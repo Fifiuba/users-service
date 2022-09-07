@@ -9,6 +9,6 @@ app.include_router(user_controller.user_router)
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"msg": "Hello World"}
 
     

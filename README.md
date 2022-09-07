@@ -23,3 +23,8 @@ Pasos para levantar el servidor local una vez clonado el repo
 poetry install
 poetry run uvicorn users_service.app:app --reload
 ```
+
+Pasos para correr los test
+```bash
+poetry run pytest
+```
