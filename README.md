@@ -1,7 +1,7 @@
 # Servicio de Usuarios
 ---
 
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Fifiuba/users-service/Python%20application?label=build&style=flat-square)](https://github.com/Fifiuba/users-service/commits)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Fifiuba/users-service/Python%20application?label=build&style=flat-square&logo=GitHub)](https://github.com/Fifiuba/users-service/commits)
 [![GitHub issues](https://img.shields.io/github/issues/Fifiuba/users-service?&style=flat-square)](https://github.com/Fifiuba/users-service/issues)
 [![GitHub license](https://img.shields.io/github/license/Fifiuba/users-service?&style=flat-square)](https://github.com/Fifiuba/users-service/blob/main/LICENSE)
 
