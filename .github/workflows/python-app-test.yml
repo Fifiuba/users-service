@@ -7,14 +7,12 @@ on:
   push:
     branches: 
     - '*'         # matches every branch that doesn't contain a '/'
-    branches-ignore:
-    - "fix**"
+    - "!fix**"
   pull_request:
     branches:
     - "develop"
     - "main"
-    branches-ignore:
-    - "fix**"
+    - "!fix**"
 
 jobs:
   build:
