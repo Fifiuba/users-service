@@ -59,7 +59,7 @@ jobs:
       - name: Run tests
         run: |
           source .venv/bin/activate
-          pytest --cov=test --cov-report=xml
+          pytest --cov=users_service tests/ --cov-report=xml
 
       #----------------------------------------------
       #              upload coverage reports
