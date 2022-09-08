@@ -26,4 +26,4 @@ COPY ./users_service/ ./users_service
 EXPOSE 8000
 
 # Corro comando para levantar el servidor
-CMD [ "poetry", "run", "uvicorn", "users_service.app:app"]
+CMD poetry run uvicorn users_service.app:app --host 0.0.0.0
