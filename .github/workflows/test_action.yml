@@ -59,4 +59,10 @@ jobs:
       - name: Run tests
         run: |
           source .venv/bin/activate
-          pytest --cov=users-service tests/
+          pytest --cov=test --cov-report=xml
+
+      #----------------------------------------------
+      #              upload coverage reports
+      #----------------------------------------------
+      - name: Upload coverage reports to Codecov with GitHub Action
+      uses: codecov/codecov-action@v3
