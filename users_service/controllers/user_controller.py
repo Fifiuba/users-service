@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter
 
 user_router = APIRouter()
+
 
 @user_router.get("/users/", tags=["users"])
 def read_users():

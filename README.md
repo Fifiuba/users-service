@@ -29,3 +29,14 @@ Pasos para correr los test
 ```bash
 poetry run pytest
 ```
+
+Pasos para correr el formatter
+```bash
+poetry run black <carpeta>
+```
+
+Pasos para correr el linter
+```bash
+poetry run flake8 <carpeta>
+```
+
