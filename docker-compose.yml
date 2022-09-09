@@ -1,0 +1,38 @@
+version: "3.9"
+
+# Declaro los servicios a utilizar
+services:
+
+  # Servicio de backend
+  backend:
+    build: .
+    ports:
+      - 8000:8000
+
+  # Servicio de base de datos
+  postgres:
+    image: postgres:alpine
+    ports:
+      - "5435:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+  
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@mail.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - "9999:80"
+    depends_on:
+      - postgres
+
+  
+
+  
+
+
