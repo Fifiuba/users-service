@@ -1,7 +1,7 @@
 # Servicio de Usuarios
 ---
 
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Fifiuba/users-service/test?label=build&style=flat-square&logo=GitHub)](https://github.com/Fifiuba/users-service/commits)
+[![GitHub Workflow Status](https://github.com/Fifiuba/users-service/actions/workflows/test_action.yml/badge.svg?event=push)](https://github.com/Fifiuba/users-service/commits/main)
 [![codecov](https://codecov.io/gh/Fifiuba/users-service/branch/main/graph/badge.svg?token=WQLIP37828)](https://codecov.io/gh/Fifiuba/users-service)
 [![GitHub issues](https://img.shields.io/github/issues/Fifiuba/users-service?&style=flat-square)](https://github.com/Fifiuba/users-service/issues)
 [![GitHub license](https://img.shields.io/github/license/Fifiuba/users-service?&style=flat-square)](https://github.com/Fifiuba/users-service/blob/main/LICENSE)
