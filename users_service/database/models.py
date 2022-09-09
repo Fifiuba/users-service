@@ -11,4 +11,4 @@ class User(Base):
     # email = Column(String, unique=True, index=True)
     hashed_password = Column("password", String(50), nullable=False)
     phone_number = Column("phone_number", String(50), nullable=True)
-    age = Column("age", Integer,nullable=True)
+    age = Column("age", Integer, nullable=True)

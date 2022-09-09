@@ -1,15 +1,16 @@
 from fastapi import FastAPI
 import uvicorn
 from .controllers import user_controller
-from .database.database import engine, Base
+from .database.database import engine
+from .database import models
 
-
-
-app = FastAPI()
-
-app.include_router(user_controller.user_router)
+models.Base.metadata.drop_all(engine)
+models.Base.metadata.create_all(engine)
 
 user_controller.set_engine(engine)
+
+app = FastAPI()
+app.include_router(user_controller.user_router)
 
 
 @app.get("/")
@@ -18,6 +19,4 @@ async def root():
 
 
 if __name__ == "__main__":
-    Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
     uvicorn.run(app, host="0.0.0.0", port=8000)

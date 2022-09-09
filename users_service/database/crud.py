@@ -1,7 +1,8 @@
 from . import models, schema
 from sqlalchemy.orm import Session
 from .database import SessionLocal
-#from .exceptions import UserAlreadyExist
+
+# from .exceptions import UserAlreadyExist
 from fastapi import Depends
 
 # Dependency
