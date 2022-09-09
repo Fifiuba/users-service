@@ -68,7 +68,7 @@ jobs:
       - name: Upload coverage reports to Codecov with GitHub Action
         uses: codecov/codecov-action@v3
         with:
-          toke:122c7a2c-c66c-4eef-af8b-6a247f2dbf6f
+          token: 122c7a2c-c66c-4eef-af8b-6a247f2dbf6f
       #----------------------------------------------
       #              run flake8 lintin
       #----------------------------------------------
