@@ -30,7 +30,7 @@ def get_users(db: Session):
 
 
 def get_user_by_name(name: str, db: Session):
-    return db.query(models.User).filter(models.User.user_name == name)
+    return db.query(models.User).filter(models.User.name == name)
 
 
 def get_user_by_id(user_id: int, db: Session):
@@ -45,8 +45,8 @@ def create_user(user: schema.UserBase, db: Session):
 
     hashed_password = get_hashed_password(user.password)
     db_user = models.User(
-        user_name=user.name,
-        hashed_password=hashed_password,
+        name=user.name,
+        password=hashed_password,
         phone_number=user.phone_number,
         age=user.age,
     )
