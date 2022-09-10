@@ -10,7 +10,7 @@ models.Base.metadata.create_all(engine)
 user_controller.set_engine(engine)
 
 app = FastAPI()
-app.include_router(user_controller.user_router)
+app.include_router(user_controller.user_router,  prefix="/recursos", tags=["Recursos"])
 
 
 @app.get("/")

@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import sessionmaker
 from typing import List
-from users_service.database import crud, schema
+from users_service.database import crud, schema, exceptions
+
 
 user_router = APIRouter()
 session = None
@@ -18,17 +19,18 @@ def set_engine(engine_rcvd):
 
 
 @user_router.post(
-    "/users/registration",
-    tags=["users"],
+    "/createUser",
     response_model=schema.UserResponse,
     status_code=status.HTTP_201_CREATED,
 )
 async def registration(user: schema.UserBase):
-    user_created = crud.create_user(user, crud.get_db())
+    if (crud.user_exists(user.name, session)):
+        return exceptions.UserAlreadyExists
+    user_created = crud.create_user(user, session)
     return user_created
 
 
-@user_router.get("/users/", tags=["users"], response_model=List[schema.UserResponse])
-def read_users(db: Session = Depends(crud.get_db)):
-    users = crud.get_users(db)
+@user_router.get('/getUsers',response_model=List[schema.UserResponse], status_code=status.HTTP_200_OK)
+def read_users():
+    users = crud.get_users(session)
     return users
