@@ -1,3 +1,4 @@
+from logging import exception
 from fastapi import APIRouter, status, HTTPException
 from sqlalchemy.orm import sessionmaker
 from typing import List
@@ -40,3 +41,22 @@ async def registration(user: schema.UserBase):
 def read_users():
     users = crud.get_users(session)
     return users
+
+@user_router.post("/createPassenger", response_model=schema.UserResponse, status_code=status.HTTP_201_CREATED)
+async def registrate_passenger(user: schema.UserBase):
+    try:
+        user_create = crud.create_user(user, session)
+        crud.create_passenger(user_create.id, session)
+        return user_create
+    except exceptions.UserInfoException as error:
+        raise HTTPException(**error.__dict__)
+
+@user_router.post("/create_driver",response_model=schema.UserResponse, status_code = status.HTTP_201_CREATED)
+async def registrate_driver(user: schema.UserBase):
+    try:
+        user_create = crud.create_user(user, session)
+        crud.create_driver(user_create.id, session)
+        return user_create
+    except exceptions.UserInfoException as error:
+        raise HTTPException(**error.__dict__)
+

@@ -56,3 +56,18 @@ def create_user(user: schema.UserBase, db: Session):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+def create_passenger(id_user: int, db: Session):
+    db_passenger = models.Passenger(id=id_user, default_address=None)
+    db.add(db_passenger)
+    db.commit()
+    db.refresh(db_passenger)
+
+
+def create_driver(id_user: int, db: Session):
+    db_driver = models.Driver(id=id_user, license_plate=None, car_model=None)
+    db.add(db_driver)
+    db.commit()
+    db.refresh(db_driver)
+    
