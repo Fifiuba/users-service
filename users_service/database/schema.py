@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from users_service.database.models import Passenger
 
 
 class UserBase(BaseModel):
@@ -19,9 +18,11 @@ class UserResponse(UserBase):
     class Config:
         orm_mode = True
 
+
 class PassengerBase(BaseModel):
     id: int
     default_address: str
+
 
 class DriverBase(BaseModel):
     id: int
