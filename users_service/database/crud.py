@@ -1,4 +1,4 @@
-from . import models, schema
+from . import models, schema, exceptions
 from sqlalchemy.orm import Session
 from .database import SessionLocal
 
@@ -30,7 +30,7 @@ def get_users(db: Session):
 
 
 def get_user_by_name(name: str, db: Session):
-    return db.query(models.User).filter(models.User.name == name)
+    return db.query(models.User).filter(models.User.name == name).first()
 
 
 def get_user_by_id(user_id: int, db: Session):
@@ -38,10 +38,12 @@ def get_user_by_id(user_id: int, db: Session):
 
 
 def user_exists(username, db: Session):
-    return get_user_by_name(username, db) is None
+    return get_user_by_name(username, db) is not None
 
 
 def create_user(user: schema.UserBase, db: Session):
+    if user_exists(user.name, db):
+        return exceptions.UserAlreadyExists
 
     hashed_password = get_hashed_password(user.password)
     db_user = models.User(
