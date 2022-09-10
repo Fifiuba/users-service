@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import sessionmaker
 from typing import List
 from users_service.database import crud, schema
@@ -17,9 +17,15 @@ def set_engine(engine_rcvd):
     session = Session()
 
 
-@user_router.post("/users/registration", tags=["users"])
+@user_router.post(
+    "/users/registration",
+    tags=["users"],
+    response_model=schema.UserResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 async def registration(user: schema.UserBase):
-    pass
+    user_created = crud.create_user(user, crud.get_db())
+    return user_created
 
 
 @user_router.get("/users/", tags=["users"], response_model=List[schema.UserResponse])
