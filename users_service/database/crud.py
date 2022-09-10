@@ -5,7 +5,8 @@ from .database import SessionLocal
 # TODO: Modular el hasher
 from passlib.context import CryptContext
 
-from fastapi import Depends
+# from fastapi import Depends
+
 
 # Dependency
 def get_db():
@@ -37,7 +38,7 @@ def get_user_by_id(user_id: int, db: Session):
 
 
 def user_exists(username, db: Session):
-    return get_user_by_name(username,db) is None
+    return get_user_by_name(username, db) is None
 
 
 def create_user(user: schema.UserBase, db: Session):
