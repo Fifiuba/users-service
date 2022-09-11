@@ -50,7 +50,7 @@ async def registrate_passenger(user: schema.UserBase):
     try:
         user_create = crud.create_passenger(user, session)
         return user_create
-    except exceptions.UserAlreadyExists as error:
+    except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
         
         

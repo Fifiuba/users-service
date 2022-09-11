@@ -1,6 +1,6 @@
 from sqlalchemy.schema import Column, ForeignKey
 from sqlalchemy.types import String, Integer
-from .database import Base
+from .database import Base, engine
 
 
 class User(Base):
@@ -26,3 +26,4 @@ class Driver(Base):
     id = Column("id", Integer, ForeignKey("users.id"), primary_key=True)
     license_plate = Column("license_plate", String(255), nullable=True)
     car_model = Column("car_model", String(255), nullable=True)
+

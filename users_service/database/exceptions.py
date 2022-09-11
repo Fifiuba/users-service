@@ -9,13 +9,12 @@ class PassengerAlreadyExists(UserInfoException):
 class DriverAlreadyExists(UserInfoException):
     def __init__(self):
         self.status_code = 409  # conflic
-        self.detail = "The passenger already exists"
+        self.detail = "The driver already exists"
 
 class UserAlreadyExists(UserInfoException):
-    def __init__(self,user_id):
+    def __init__(self):
         self.status_code = 409  # conflic
         self.detail = "The user already exists"
-        self.user = user
 
 
 class PassengerNotFoundError(UserInfoException):
