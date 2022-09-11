@@ -56,19 +56,19 @@ jobs:
       #----------------------------------------------
       #              run test suite
       #----------------------------------------------
-      - name: Run tests
-        run: |
-          source .venv/bin/activate
-          pytest --cov=users_service tests/ --cov-report=xml
+      #- name: Run tests
+      #  run: |
+      #   source .venv/bin/activate
+      #    pytest --cov=users_service tests/ --cov-report=xml
 
 
       #----------------------------------------------
       #              upload coverage reports
       #----------------------------------------------
-      - name: Upload coverage reports to Codecov with GitHub Action
-        uses: codecov/codecov-action@v3
-        with:
-          token: 122c7a2c-c66c-4eef-af8b-6a247f2dbf6f
+      #- name: Upload coverage reports to Codecov with GitHub Action
+      #  uses: codecov/codecov-action@v3
+      #  with:
+      #    token: 122c7a2c-c66c-4eef-af8b-6a247f2dbf6f
       #----------------------------------------------
       #              run flake8 lintin
       #----------------------------------------------
