@@ -1,10 +1,19 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import os
 
-engine = create_engine(
-    "postgresql+psycopg2://postgres:postgres@postgres:5432/users", echo=True
-)
+if 'RUN_ENV' in os.environ.keys() and os.environ['RUN_ENV'] != 'test':
+
+    engine = create_engine(
+        "postgresql+psycopg2://postgres:postgres@postgres:5432/users", echo=True
+    )
+else:
+    SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+
+    engine = create_engine(
+        SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+    )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

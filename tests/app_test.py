@@ -1,21 +1,13 @@
 from fastapi.testclient import TestClient
 from fastapi import status
 from users_service.app import app
-from users_service.crud import get_db
+from users_service.database.crud import get_db
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from ..database import Base
+from users_service.database.database import Base, engine
+import sqlalchemy as sa
+import os
 
-# def test_read_main():
-#     response = client.get("/")
-#     assert response.status_code == 200
-#     assert response.json() == {"msg": "Hello World"}
-
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
-
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
 
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -35,8 +27,16 @@ app.dependency_overrides[get_db] = override_get_db
 
 client = TestClient(app)
 
+def registerClient():
+    
+    return response 
 
-def test_create_user():
+def test_has_table():
+    assert sa.inspect(engine).has_table("users")
+    assert sa.inspect(engine).has_table("passengers")
+    assert sa.inspect(engine).has_table("drivers")
+
+"""def test_whenCreatingUserWithNotRegisteredName_createsTheUserCorrectly():
     response = client.post(
         "/createUser",
         json={
@@ -57,3 +57,12 @@ def test_create_user():
     assert "id" in data
 
     # faltaria chequear que el id devuelve al user correcto
+
+def test_whenCreatingUserWithRegisteredName_doesNotcreateTheUser():
+    registerClient()
+    response = registerClient()
+
+    assert response.status_code == status.HTTP_409_CONFLICT, response.text
+    data = response.json()
+    assert data["detail"] == "The passenger already exists""""
+    
