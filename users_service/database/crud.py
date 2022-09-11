@@ -52,8 +52,10 @@ def user_exists(username, db: Session):
 
 
 def create_user(user: schema.UserBase, db: Session):
-    if user_exists(user.name, db):
-        raise exceptions.UserAlreadyExists
+    user = get_user_by_name(user.name, db)
+    exists_user = user_exists(user.name,db)
+    if (exists_user):
+        return user,exists_user
     hashed_password = get_hashed_password(user.password)
     db_user = models.User(
         name=user.name,
@@ -64,22 +66,39 @@ def create_user(user: schema.UserBase, db: Session):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    return db_user
+    return db_user,False
 
-
-def create_passenger(id_user: int, db: Session):
-    db_passenger = models.Passenger(id=id_user, default_address=None)
+def create_passenger_with_id(user_id: int, db:Session):
+    db_passenger = models.Passenger(id=user_id, default_address=None)
     db.add(db_passenger)
     db.commit()
-    db.refresh(db_passenger)
+    db.refresh(db_passenger)  
 
-
-def create_driver(id_user: int, db: Session):
-    db_driver = models.Driver(id=id_user, license_plate=None, car_model=None)
+def create_driver_with_id(user_id: int, db: Session):
+    db_driver = models.Driver(id=user_id, license_plate=None, car_model=None)
     db.add(db_driver)
     db.commit()
     db.refresh(db_driver)
+      
+## Hip: UNA PERSONA PUEDE TENER PARA UN MISMO MAIL DOS USUARIOS
+def create_passenger(user: schema.UserBase, db: Session):
+    
+    db_user, already_existing_user = create_user(user, db)
+    if already_existing_user and get_driver_by_id(db_user.id) is None:
+        raise exceptions.PassengerAlreadyExists
+    else:
+        create_passenger_with_id(db_user.id)
+    return db_user
 
+
+def create_driver(user: schema.UserBase, db: Session):
+    
+    db_user, already_existing_user = create_user(user, db)
+    if already_existing_user and get_passenger_by_id(db_user.id) is None:
+        raise exceptions.DriverAlreadyExists   
+    else:
+        create_driver_with_id(db_user.id)
+    return db_user
 
 def add_passenger_address(passenger: schema.PassengerBase, db: Session):
     db_passenger = get_passenger_by_id(passenger.id, db)

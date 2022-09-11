@@ -48,14 +48,12 @@ def read_users():
 )
 async def registrate_passenger(user: schema.UserBase):
     try:
-        user_create = crud.create_user(user, session)
+        user_create = crud.create_passenger(user, session)
+        return user_create
     except exceptions.UserAlreadyExists as error:
         raise HTTPException(**error.__dict__)
-    else:
-        crud.create_passenger(user_create.id, session)
-        return user_create
-
-
+        
+        
 @user_router.post(
     "/driver/create",
     response_model=schema.UserResponse,
@@ -63,12 +61,11 @@ async def registrate_passenger(user: schema.UserBase):
 )
 async def registrate_driver(user: schema.UserBase):
     try:
-        user_create = crud.create_user(user, session)
+        user_create = crud.create_driver(user, session)
+        return user_create
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
-    else:
-        crud.create_driver(user_create.id, session)
-        return user_create
+   
 
 
 @user_router.patch("/passenger/add_addres", status_code=status.HTTP_200_OK)

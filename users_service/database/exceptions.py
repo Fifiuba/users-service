@@ -1,11 +1,21 @@
 class UserInfoException(Exception):
     ...
 
-
-class UserAlreadyExists(UserInfoException):
+class PassengerAlreadyExists(UserInfoException):
     def __init__(self):
         self.status_code = 409  # conflic
+        self.detail = "The passenger already exists"
+
+class DriverAlreadyExists(UserInfoException):
+    def __init__(self):
+        self.status_code = 409  # conflic
+        self.detail = "The passenger already exists"
+
+class UserAlreadyExists(UserInfoException):
+    def __init__(self,user_id):
+        self.status_code = 409  # conflic
         self.detail = "The user already exists"
+        self.user = user
 
 
 class PassengerNotFoundError(UserInfoException):
