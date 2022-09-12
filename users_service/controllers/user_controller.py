@@ -18,19 +18,6 @@ def set_engine(engine_rcvd):
     session = Session()
 
 
-#@user_router.post(
-#    "/createUser",
-    #response_model=schema.UserResponse,
-#    status_code=status.HTTP_201_CREATED,
-#)
-#async def registration(user: schema.UserBase):
-#    try:
-#        user_created = crud.create_user(user, session)
-#        return user_created
-#    except exceptions.UserInfoException as error:
-#        raise HTTPException(**error.__dict__)
-
-
 @user_router.get(
     "/getUsers",
     response_model=List[schema.UserResponse],

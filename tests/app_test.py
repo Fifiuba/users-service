@@ -27,9 +27,9 @@ app.dependency_overrides[get_db] = override_get_db
 
 client = TestClient(app)
 
-def registerClient():
+def registerClient(endpoint):
     response = client.post(
-        "users/passenger/create",
+        endpoint,
         json={
             "name": "Sol",
             "password": "87654321",
@@ -45,7 +45,7 @@ def test_has_table():
     assert sa.inspect(engine).has_table("drivers")
 
 def test_whenCreatingAPassengerWithNotRegisteredName_createsTheUserCorrectly():
-    response = registerClient()
+    response = registerClient("users/passenger/create")
 
     assert response.status_code == status.HTTP_201_CREATED, response.text
     data = response.json()
@@ -58,10 +58,29 @@ def test_whenCreatingAPassengerWithNotRegisteredName_createsTheUserCorrectly():
     # faltaria chequear que el id devuelve al user correcto
 
 def test_whenCreatingAPassengerWithRegisteredName_doesNotcreateThePassenger():
-    registerClient()
-    response = registerClient()
+    registerClient("users/passenger/create")
+    response = registerClient("users/passenger/create")
 
     assert response.status_code == status.HTTP_409_CONFLICT, response.text
     data = response.json()
     assert data["detail"] == "The passenger already exists"
 
+def test_whenCreatingADriverWithNotRegisteredName_createsThePassengerCorrectly():
+    response = registerClient("users/driver/create")
+
+    assert response.status_code == status.HTTP_201_CREATED, response.text
+    data = response.json()
+    assert data["name"] == "Sol"
+    # check de la hashed password?
+    assert data["phone_number"] == "12345678"
+    assert data["age"] == 22
+    assert "id" in data
+
+    # faltaria chequear que el id devuelve al user correcto
+
+def test_whenCreatingADriverWithRegisteredName_doesNotcreateTheDriver():
+    registerClient("users/driver/create")
+    response = registerClient("users/driver/create")
+    assert response.status_code == status.HTTP_409_CONFLICT, response.text
+    data = response.json()
+    assert data["detail"] == "The driver already exists"
