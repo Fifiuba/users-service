@@ -82,7 +82,6 @@ def create_driver_with_id(user_id: int, db: Session):
       
 ## Hip: UNA PERSONA PUEDE TENER PARA UN MISMO MAIL DOS USUARIOS
 def create_passenger(user: schema.UserBase, db: Session):
-    
     db_user, already_existing_user = create_user(user, db)
     if already_existing_user and (get_driver_by_id(db_user.id, db) is None or get_passenger_by_id(db_user.id, db) is not None):
         raise exceptions.PassengerAlreadyExists
