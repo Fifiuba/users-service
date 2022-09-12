@@ -52,10 +52,10 @@ def user_exists(username, db: Session):
 
 
 def create_user(user: schema.UserBase, db: Session):
-    user = get_user_by_name(user.name, db)
+    db_user = get_user_by_name(user.name, db)
     exists_user = user_exists(user.name,db)
     if (exists_user):
-        return user,exists_user
+        return db_user,exists_user
     hashed_password = get_hashed_password(user.password)
     db_user = models.User(
         name=user.name,
@@ -84,20 +84,20 @@ def create_driver_with_id(user_id: int, db: Session):
 def create_passenger(user: schema.UserBase, db: Session):
     
     db_user, already_existing_user = create_user(user, db)
-    if already_existing_user and get_driver_by_id(db_user.id) is None:
+    if already_existing_user and get_driver_by_id(db_user.id,db) is None:
         raise exceptions.PassengerAlreadyExists
     else:
-        create_passenger_with_id(db_user.id)
+        create_passenger_with_id(db_user.id,db)
     return db_user
 
 
 def create_driver(user: schema.UserBase, db: Session):
     
     db_user, already_existing_user = create_user(user, db)
-    if already_existing_user and get_passenger_by_id(db_user.id) is None:
+    if already_existing_user and get_passenger_by_id(db_user.id,db) is None:
         raise exceptions.DriverAlreadyExists   
     else:
-        create_driver_with_id(db_user.id)
+        create_driver_with_id(db_user.id,db)
     return db_user
 
 def add_passenger_address(passenger: schema.PassengerBase, db: Session):
