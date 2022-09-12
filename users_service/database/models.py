@@ -1,6 +1,6 @@
 from sqlalchemy.schema import Column, ForeignKey
 from sqlalchemy.types import String, Integer
-from .database import Base
+from .database import Base, engine
 
 
 class User(Base):

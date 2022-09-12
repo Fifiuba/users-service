@@ -48,14 +48,14 @@ def get_driver_by_id(driver_id: int, db: Session):
 
 
 def user_exists(username, db: Session):
-    return get_user_by_name(username, db) is not None
+    user = get_user_by_name(username, db)
+    return user
 
 
 def create_user(user: schema.UserBase, db: Session):
-    db_user = get_user_by_name(user.name, db)
-    exists_user = user_exists(user.name,db)
-    if (exists_user):
-        return db_user,exists_user
+    user_aux = get_user_by_name(user.name, db)
+    if (user_aux):
+        return user_aux, True
     hashed_password = get_hashed_password(user.password)
     db_user = models.User(
         name=user.name,
@@ -82,22 +82,21 @@ def create_driver_with_id(user_id: int, db: Session):
       
 ## Hip: UNA PERSONA PUEDE TENER PARA UN MISMO MAIL DOS USUARIOS
 def create_passenger(user: schema.UserBase, db: Session):
-    
     db_user, already_existing_user = create_user(user, db)
-    if already_existing_user and get_driver_by_id(db_user.id,db) is None:
+    if already_existing_user and (get_driver_by_id(db_user.id, db) is None or get_passenger_by_id(db_user.id, db) is not None):
         raise exceptions.PassengerAlreadyExists
     else:
-        create_passenger_with_id(db_user.id,db)
+        create_passenger_with_id(db_user.id, db)
     return db_user
 
 
 def create_driver(user: schema.UserBase, db: Session):
     
     db_user, already_existing_user = create_user(user, db)
-    if already_existing_user and get_passenger_by_id(db_user.id,db) is None:
+    if already_existing_user and (get_passenger_by_id(db_user.id, db) is None or get_driver_by_id(db_user.id, db) is not None):
         raise exceptions.DriverAlreadyExists   
     else:
-        create_driver_with_id(db_user.id,db)
+        create_driver_with_id(db_user.id, db)
     return db_user
 
 def add_passenger_address(passenger: schema.PassengerBase, db: Session):
