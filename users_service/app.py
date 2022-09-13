@@ -4,9 +4,8 @@ from .controllers import user_controller
 from .database.database import engine
 from .database import models
 
-models.Base.metadata.drop_all(engine)
-models.Base.metadata.create_all(engine)
-user_controller.set_engine(engine)
+
+
 
 app = FastAPI()
 app.include_router(user_controller.user_router, prefix="/users", tags=["Users"])

@@ -1,20 +1,9 @@
 from . import models, schema, exceptions
 from sqlalchemy.orm import Session
-from .database import SessionLocal
 
 # TODO: Modular el hasher
 from passlib.context import CryptContext
 
-# from fastapi import Depends
-
-
-# Dependency
-def get_db():
-    db = SessionLocal()()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

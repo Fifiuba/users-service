@@ -1,9 +1,10 @@
 from fastapi.testclient import TestClient
 from fastapi import status
 from users_service.app import app
-from users_service.database.crud import get_db
+from users_service.database.database import get_db
 from sqlalchemy.orm import sessionmaker
-from users_service.database.database import Base, engine
+from users_service.database.database import engine
+from users_service.database.models import Base
 import sqlalchemy as sa
 
 
