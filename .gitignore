@@ -1,2 +1,6 @@
 .env
 postgres-data
+test.db
+.pytest_cache
+__pycache__/
+*.pyc

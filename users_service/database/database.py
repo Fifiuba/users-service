@@ -11,7 +11,6 @@ if "RUN_ENV" in os.environ.keys() and os.environ["RUN_ENV"] == "test":
         SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
     )
 
-
 else:
 
     engine = create_engine(
