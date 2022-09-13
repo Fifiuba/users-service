@@ -3,12 +3,6 @@ version: "3.9"
 # Declaro los servicios a utilizar
 services:
 
-  # Servicio de backend
-  backend:
-    build: .
-    ports:
-      - 8000:8000
-
   # Servicio de base de datos
   postgres:
     image: postgres:alpine
@@ -19,7 +13,17 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
-  
+    
+    
+  # Servicio de backend
+  backend:
+    build: .
+    restart: on-failure
+    ports:
+      - 8000:8000
+
+    
+  # Servicio de pgAdmin web
   pgadmin:
     container_name: pgadmin
     image: dpage/pgadmin4

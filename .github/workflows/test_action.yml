@@ -58,9 +58,8 @@ jobs:
       #----------------------------------------------
       - name: Run tests
         run: |
-          source .venv/bin/activate
-          pytest --cov=users_service tests/ --cov-report=xml
-
+         source .venv/bin/activate
+          RUN_ENV='test' pytest --cov=users_service tests/ --cov-report=xml
 
       #----------------------------------------------
       #              upload coverage reports
