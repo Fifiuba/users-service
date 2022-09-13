@@ -125,9 +125,9 @@ def verified_user(name, password: str, db: Session):
     if (db_user):
         password_ok = password_context.verify(password, db_user.password)
     return db_user, password_ok
-    
-def get_user_log_in(name: str, password: str, db: Session):
-    db_user, password_ok = verified_user(name, password, db);
+
+def get_user_log_in(user: schema.UserLogInBase, db: Session):
+    db_user, password_ok = verified_user(user.name, user.password, db);
     if (db_user is None or not password_ok):
         raise exceptions.UserWrongLoginInformation
     return db_user.id;

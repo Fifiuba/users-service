@@ -29,3 +29,6 @@ class DriverBase(BaseModel):
     license_plate: str
     car_model: str
 
+class UserLogInBase(BaseModel):
+    name: str
+    password: str
