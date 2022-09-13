@@ -28,3 +28,4 @@ class DriverBase(BaseModel):
     id: int
     license_plate: str
     car_model: str
+

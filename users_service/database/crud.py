@@ -118,3 +118,16 @@ def add_driver_car_info(driver: schema.DriverBase, db: Session):
     db.commit()
     db.refresh(db_driver)
     return db_driver
+
+def verified_user(name, password: str, db: Session):
+    db_user = get_user_by_name(name, db);
+    password_ok = False
+    if (db_user):
+        password_ok = password_context.verify(password, db_user.password)
+    return db_user, password_ok
+    
+def get_user_log_in(name: str, password: str, db: Session):
+    db_user, password_ok = verified_user(name, password, db);
+    if (db_user is None or not password_ok):
+        raise exceptions.UserWrongLoginInformation
+    return db_user.id;

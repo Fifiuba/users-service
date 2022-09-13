@@ -71,3 +71,13 @@ async def add_car_info(driver: schema.DriverBase):
         return driver
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
+
+@user_router.post("/login", status_code=status.HTTP_200_OK)
+async def login_user(name: str, password: str):
+    try:
+        user = crud.get_user_log_in(name,password, session)
+        return user;
+    except exceptions.UserInfoException as error:
+        raise HTTPException(**error.__dict__)
+
+    
