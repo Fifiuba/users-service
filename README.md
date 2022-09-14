@@ -40,3 +40,19 @@ Pasos para correr el linter
 poetry run flake8 <carpeta>
 ```
 
+### Ambiente de desarrollo usando Docker
+
+Controlar las versiones necesarias de docker compose, python(3) y docker
+
+Pasos para correr el entorno
+```bash
+docker compose build --no-cache
+clear
+docker compose up
+```
+Pasos para eliminar correctamente el entorno
+```bash
+docker compose down -v
+```
+
+
