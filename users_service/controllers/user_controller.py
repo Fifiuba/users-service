@@ -44,7 +44,7 @@ async def registrate_driver(user: schema.UserBase, db: Session = Depends(databas
         raise HTTPException(**error.__dict__)
 
 
-@user_router.patch("/passenger/add_addres", status_code=status.HTTP_200_OK)
+@user_router.patch("/passenger/add_address", status_code=status.HTTP_200_OK)
 async def add_address(passenger: schema.PassengerBase, db: Session = Depends(database.get_db)):
     try:
         passenger = crud.add_passenger_address(passenger, db)
