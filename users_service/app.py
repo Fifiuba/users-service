@@ -5,6 +5,8 @@ from .controllers import user_controller
 from .database.database import engine
 from .database import models
 
+app = FastAPI()
+
 origins = [
 
     # Cambiar por api-gateway
@@ -17,11 +19,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-
-
-app = FastAPI()
 app.include_router(user_controller.user_router, prefix="/users", tags=["Users"])
 
 
