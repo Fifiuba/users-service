@@ -9,7 +9,7 @@ user_router = APIRouter()
 
 
 @user_router.get(
-    "/getUsers",
+    "/",
     response_model=List[schema.UserResponse],
     status_code=status.HTTP_200_OK,
 )
@@ -19,7 +19,7 @@ def read_users(db: Session = Depends(database.get_db)):
 
 
 @user_router.post(
-    "/passenger/create",
+    "/passengers",
     response_model=schema.UserResponse,
     status_code=status.HTTP_201_CREATED,
 )
@@ -32,7 +32,7 @@ async def registrate_passenger(user: schema.UserBase, db: Session = Depends(data
 
 
 @user_router.post(
-    "/driver/create",
+    "/drivers",
     response_model=schema.UserResponse,
     status_code=status.HTTP_201_CREATED,
 )
@@ -44,7 +44,7 @@ async def registrate_driver(user: schema.UserBase, db: Session = Depends(databas
         raise HTTPException(**error.__dict__)
 
 
-@user_router.patch("/passenger/add_address", status_code=status.HTTP_200_OK)
+@user_router.patch("/passengers/add_address", status_code=status.HTTP_200_OK)
 async def add_address(passenger: schema.PassengerBase, db: Session = Depends(database.get_db)):
     try:
         passenger = crud.add_passenger_address(passenger, db)
@@ -53,7 +53,7 @@ async def add_address(passenger: schema.PassengerBase, db: Session = Depends(dat
         raise HTTPException(**error.__dict__)
 
 
-@user_router.patch("/driver/add_car_info", status_code=status.HTTP_200_OK)
+@user_router.patch("/drivers/add_car_info", status_code=status.HTTP_200_OK)
 async def add_car_info(driver: schema.DriverBase, db: Session = Depends(database.get_db)):
     try:
         driver = crud.add_driver_car_info(driver, db)

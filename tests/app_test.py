@@ -47,7 +47,7 @@ def test_has_table():
 
 
 def test_whenCreatingAPassengerWithNotRegisteredName_createsTheUserCorrectly():
-    response = registerClient("users/passenger/create")
+    response = registerClient("users/passengers")
 
     assert response.status_code == status.HTTP_201_CREATED, response.text
     data = response.json()
@@ -61,8 +61,8 @@ def test_whenCreatingAPassengerWithNotRegisteredName_createsTheUserCorrectly():
 
 
 def test_whenCreatingAPassengerWithRegisteredName_doesNotcreateThePassenger():
-    registerClient("users/passenger/create")
-    response = registerClient("users/passenger/create")
+    registerClient("users/passengers")
+    response = registerClient("users/passengers")
 
     assert response.status_code == status.HTTP_409_CONFLICT, response.text
     data = response.json()
@@ -70,7 +70,7 @@ def test_whenCreatingAPassengerWithRegisteredName_doesNotcreateThePassenger():
 
 
 def test_whenCreatingADriverWithNotRegisteredName_createsThePassengerCorrectly():
-    response = registerClient("users/driver/create")
+    response = registerClient("users/drivers")
 
     assert response.status_code == status.HTTP_201_CREATED, response.text
     data = response.json()
@@ -84,8 +84,8 @@ def test_whenCreatingADriverWithNotRegisteredName_createsThePassengerCorrectly()
 
 
 def test_whenCreatingADriverWithRegisteredName_doesNotcreateTheDriver():
-    registerClient("users/driver/create")
-    response = registerClient("users/driver/create")
+    registerClient("users/drivers")
+    response = registerClient("users/drivers")
     assert response.status_code == status.HTTP_409_CONFLICT, response.text
     data = response.json()
     assert data["detail"] == "The driver already exists"
