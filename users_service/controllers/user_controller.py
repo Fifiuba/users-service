@@ -9,7 +9,7 @@ user_router = APIRouter()
 
 
 @user_router.get(
-    "/",
+    "",
     response_model=List[schema.UserResponse],
     status_code=status.HTTP_200_OK,
 )
