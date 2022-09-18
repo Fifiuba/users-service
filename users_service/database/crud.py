@@ -120,4 +120,4 @@ def get_user_log_in(user: schema.UserLogInBase, db: Session):
     db_user, password_ok = verified_user(user.name, user.password, db)
     if db_user is None or not password_ok:
         raise exceptions.UserWrongLoginInformation
-    return db_user.id
+    return db_user.name

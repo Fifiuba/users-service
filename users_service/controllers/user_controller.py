@@ -2,6 +2,7 @@ from fastapi import APIRouter, status, HTTPException, Depends
 from sqlalchemy.orm import Session
 from typing import List
 from users_service.database import crud, schema, exceptions, database
+from users_service.utils import token_handler
 
 
 user_router = APIRouter()
@@ -75,6 +76,7 @@ async def login_user(
 ):
     try:
         db_user = crud.get_user_log_in(user, db)
-        return db_user
+        token = token_handler.create_access_token(db_user)
+        return token
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
