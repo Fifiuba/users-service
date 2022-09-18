@@ -12,14 +12,16 @@ if "RUN_ENV" in os.environ.keys() and os.environ["RUN_ENV"] == "test":
 
 else:
 
-#     engine = create_engine(
-#         "postgresql+psycopg2://postgres:postgres@postgres:5432/users", echo=True
-#     )
+    #     engine = create_engine(
+    #         "postgresql+psycopg2://postgres:postgres@postgres:5432/users", echo=True
+    #     )
 
-# SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    # SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Base = declarative_base()
-    engine = create_engine("postgresql+psycopg2://postgres:postgres@postgres:5432/users" , echo=True )
+    # Base = declarative_base()
+    engine = create_engine(
+        "postgresql+psycopg2://postgres:postgres@postgres:5432/users", echo=True
+    )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
