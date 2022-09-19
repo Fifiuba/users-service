@@ -2,13 +2,14 @@ from pydantic import BaseModel
 
 
 class UserBase(BaseModel):
+    user_type: str
     name: str
     password: str
     phone_number: str
     age: int
 
 
-class UserResponse(UserBase):
+class UserResponse(BaseModel):
     id: int
     name: str
     password: str

@@ -19,30 +19,19 @@ def read_users(db: Session = Depends(database.get_db)):
 
 
 @user_router.post(
-    "/passengers",
+    "",
     response_model=schema.UserResponse,
     status_code=status.HTTP_201_CREATED,
 )
-async def registrate_passenger(user: schema.UserBase, db: Session = Depends(database.get_db)):
+async def registrate_user(user: schema.UserBase, db: Session = Depends(database.get_db)):
     try:
-        user_create = crud.create_passenger(user, db)
+        if(user.user_type == "passenger"):
+            user_create = crud.create_passenger(user, db)
+        else:
+            user_create = crud.create_driver(user, db)
         return user_create
-    except exceptions.PassengerAlreadyExists as error:
+    except (exceptions.PassengerAlreadyExists, exceptions.DriverAlreadyExists) as error:
         raise HTTPException(**error.__dict__)
-
-
-@user_router.post(
-    "/drivers",
-    response_model=schema.UserResponse,
-    status_code=status.HTTP_201_CREATED,
-)
-async def registrate_driver(user: schema.UserBase, db: Session = Depends(database.get_db)):
-    try:
-        user_create = crud.create_driver(user, db)
-        return user_create
-    except exceptions.DriverAlreadyExists as error:
-        raise HTTPException(**error.__dict__)
-
 
 @user_router.patch("/passengers/add_address", status_code=status.HTTP_200_OK)
 async def add_address(passenger: schema.PassengerBase, db: Session = Depends(database.get_db)):

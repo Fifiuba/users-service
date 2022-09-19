@@ -27,10 +27,23 @@ app.dependency_overrides[get_db] = override_get_db
 client = TestClient(app)
 
 
-def registerClient(endpoint):
-    response = client.post(
-        endpoint,
+def registerClient(type):
+    if type == "driver":
+        response = client.post(
+        "/users",
         json={
+            "user_type": "driver",
+            "name": "Sol",
+            "password": "87654321",
+            "phone_number": "12345678",
+            "age": 22,
+        },
+    )
+    else:
+        response = client.post(
+        "/users",
+        json={
+            "user_type": "passenger",
             "name": "Sol",
             "password": "87654321",
             "phone_number": "12345678",
@@ -47,7 +60,7 @@ def test_has_table():
 
 
 def test_whenCreatingAPassengerWithNotRegisteredName_createsTheUserCorrectly():
-    response = registerClient("users/passengers")
+    response = registerClient("passenger")
 
     assert response.status_code == status.HTTP_201_CREATED, response.text
     data = response.json()
@@ -61,8 +74,8 @@ def test_whenCreatingAPassengerWithNotRegisteredName_createsTheUserCorrectly():
 
 
 def test_whenCreatingAPassengerWithRegisteredName_doesNotcreateThePassenger():
-    registerClient("users/passengers")
-    response = registerClient("users/passengers")
+    registerClient("passenger")
+    response = registerClient("passenger")
 
     assert response.status_code == status.HTTP_409_CONFLICT, response.text
     data = response.json()
@@ -70,7 +83,7 @@ def test_whenCreatingAPassengerWithRegisteredName_doesNotcreateThePassenger():
 
 
 def test_whenCreatingADriverWithNotRegisteredName_createsThePassengerCorrectly():
-    response = registerClient("users/drivers")
+    response = registerClient("driver")
 
     assert response.status_code == status.HTTP_201_CREATED, response.text
     data = response.json()
@@ -84,8 +97,8 @@ def test_whenCreatingADriverWithNotRegisteredName_createsThePassengerCorrectly()
 
 
 def test_whenCreatingADriverWithRegisteredName_doesNotcreateTheDriver():
-    registerClient("users/drivers")
-    response = registerClient("users/drivers")
+    registerClient("driver")
+    response = registerClient("driver")
     assert response.status_code == status.HTTP_409_CONFLICT, response.text
     data = response.json()
     assert data["detail"] == "The driver already exists"
