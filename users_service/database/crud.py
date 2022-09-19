@@ -1,16 +1,6 @@
+from users_service.utils import password_handler
 from . import models, schema, exceptions
 from sqlalchemy.orm import Session
-
-# TODO: Modular el hasher
-from passlib.context import CryptContext
-
-
-
-password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-
-def get_hashed_password(password: str) -> str:
-    return password_context.hash(password)
 
 
 def get_users(db: Session):
@@ -45,7 +35,7 @@ def create_user(user: schema.UserBase, db: Session):
     user_aux = get_user_by_name(user.name, db)
     if user_aux:
         return user_aux, True
-    hashed_password = get_hashed_password(user.password)
+    hashed_password = password_handler.get_hashed_password(user.password)
     db_user = models.User(
         name=user.name,
         password=hashed_password,
@@ -97,8 +87,8 @@ def create_driver(user: schema.UserBase, db: Session):
     return db_user
 
 
-def add_passenger_address(passenger: schema.PassengerBase, db: Session):
-    db_passenger = get_passenger_by_id(passenger.id, db)
+def add_passenger_address(passenger_id: int, passenger: schema.PassengerBase, db: Session):
+    db_passenger = get_passenger_by_id(passenger_id, db)
     if db_passenger is None:
         raise exceptions.PassengerNotFoundError
     db_passenger.default_address = passenger.default_address
@@ -107,8 +97,8 @@ def add_passenger_address(passenger: schema.PassengerBase, db: Session):
     return db_passenger
 
 
-def add_driver_car_info(driver: schema.DriverBase, db: Session):
-    db_driver = get_driver_by_id(driver.id, db)
+def add_driver_car_info(driver_id: int, driver: schema.DriverBase, db: Session):
+    db_driver = get_driver_by_id(driver_id, db)
     if db_driver is None:
         raise exceptions.DriverNotFoundError
     db_driver.license_plate = driver.license_plate
@@ -122,7 +112,7 @@ def verified_user(name, password: str, db: Session):
     db_user = get_user_by_name(name, db)
     password_ok = False
     if db_user:
-        password_ok = password_context.verify(password, db_user.password)
+        password_ok = password_handler.verify_password(password, db_user.password)
     return db_user, password_ok
 
 
@@ -130,4 +120,5 @@ def get_user_log_in(user: schema.UserLogInBase, db: Session):
     db_user, password_ok = verified_user(user.name, user.password, db)
     if db_user is None or not password_ok:
         raise exceptions.UserWrongLoginInformation
-    return db_user.id
+    return db_user.name
+

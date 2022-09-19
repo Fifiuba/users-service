@@ -51,7 +51,35 @@ def registerClient(type):
         },
     )
     return response
+def registerClient2(endpoint):
+    response = client.post(
+        endpoint,
+        json={
+            "name": "Agustina",
+            "password": "87654321",
+            "phone_number": "12345678",
+            "age": 22,
+        },
+    )
+    return response
+def addAdressClient(endpoint):
+    response = client.patch(
+        endpoint,
+        json={
+            "default_address": 'Av avellaneda 123'
+        },
+    )
+    return response
 
+def addCarInfoClient(endpoint):
+    response = client.patch(
+        endpoint,
+        json={
+            "license_plate": "ABC123",
+            "car_model": "Ford K"
+        }
+    )
+    return response
 
 def test_has_table():
     assert sa.inspect(engine).has_table("users")
@@ -102,3 +130,40 @@ def test_whenCreatingADriverWithRegisteredName_doesNotcreateTheDriver():
     assert response.status_code == status.HTTP_409_CONFLICT, response.text
     data = response.json()
     assert data["detail"] == "The driver already exists"
+
+def test_whenCreatingADriverWithRegisteredName_doesNotcreateTheDriver():
+    registerClient("users/drivers")
+    response = registerClient("users/drivers")
+    assert response.status_code == status.HTTP_409_CONFLICT, response.text
+    data = response.json()
+    assert data["detail"] == "The driver already exists"
+
+def test_givenAPassangerThatExists_whenHeAddsaneAddress_then_ItDoesAddTheAddresCorrectly():
+    response = registerClient2("users/passengers")
+    data = response.json()
+    response = addAdressClient("users/passengers/" + str(data['id']))
+    data = response.json()
+    assert response.status_code == status.HTTP_200_OK, response.text
+    assert data['default_address'] == 'Av avellaneda 123'
+
+def test_givenAPassengerThatNotExists_whenHeAddsAnAddress_thenItDoesNotAddTheAddres():
+    response = addAdressClient("users/passengers/100")
+    data = response.json()
+    assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
+    assert data['detail'] == "The passenger does not exists"
+
+def test_givenADriverThatExists_WhenHeAddsCarInfo_thenItDoesaddCarInfoCorrectly():
+    response = registerClient2("users/drivers")
+    data = response.json()
+    response = addCarInfoClient("users/drivers/" + str(data['id']))
+    data = response.json()
+    assert response.status_code == status.HTTP_200_OK, response.text
+    assert data['license_plate'] == 'ABC123'
+    assert data['car_model'] == 'Ford K'
+
+def test_givenADriverThtNotExists_WhenHeAddsCarInfo_ThenItDoesNotAddTheCarInfo():
+    response = addCarInfoClient("users/drivers/100")
+    data = response.json()
+    assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
+    assert data['detail'] == "The driver does not exists"
+   

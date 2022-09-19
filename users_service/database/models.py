@@ -5,6 +5,7 @@ from .database import engine
 
 Base = declarative_base()
 
+
 class User(Base):
     __tablename__ = "users"
 
@@ -28,6 +29,7 @@ class Driver(Base):
     id = Column("id", Integer, ForeignKey("users.id"), primary_key=True)
     license_plate = Column("license_plate", String(255), nullable=True)
     car_model = Column("car_model", String(255), nullable=True)
+
 
 Base.metadata.drop_all(engine)
 Base.metadata.create_all(engine)

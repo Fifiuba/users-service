@@ -21,16 +21,18 @@ class UserResponse(BaseModel):
 
 
 class PassengerBase(BaseModel):
-    id: int
     default_address: str
 
 
 class DriverBase(BaseModel):
-    id: int
     license_plate: str
     car_model: str
 
 
 class UserLogInBase(BaseModel):
     name: str
+    password: str
+
+class GoogleLogin(BaseModel):
+    email: str
     password: str

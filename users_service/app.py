@@ -2,13 +2,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from .controllers import user_controller
-from .database.database import engine
-from .database import models
 
 app = FastAPI()
 
 origins = [
-
     # Cambiar por api-gateway
 ]
 

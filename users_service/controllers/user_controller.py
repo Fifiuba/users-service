@@ -2,10 +2,10 @@ from fastapi import APIRouter, status, HTTPException, Depends
 from sqlalchemy.orm import Session
 from typing import List
 from users_service.database import crud, schema, exceptions, database
+from users_service.utils import token_handler
 
 
 user_router = APIRouter()
-
 
 
 @user_router.get(
@@ -33,28 +33,38 @@ async def registrate_user(user: schema.UserBase, db: Session = Depends(database.
     except (exceptions.PassengerAlreadyExists, exceptions.DriverAlreadyExists) as error:
         raise HTTPException(**error.__dict__)
 
-@user_router.patch("/passengers/add_address", status_code=status.HTTP_200_OK)
-async def add_address(passenger: schema.PassengerBase, db: Session = Depends(database.get_db)):
+@user_router.patch("/passengers/{passenger_id}", status_code=status.HTTP_200_OK)
+async def add_address(
+    passenger_id: int, passenger: schema.PassengerBase, db: Session = Depends(database.get_db)
+):
+
     try:
-        passenger = crud.add_passenger_address(passenger, db)
+        passenger = crud.add_passenger_address(passenger_id, passenger, db)
         return passenger
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
 
 
-@user_router.patch("/drivers/add_car_info", status_code=status.HTTP_200_OK)
-async def add_car_info(driver: schema.DriverBase, db: Session = Depends(database.get_db)):
+@user_router.patch("/drivers/{driver_id}", status_code=status.HTTP_200_OK)
+async def add_car_info(
+    driver_id:int, driver: schema.DriverBase, db: Session = Depends(database.get_db)
+):
     try:
-        driver = crud.add_driver_car_info(driver, db)
+        driver = crud.add_driver_car_info(driver_id, driver, db)
         return driver
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
 
 
 @user_router.post("/login", status_code=status.HTTP_200_OK)
-async def login_user(user: schema.UserLogInBase, db: Session = Depends(database.get_db)):
+async def login_user(
+    user: schema.UserLogInBase, db: Session = Depends(database.get_db)
+):
     try:
         db_user = crud.get_user_log_in(user, db)
-        return db_user
+        token = token_handler.create_access_token(db_user)
+        return token
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
+
+
