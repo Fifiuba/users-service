@@ -48,23 +48,23 @@ async def registrate_driver(
         raise HTTPException(**error.__dict__)
 
 
-@user_router.patch("/passengers/add_address", status_code=status.HTTP_200_OK)
+@user_router.patch("/passengers/{passenger_id}", status_code=status.HTTP_200_OK)
 async def add_address(
-    passenger: schema.PassengerBase, db: Session = Depends(database.get_db)
+    passenger_id: int, passenger: schema.PassengerBase, db: Session = Depends(database.get_db)
 ):
     try:
-        passenger = crud.add_passenger_address(passenger, db)
+        passenger = crud.add_passenger_address(passenger_id, passenger, db)
         return passenger
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
 
 
-@user_router.patch("/drivers/add_car_info", status_code=status.HTTP_200_OK)
+@user_router.patch("/drivers/{driver_id}", status_code=status.HTTP_200_OK)
 async def add_car_info(
-    driver: schema.DriverBase, db: Session = Depends(database.get_db)
+    driver_id:int, driver: schema.DriverBase, db: Session = Depends(database.get_db)
 ):
     try:
-        driver = crud.add_driver_car_info(driver, db)
+        driver = crud.add_driver_car_info(driver_id, driver, db)
         return driver
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
@@ -80,3 +80,5 @@ async def login_user(
         return token
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
+
+

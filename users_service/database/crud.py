@@ -87,8 +87,8 @@ def create_driver(user: schema.UserBase, db: Session):
     return db_user
 
 
-def add_passenger_address(passenger: schema.PassengerBase, db: Session):
-    db_passenger = get_passenger_by_id(passenger.id, db)
+def add_passenger_address(passenger_id: int, passenger: schema.PassengerBase, db: Session):
+    db_passenger = get_passenger_by_id(passenger_id, db)
     if db_passenger is None:
         raise exceptions.PassengerNotFoundError
     db_passenger.default_address = passenger.default_address
@@ -97,8 +97,8 @@ def add_passenger_address(passenger: schema.PassengerBase, db: Session):
     return db_passenger
 
 
-def add_driver_car_info(driver: schema.DriverBase, db: Session):
-    db_driver = get_driver_by_id(driver.id, db)
+def add_driver_car_info(driver_id: int, driver: schema.DriverBase, db: Session):
+    db_driver = get_driver_by_id(driver_id, db)
     if db_driver is None:
         raise exceptions.DriverNotFoundError
     db_driver.license_plate = driver.license_plate
@@ -121,3 +121,4 @@ def get_user_log_in(user: schema.UserLogInBase, db: Session):
     if db_user is None or not password_ok:
         raise exceptions.UserWrongLoginInformation
     return db_user.name
+
