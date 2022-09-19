@@ -6,6 +6,7 @@ class UserBase(BaseModel):
     name: str
     password: str
     phone_number: str
+    email: str
     age: int
 
 
@@ -14,6 +15,7 @@ class UserResponse(BaseModel):
     name: str
     password: str
     phone_number: str
+    email: str
     age: int
 
     class Config:
@@ -30,7 +32,7 @@ class DriverBase(BaseModel):
 
 
 class UserLogInBase(BaseModel):
-    name: str
+    email: str
     password: str
 
 class GoogleLogin(BaseModel):

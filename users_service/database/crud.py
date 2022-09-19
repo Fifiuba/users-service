@@ -11,6 +11,8 @@ def get_users(db: Session):
 def get_user_by_name(name: str, db: Session):
     return db.query(models.User).filter(models.User.name == name).first()
 
+def get_user_by_email(email: str, db: Session):
+    return db.query(models.User).filter(models.User.email == email).first()
 
 def get_user_by_id(user_id: int, db: Session):
     return db.query(models.User).filter(models.User.id == user_id).first()
@@ -38,6 +40,7 @@ def create_user(user: schema.UserBase, db: Session):
     hashed_password = password_handler.get_hashed_password(user.password)
     db_user = models.User(
         name=user.name,
+        email=user.email,
         password=hashed_password,
         phone_number=user.phone_number,
         age=user.age,
@@ -108,8 +111,8 @@ def add_driver_car_info(driver_id: int, driver: schema.DriverBase, db: Session):
     return db_driver
 
 
-def verified_user(name, password: str, db: Session):
-    db_user = get_user_by_name(name, db)
+def verified_user(email, password: str, db: Session):
+    db_user = get_user_by_email(email, db)
     password_ok = False
     if db_user:
         password_ok = password_handler.verify_password(password, db_user.password)
@@ -117,7 +120,7 @@ def verified_user(name, password: str, db: Session):
 
 
 def get_user_log_in(user: schema.UserLogInBase, db: Session):
-    db_user, password_ok = verified_user(user.name, user.password, db)
+    db_user, password_ok = verified_user(user.email, user.password, db)
     if db_user is None or not password_ok:
         raise exceptions.UserWrongLoginInformation
     return db_user.name
