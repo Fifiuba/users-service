@@ -125,3 +125,22 @@ def get_user_log_in(user: schema.UserLogInBase, db: Session):
         raise exceptions.UserWrongLoginInformation
     return db_user.name
 
+def login_google(googleUser: schema.GoogleLogin, db: Session):
+    # caso 1 email no esta en la tabla de relacion google usuairo 
+    relationship = db.query(models.GoogleUser).filter(models.GoogleUser.googleId == googleUser.googleId).first()
+    if (not relationship):
+        # hay algun usuario con ese email:
+        user = get_user_by_email(googleUser.email, db)
+        if (user):
+            raise exceptions.UserAlreadyExists
+        else:
+            user_aux = schema.UserBase(user_type = '',name = googleUser.name, password = '', phone_number = None, email = googleUser.email, age = None)
+            user, _ = create_user(user_aux,db)
+            db_google_user = models.GoogleUser(userId=user.id, googleId = googleUser.googleId)
+            db.add(db_google_user)
+            db.commit()
+            return user.name
+    
+    user = get_user_by_id(relationship.userId, db)
+    return user.name
+    

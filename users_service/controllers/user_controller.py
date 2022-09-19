@@ -68,3 +68,13 @@ async def login_user(
         raise HTTPException(**error.__dict__)
 
 
+@user_router.post("/loginGoogle", status_code=status.HTTP_200_OK)
+async def login_google(googleUser: schema.GoogleLogin, db: Session = Depends(database.get_db)):
+    try:
+        db_user = crud.login_google(googleUser, db)
+        token = token_handler.create_access_token(db_user)
+        return token
+    except exceptions.UserInfoException as error:
+        raise HTTPException(**error.__dict__)
+
+
