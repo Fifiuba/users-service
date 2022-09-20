@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, List, Dict
 from pydantic import BaseModel
 
 
@@ -10,7 +10,6 @@ class UserBase(BaseModel):
     email: str
     age: Union[int, None] = None
 
-
 class UserResponse(BaseModel):
     id: int
     name: str
@@ -21,6 +20,9 @@ class UserResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+class UserRegisteredResponse(UserResponse):
+    user_type: str
 
 
 class PassengerBase(BaseModel):
@@ -41,3 +43,7 @@ class GoogleLogin(BaseModel):
     name: str
     email: str
     googleId: int
+
+class UserPatch(BaseModel):
+    user_type: str
+    fields: List[Dict]

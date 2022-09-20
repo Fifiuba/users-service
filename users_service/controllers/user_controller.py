@@ -20,7 +20,7 @@ def read_users(db: Session = Depends(database.get_db)):
 
 @user_router.post(
     "",
-    response_model=schema.UserResponse,
+    response_model=schema.UserRegisteredResponse,
     status_code=status.HTTP_201_CREATED,
 )
 async def registrate_user(user: schema.UserBase, db: Session = Depends(database.get_db)):
@@ -33,28 +33,21 @@ async def registrate_user(user: schema.UserBase, db: Session = Depends(database.
     except (exceptions.PassengerAlreadyExists, exceptions.DriverAlreadyExists) as error:
         raise HTTPException(**error.__dict__)
 
-@user_router.patch("/passengers/{passenger_id}", status_code=status.HTTP_200_OK)
+@user_router.patch("/{user_id}", status_code=status.HTTP_200_OK)
 async def add_address(
-    passenger_id: int, passenger: schema.PassengerBase, db: Session = Depends(database.get_db)
+    user_id: int, user: schema.UserPatch, db: Session = Depends(database.get_db)
 ):
 
     try:
-        passenger = crud.add_passenger_address(passenger_id, passenger, db)
-        return passenger
+        if user.user_type == "passenger":
+            passenger = crud.add_passenger_address(user_id, user.fields[0]["default_address"], db)
+            return passenger
+        else:
+            driver = crud.add_driver_car_info(user_id, user.fields[0]["license_plate"], user.fields[0]["car_model"], db)
+            return driver
+
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
-
-
-@user_router.patch("/drivers/{driver_id}", status_code=status.HTTP_200_OK)
-async def add_car_info(
-    driver_id:int, driver: schema.DriverBase, db: Session = Depends(database.get_db)
-):
-    try:
-        driver = crud.add_driver_car_info(driver_id, driver, db)
-        return driver
-    except exceptions.UserInfoException as error:
-        raise HTTPException(**error.__dict__)
-
 
 @user_router.post("/login", status_code=status.HTTP_200_OK)
 async def login_user(
