@@ -142,5 +142,5 @@ def login_google(googleUser: schema.GoogleLogin, db: Session):
             return user.name
     
     user = get_user_by_id(relationship.userId, db)
-    return user.name
+    return user.id
     

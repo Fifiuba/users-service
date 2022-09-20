@@ -61,8 +61,8 @@ async def login_user(
     user: schema.UserLogInBase, db: Session = Depends(database.get_db)
 ):
     try:
-        db_user = crud.get_user_log_in(user, db)
-        token = token_handler.create_access_token(db_user)
+        user_id = crud.get_user_log_in(user, db)
+        token = token_handler.create_access_token(user_id, True)
         return token
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
@@ -71,8 +71,8 @@ async def login_user(
 @user_router.post("/loginGoogle", status_code=status.HTTP_200_OK)
 async def login_google(googleUser: schema.GoogleLogin, db: Session = Depends(database.get_db)):
     try:
-        db_user = crud.login_google(googleUser, db)
-        token = token_handler.create_access_token(db_user)
+        user_id = crud.login_google(googleUser, db)
+        token = token_handler.create_access_token(user_id, True)
         return token
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
