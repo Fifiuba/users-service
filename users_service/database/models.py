@@ -36,7 +36,10 @@ class GoogleUser(Base):
     __tablename__ = "googleUser"
 
     userId = Column("userId", Integer, ForeignKey("users.id"), nullable=False)
-    googleId = Column("googleId", Integer, primary_key=True) #TODO: ver si es integer o string el google id
+    googleId = Column(
+        "googleId", Integer, primary_key=True
+    )  # TODO: ver si es integer o string el google id
+
 
 Base.metadata.drop_all(engine)
 Base.metadata.create_all(engine)

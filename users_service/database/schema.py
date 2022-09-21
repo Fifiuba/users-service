@@ -38,6 +38,7 @@ class UserLogInBase(BaseModel):
     email: str
     password: str
 
+
 class GoogleLogin(BaseModel):
     user_type: str
     name: str
