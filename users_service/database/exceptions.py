@@ -36,3 +36,9 @@ class DriverNotFoundError(UserInfoException):
     def __init__(self):
         self.status_code = 404  # conflic
         self.detail = "The driver does not exists"
+
+
+class UnauthorizeUser(UserInfoException):
+    def __init__(self):
+        self.status_code = 404  # conflic
+        self.detail = "The user is not authorize"

@@ -103,7 +103,9 @@ def add_passenger_address(passenger_id: int, default_address: str, db: Session):
     return db_passenger
 
 
-def add_driver_car_info(driver_id: int, license_plate: str, car_model: str, db: Session):
+def add_driver_car_info(
+    driver_id: int, license_plate: str, car_model: str, db: Session
+):
     db_driver = get_driver_by_id(driver_id, db)
     if db_driver is None:
         raise exceptions.DriverNotFoundError
