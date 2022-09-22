@@ -36,7 +36,7 @@ def user_exists(username, db: Session):
 
 
 def create_user(user: schema.UserBase, db: Session):
-    user_aux = get_user_by_name(user.name, db)
+    user_aux = get_user_by_email(user.email, db)
     if user_aux:
         return user_aux, True
     hashed_password = password_handler.get_hashed_password(user.password)
@@ -114,21 +114,6 @@ def add_driver_car_info(
     db.commit()
     db.refresh(db_driver)
     return db_driver
-
-
-def verified_user(email, password: str, db: Session):
-    db_user = get_user_by_email(email, db)
-    password_ok = False
-    if db_user:
-        password_ok = password_handler.verify_password(password, db_user.password)
-    return db_user, password_ok
-
-
-def get_user_log_in(user: schema.UserLogInBase, db: Session):
-    db_user, password_ok = verified_user(user.email, user.password, db)
-    if db_user is None or not password_ok:
-        raise exceptions.UserWrongLoginInformation
-    return db_user.name
 
 
 def login_google(googleUser: schema.GoogleLogin, db: Session):

@@ -13,8 +13,6 @@ else:
 ACCESS_TOKEN_EXPIRE_MINUTES = 5
 
 
-
-
 def create_access_token(user_id: int, user: bool) -> str:
 
     expires_delta = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
