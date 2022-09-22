@@ -1,8 +1,8 @@
 from fastapi import APIRouter, status, HTTPException, Depends, Request
 from sqlalchemy.orm import Session
 from typing import List
-from users_service.database import crud, schema, exceptions, database
-from users_service.utils import token_handler, authorization_handler
+from users_service.database import schema, exceptions, database, user_repository
+from users_service.utils import authorization_handler
 
 
 user_router = APIRouter()
@@ -19,8 +19,18 @@ def read_users(rq: Request, db: Session = Depends(database.get_db)):
     except (exceptions.UnauthorizeUser) as error:
         raise HTTPException(**error.__dict__)
     else:
-        users = crud.get_users(db)
+        users = user_repository.get_users(db)
         return users
+
+
+@user_router.get("/{email}", status_code=status.HTTP_200_OK)
+async def get_user(rq: Request, email: str, db: Session = Depends(database.get_db)):
+    try:
+        authorization_handler.is_auth(rq.headers)
+        user = user_repository.get_user_by_email(email, db)
+        return user
+    except (exceptions.UnauthorizeUser, exceptions.UserNotFoundError) as error:
+        raise HTTPException(**error.__dict__)
 
 
 @user_router.post(
@@ -32,35 +42,18 @@ async def registrate_user(
     user: schema.UserBase, db: Session = Depends(database.get_db)
 ):
     try:
-        if user.user_type == "passenger":
-            user_create = crud.create_passenger(user, db)
-        else:
-            user_create = crud.create_driver(user, db)
-        return user_create
+        return user_repository.create_user(user, db)
     except (exceptions.PassengerAlreadyExists, exceptions.DriverAlreadyExists) as error:
         raise HTTPException(**error.__dict__)
 
 
 @user_router.patch("/{user_id}", status_code=status.HTTP_200_OK)
-async def add_address(
+async def add_user_info(
     user_id: int, user: schema.UserPatch, db: Session = Depends(database.get_db)
 ):
 
     try:
-        if user.user_type == "passenger":
-            passenger = crud.add_passenger_address(
-                user_id, user.fields[0]["default_address"], db
-            )
-            return passenger
-        else:
-            driver = crud.add_driver_car_info(
-                user_id,
-                user.fields[0]["license_plate"],
-                user.fields[0]["car_model"],
-                db,
-            )
-            return driver
-
+        return user_repository.add_user_info(user_id, user, db)
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
 
@@ -70,9 +63,7 @@ async def login_user(
     user: schema.UserLogInBase, db: Session = Depends(database.get_db)
 ):
     try:
-        user_id = crud.get_user_log_in(user, db)
-        token = token_handler.create_access_token(user_id, True)
-        return token
+        return user_repository.login(user, db)
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
 
@@ -82,8 +73,6 @@ async def login_google(
     googleUser: schema.GoogleLogin, db: Session = Depends(database.get_db)
 ):
     try:
-        user_id = crud.login_google(googleUser, db)
-        token = token_handler.create_access_token(user_id, True)
-        return token
+        return user_repository.login_google(googleUser, db)
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)

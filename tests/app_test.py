@@ -11,6 +11,7 @@ from users_service.utils import token_handler
 
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(bind=engine)
 
 
@@ -137,6 +138,7 @@ def test_when_creating_a_passenger_with_not_registered_email_creates_the_user():
     assert data["age"] == 22
     assert data["email"] == "sol@gmail.com"
     assert "id" in data
+    client.delete("users/" + str(data["id"]))
 
 
 #     # faltaria chequear que el id devuelve al user correcto
@@ -163,7 +165,7 @@ def test_when_creating_passenger_with_registered_email_doesnot_create_the_passen
 #     assert data["age"] == 22
 #     assert "id" in data
 
-    # faltaria chequear que el id devuelve al user correcto
+# faltaria chequear que el id devuelve al user correcto
 
 
 # def test_when_creating_driver_with_registered_email_doesnot_create_the_driver():
@@ -178,14 +180,14 @@ def test_when_a_passanger_exists_and_add_the_address_then_the_addres_is_add_it()
     response = registerPassenger2()
     data = response.json()
     assert data["name"] == "Agus"
-    response = addAdressClient("users/" + str(data["id"]))
+    response = addAdressClient("/users/" + str(data["id"]))
     data = response.json()
     assert response.status_code == status.HTTP_200_OK, response.text
     assert data["default_address"] == "Av avellaneda 123"
 
 
 def test_when_Passenger_not_exist_and_adds_address_then_the_addres_isnot_addit():
-    response = addAdressClient("users/100")
+    response = addAdressClient("/users/100")
     data = response.json()
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
     assert data["detail"] == "The passenger does not exists"
@@ -203,7 +205,49 @@ def test_when_Passenger_not_exist_and_adds_address_then_the_addres_isnot_addit()
 
 
 def test_when_driver_not_exists_and_adds_carInfo_the_carInfo_isnot_addit():
-    response = addCarInfoClient("users/100")
+    response = addCarInfoClient("/users/100")
     data = response.json()
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
     assert data["detail"] == "The driver does not exists"
+
+
+def test_when_getting_information_for_nonexisting_user_then_returns_user_not_exist():
+    token = token_handler.create_access_token(1, True)
+    response = client.get(
+        "/users/EXAMPLE@gamil.com", headers={"Authorization": f"Baerer {token}"}
+    )
+    print(response.status_code)
+    assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
+
+    data = response.json()
+    print(data)
+    assert data["detail"] == "The user does not exists"
+
+
+def test_when_gettion_info_fro_existing_user_then_returns_the_information():
+    token = token_handler.create_access_token(1, True)
+    response = client.post(
+        "/users",
+        json={
+            "user_type": "passenger",
+            "name": "Agus2",
+            "email": "agus2@gmail.com",
+            "password": "87654321",
+            "phone_number": "12345678",
+            "age": 22,
+        },
+    )
+    data = response.json()
+
+    response = client.get(
+        "/users/" + data["email"], headers={"Authorization": f"Baerer {token}"}
+    )
+
+    assert response.status_code == status.HTTP_200_OK, response.text
+
+    data2 = response.json()
+
+    assert data2["email"] == data["email"]
+    assert data2["name"] == data["name"]
+    assert data2["phone_number"] == data["phone_number"]
+    assert data2["age"] == data["age"]
