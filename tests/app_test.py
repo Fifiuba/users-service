@@ -156,7 +156,6 @@ def test_when_app_has_2_user_then_get_users_return_2_users():
 
     data = response.json()
     assert len(data) == 2
-    print(data)
 
 
 def test_when_creating_a_passenger_with_not_registered_email_creates_the_user():
@@ -164,16 +163,14 @@ def test_when_creating_a_passenger_with_not_registered_email_creates_the_user():
 
     assert response.status_code == status.HTTP_201_CREATED, response.text
     data = response.json()
+
     assert data["name"] == "Sol"
-    # check de la hashed password?
     assert data["phone_number"] == "12345678"
     assert data["age"] == 22
     assert data["email"] == "sol@gmail.com"
     assert "id" in data
-    print(data)
+   
 
-
-#     # faltaria chequear que el id devuelve al user correcto
 
 
 def test_when_creating_passenger_with_registered_email_doesnot_create_the_passenger():
@@ -190,15 +187,13 @@ def test_when_creating_a_driver_withnot_registered_email_creates_the_driver():
 
     assert response.status_code == status.HTTP_201_CREATED, response.text
     data = response.json()
+
     assert data["name"] == "Sol"
-    # check de la hashed password?
     assert data["email"] == "sol@gmail.com"
     assert data["phone_number"] == "12345678"
     assert data["age"] == 22
     assert "id" in data
 
-
-# faltaria chequear que el id devuelve al user correcto
 
 
 def test_when_creating_driver_with_registered_email_doesnot_create_the_driver():
@@ -253,7 +248,7 @@ def test_when_getting_information_for_nonexisting_user_then_returns_user_not_exi
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
 
     data = response.json()
-    print(data)
+    
     assert data["detail"] == "The user does not exists"
 
 
@@ -322,27 +317,50 @@ def test_when_login_register_user_with_invalid_password_it_should_not_return_tok
 
 def test_when_update_passenger_info_it_should_do_it():
     token = token_handler.create_access_token(1, True)
-    response = client.patch("/users/edit/",headers={"Authorization": f"Baerer {token}"}, json={
+    response = client.patch("/users/me/",headers={"Authorization": f"Baerer {token}"}, json={
             "user_type": "passenger",
             "fields": [{"age": 25},{"default_address": "example"}],
         })
     
     assert response.status_code == status.HTTP_200_OK, response.text
     data = response.json()
-    print("soy passenger edit ", data)
+    
     assert data[0]["age"] == 25
     assert data[1]['default_address'] == 'example'
     
 def test_when_update_driver_info_it_should_do_it():
     token = token_handler.create_access_token(2, True)
-    response = client.patch("/users/edit/",headers={"Authorization": f"Baerer {token}"}, json={
+    response = client.patch("/users/me/",headers={"Authorization": f"Baerer {token}"}, json={
             "user_type": "driver",
             "fields": [{"age": 14, "phone_number": "436278"},{"model_car": "Audi"}],
         })
     
     assert response.status_code == status.HTTP_200_OK, response.text
     data = response.json()
-    print("toy en test dirver ", data)
+    
     assert data[0]["age"] == 14
     assert data[0]['phone_number'] == "436278"
     assert data[1]['model_car'] == 'Audi'
+
+def test_when_update_driver_that_not_exist_it_should_not_do_it():
+    token = token_handler.create_access_token(100, True)
+    response = client.patch("/users/me/",headers={"Authorization": f"Baerer {token}"}, json={
+            "user_type": "driver",
+            "fields": [{"age": 14, "phone_number": "436278"},{"model_car": "Audi"}],
+        })
+    
+    assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
+    data = response.json()
+    assert data["detail"] == "The driver does not exists"
+
+def test_when_update_passenger_that_not_exist_it_should_not_do_it():
+    token = token_handler.create_access_token(100, True)
+    response = client.patch("/users/me/",headers={"Authorization": f"Baerer {token}"}, json={
+            "user_type": "passenger",
+            "fields": [{"age": 25},{"default_address": "example"}],
+        })
+    
+    assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
+    data = response.json()
+    assert data["detail"] == "The passenger does not exists"
+
