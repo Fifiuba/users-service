@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, HTTPException, Depends, Request
 from sqlalchemy.orm import Session
 from typing import List
 from users_service.database import schema, exceptions, database, user_repository
-from users_service.utils import authorization_handler
+from users_service.utils import authorization_handler, token_handler
 
 
 user_router = APIRouter()
@@ -55,7 +55,7 @@ async def add_user_info(
 ):
 
     try:
-        return user_repository.add_user_info(user_id, user, db)
+        return user_repository.edit_user_info(user_id, user, db)
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
 
@@ -77,4 +77,14 @@ async def login_google(
     try:
         return user_repository.login_google(googleUser, db)
     except exceptions.UserInfoException as error:
+        raise HTTPException(**error.__dict__)
+
+@user_router.patch("/me/", status_code=status.HTTP_200_OK)
+async def edit_profile(rq: Request, user: schema.UserPatch, db: Session = Depends(database.get_db)):
+    try:
+        authorization_handler.is_auth(rq.headers)
+        token = authorization_handler.get_token(rq.headers)
+        user_id = token_handler.decode_token(token)["user_id"]
+        return user_repository.edit_user_info(user_id, user, db)
+    except (exceptions.UnauthorizeUser, exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)

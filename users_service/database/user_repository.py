@@ -21,11 +21,23 @@ def create_user(user: schema.UserBase, db: Session):
         user_create = crud.create_driver(user, db)
     return user_create
 
+def edit_user_info(user_id, user: schema.UserPatch, db: Session):
+    if user.user_type == "passenger":
+        db_user, passenger = crud.edit_passenger_info(user_id, user.fields[0],user.fields[1], db)
+        db_user.user_type = user.user_type
+        return db_user, passenger
+    else:
+        db_user, driver = crud.edit_driver_info(user_id, user.fields[0],user.fields[1], db)
+        db_user.user_type = user.user_type
+        
+        return db_user, driver
+
 
 def add_user_info(user_id: int, user: schema.UserPatch, db: Session):
+    
     if user.user_type == "passenger":
         passenger = crud.add_passenger_address(
-            user_id, user.fields[0]["default_address"], db
+            user_id, user.fields[0]['default_address'], db
         )
         return passenger
     else:

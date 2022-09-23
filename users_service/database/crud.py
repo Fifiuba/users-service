@@ -149,3 +149,47 @@ def login_google(googleUser: schema.GoogleLogin, db: Session):
 
     user = get_user_by_id(relationship.userId, db)
     return user.id
+
+def removeNoneValues(dict_aux: dict):
+    dict_aux2  = {}
+    for key, value in dict_aux.items():
+        if value is not None:
+            dict_aux2[key] = value
+    return dict_aux2
+
+def edit_user(user_id: int, userInfo: schema.UserEditFields, db: Session):
+    user = get_user_by_id(user_id, db)
+    attributes_user = removeNoneValues(userInfo)
+    for attr, value in attributes_user.items():
+        setattr(user, attr, value)
+    db.commit()
+    db.refresh(user)
+    return user
+
+def edit_passenger_info(user_id: int, userInfo: schema.UserEditFields, passengerInfo: schema.PassengerEditFields, db: Session):
+    passenger = get_passenger_by_id(user_id, db)
+    if not passenger:
+        raise exceptions.PassengerNotFoundError
+    user = edit_user(user_id, userInfo, db)
+    attribute_passenger = removeNoneValues(passengerInfo)
+    for attr, value in attribute_passenger.items():
+        setattr(passenger, attr, value)
+    
+    db.commit()
+    db.refresh(user)
+    db.refresh(passenger)
+    return user, passenger
+
+def edit_driver_info(user_id: int, userInfo: schema.UserEditFields, driverInfo: schema.DriverEditFields, db: Session):
+    driver = get_driver_by_id(user_id, db)
+    if not driver:
+        raise exceptions.DriverNotFoundError
+    user = edit_user(user_id, userInfo, db)
+   
+    attribute_passenger = removeNoneValues(driverInfo)
+    for attr, value in attribute_passenger.items():
+        setattr(driver, attr, value)
+    db.commit()
+    db.refresh(user)
+    db.refresh(driver)
+    return user, driver
