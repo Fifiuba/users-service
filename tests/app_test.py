@@ -1,30 +1,12 @@
 from fastapi.testclient import TestClient
 from fastapi import status
 from users_service.app import app
-from users_service.database.database import get_db
-from sqlalchemy.orm import sessionmaker
 from users_service.database.database import engine
-from users_service.database.models import Base
 import sqlalchemy as sa
 from users_service.utils import token_handler
 
 
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-Base.metadata.drop_all(bind=engine)
-Base.metadata.create_all(bind=engine)
-
-
-# Create the new database session
-def override_get_db():
-    try:
-        db = TestingSessionLocal()
-        yield db
-    finally:
-        db.close()
-
-
-app.dependency_overrides[get_db] = override_get_db
 
 client = TestClient(app)
 
@@ -128,34 +110,19 @@ def test_when_app_is_with_no_users_then_get_users_return_an_empty_list():
 
 
 def test_when_app_has_2_user_then_get_users_return_2_users():
-    client.post(
-        "/users",
-        json={
-            "user_type": "passenger",
-            "name": "Agus3",
-            "email": "agus3@gmail.com",
-            "password": "87654321",
-            "phone_number": "12345678",
-            "age": 22,
-        },
-    )
-    client.post(
-        "/users",
-        json={
-            "user_type": "driver",
-            "name": "Agus4",
-            "email": "agus4@gmail.com",
-            "password": "87654321",
-            "phone_number": "12345678",
-            "age": 22,
-        },
-    )
+
+    registerPassenger()
+    registerPassenger2()
     token = token_handler.create_access_token(2, True)
     response = client.get("/users/", headers={"Authorization": f"Baerer {token}"})
     assert response.status_code == status.HTTP_200_OK
 
     data = response.json()
     assert len(data) == 2
+    
+    client.delete("/users/" + str(data[0]['id']), json ={"user_type": "passenger"})
+    client.delete("/users/" + str(data[1]['id']), json = {"user_type": "passenger"})
+    
 
 
 def test_when_creating_a_passenger_with_not_registered_email_creates_the_user():
@@ -169,18 +136,20 @@ def test_when_creating_a_passenger_with_not_registered_email_creates_the_user():
     assert data["age"] == 22
     assert data["email"] == "sol@gmail.com"
     assert "id" in data
+    client.delete("/users/" + str(data['id']), json ={"user_type": "passenger"})
    
 
 
 
-def test_when_creating_passenger_with_registered_email_doesnot_create_the_passenger():
+def test_when_creating_passenger_with_registered_email_does_not_create_the_passenger():
     registerPassenger()
     response = registerPassenger()
 
     assert response.status_code == status.HTTP_409_CONFLICT, response.text
     data = response.json()
     assert data["detail"] == "The passenger already exists"
-
+    
+    client.delete("/users/1", json ={"user_type": "passenger"})
 
 def test_when_creating_a_driver_withnot_registered_email_creates_the_driver():
     response = registerDriver()
@@ -194,6 +163,8 @@ def test_when_creating_a_driver_withnot_registered_email_creates_the_driver():
     assert data["age"] == 22
     assert "id" in data
 
+    client.delete("/users/" + str(data['id']), json ={"user_type": "driver"})
+
 
 
 def test_when_creating_driver_with_registered_email_doesnot_create_the_driver():
@@ -202,16 +173,19 @@ def test_when_creating_driver_with_registered_email_doesnot_create_the_driver():
     assert response.status_code == status.HTTP_409_CONFLICT, response.text
     data = response.json()
     assert data["detail"] == "The driver already exists"
+    client.delete("/users/1", json ={"user_type": "driver"})
 
 
 def test_when_a_passanger_exists_and_add_the_address_then_the_addres_is_add_it():
     response = registerPassenger2()
     data = response.json()
-    assert data["name"] == "Agus"
-    response = addAdressClient("/users/" + str(data["id"]))
+    id = data['id']
+    response = addAdressClient("/users/" + str(id))
     data = response.json()
     assert response.status_code == status.HTTP_200_OK, response.text
     assert data[1]["default_address"] == "Av avellaneda 123"
+
+    client.delete("/users/" + str(id), json ={"user_type": "passenger"})
 
 
 def test_when_Passenger_not_exist_and_adds_address_then_the_addres_isnot_addit():
@@ -224,12 +198,14 @@ def test_when_Passenger_not_exist_and_adds_address_then_the_addres_isnot_addit()
 def test_when_driver_exists_and_adds_carInfo_the_carInfo_is_addit():
     response = registerDriver2()
     data = response.json()
-
-    response = addCarInfoClient("users/" + str(data["id"]))
+    id = data['id']
+    response = addCarInfoClient("users/" + str(id))
     data = response.json()
     assert response.status_code == status.HTTP_200_OK, response.text
     assert data[1]["license_plate"] == "ABC123"
     assert data[1]["car_model"] == "Ford K"
+
+    client.delete("/users/" + str(id), json ={"user_type": "driver"})
 
 
 def test_when_driver_not_exists_and_adds_carInfo_the_carInfo_isnot_addit():
@@ -254,17 +230,7 @@ def test_when_getting_information_for_nonexisting_user_then_returns_user_not_exi
 
 def test_when_gettion_info_from_existing_user_then_returns_the_information():
     token = token_handler.create_access_token(1, True)
-    response = client.post(
-        "/users",
-        json={
-            "user_type": "passenger",
-            "name": "Agus2",
-            "email": "agus2@gmail.com",
-            "password": "87654321",
-            "phone_number": "12345678",
-            "age": 22,
-        },
-    )
+    response = registerPassenger2()
     data = response.json()
 
     response = client.get(
@@ -280,10 +246,13 @@ def test_when_gettion_info_from_existing_user_then_returns_the_information():
     assert data2["phone_number"] == data["phone_number"]
     assert data2["age"] == data["age"]
 
+    client.delete("/users/" + str(data['id']), json ={"user_type": "passenger"})
+
 
 def test_when_login_to_register_user_with_validad_data_then_it_should_return_token():
+    response = registerPassenger2()
     response = client.post(
-        "users/login", json={"email": "agus3@gmail.com", "password": "87654321"}
+        "users/login", json={"email": "agus@gmail.com", "password": "87654321"}
     )
     assert response.status_code == status.HTTP_200_OK, response.text
     data = response.json()
@@ -295,6 +264,7 @@ def test_when_login_to_register_user_with_validad_data_then_it_should_return_tok
 
     assert actual["user_id"] == expected["user_id"]
     assert actual["user"] == expected["user"]
+    client.delete("/users/" + str(1), json ={"user_type": "passenger"})
 
 
 def test_when_login_register_user_with_invalid_email_then_it_should_not_return_token():
@@ -308,15 +278,33 @@ def test_when_login_register_user_with_invalid_email_then_it_should_not_return_t
 
 def test_when_login_register_user_with_invalid_password_it_should_not_return_token():
     response = client.post(
-        "users/login", json={"email": "agus3@gmail.com", "password": "12345678"}
+        "users/login", json={"email": "agus@gmail.com", "password": "12345678"}
     )
     assert response.status_code == status.HTTP_401_UNAUTHORIZED, response.text
     data = response.json()
     assert data["detail"] == "The username/password is incorrect"
 
+def test_when_getting_profile_for_passenger_that_exists_it_should_do_it():
+    response = registerPassenger2()
+    data1 = response.json()
+    token = token_handler.create_access_token(data1['id'], True)
+    response = client.get("/users/me/",headers={"Authorization": f"Baerer {token}"}, json={
+            "user_type": "passenger"})
+    
+    assert response.status_code == status.HTTP_200_OK, response.text
+    data = response.json()
+    
+    assert data[0]['name'] == "Agus"
+    assert data[0]['age'] == 22
+    assert data[0]['phone_number'] == "12345678"
+    assert data[0]['email'] == "agus@gmail.com"
+    assert data[1]['default_address'] == None
+    client.delete("/users/" + str(data1['id']), json ={"user_type": "passenger"})
 
 def test_when_update_passenger_info_it_should_do_it():
-    token = token_handler.create_access_token(1, True)
+    response = registerPassenger2()
+    data1 = response.json()
+    token = token_handler.create_access_token(data1['id'], True)
     response = client.patch("/users/me/",headers={"Authorization": f"Baerer {token}"}, json={
             "user_type": "passenger",
             "fields": [{"age": 25},{"default_address": "example"}],
@@ -327,9 +315,12 @@ def test_when_update_passenger_info_it_should_do_it():
     
     assert data[0]["age"] == 25
     assert data[1]['default_address'] == 'example'
+    client.delete("/users/" + str(data1['id']), json ={"user_type": "passenger"})
     
 def test_when_update_driver_info_it_should_do_it():
-    token = token_handler.create_access_token(2, True)
+    response = registerDriver()
+    data1 = response.json()
+    token = token_handler.create_access_token(data1['id'], True)
     response = client.patch("/users/me/",headers={"Authorization": f"Baerer {token}"}, json={
             "user_type": "driver",
             "fields": [{"age": 14, "phone_number": "436278"},{"model_car": "Audi"}],
@@ -341,6 +332,8 @@ def test_when_update_driver_info_it_should_do_it():
     assert data[0]["age"] == 14
     assert data[0]['phone_number'] == "436278"
     assert data[1]['model_car'] == 'Audi'
+
+    client.delete("/users/" + str(data1['id']), json ={"user_type": "driver"})
 
 def test_when_update_driver_that_not_exist_it_should_not_do_it():
     token = token_handler.create_access_token(100, True)
