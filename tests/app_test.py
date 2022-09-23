@@ -118,14 +118,32 @@ def test_has_table():
     assert sa.inspect(engine).has_table("drivers")
 
 
-def test_when_app_is_with_no_users_then_getadming_return_an_empty_list():
+def test_when_app_is_with_no_users_then_get_users_return_an_empty_list():
     token = token_handler.create_access_token(1, True)
-    response = client.get("users/", headers={"Authorization": f"Baerer {token}"})
+    response = client.get("/users/", headers={"Authorization": f"Baerer {token}"})
     assert response.status_code == status.HTTP_200_OK
 
     data = response.json()
     assert data == []
 
+def test_when_app_has_2_user_then_get_users_return_2_users():
+    client.post("/users", json={ "user_type": "passenger", 
+                    "name": "Agus3","email": "agus3@gmail.com",
+                    "password": "87654321", "phone_number": "12345678","age": 22,
+                    },)
+    client.post("/users", json={ "user_type": "passenger", 
+                    "name": "Agus4","email": "agus4@gmail.com",
+                    "password": "87654321", "phone_number": "12345678","age": 22,
+                    },)
+    token = token_handler.create_access_token(2, True)
+    response = client.get("/users/", headers={"Authorization": f"Baerer {token}"})
+    assert response.status_code == status.HTTP_200_OK
+
+    data = response.json()
+    assert len(data) == 2
+    print(data)
+    
+    
 
 def test_when_creating_a_passenger_with_not_registered_email_creates_the_user():
     response = registerPassenger()
@@ -138,7 +156,7 @@ def test_when_creating_a_passenger_with_not_registered_email_creates_the_user():
     assert data["age"] == 22
     assert data["email"] == "sol@gmail.com"
     assert "id" in data
-    client.delete("users/" + str(data["id"]))
+    print(data)
 
 
 #     # faltaria chequear que el id devuelve al user correcto
@@ -224,7 +242,7 @@ def test_when_getting_information_for_nonexisting_user_then_returns_user_not_exi
     assert data["detail"] == "The user does not exists"
 
 
-def test_when_gettion_info_fro_existing_user_then_returns_the_information():
+def test_when_gettion_info_from_existing_user_then_returns_the_information():
     token = token_handler.create_access_token(1, True)
     response = client.post(
         "/users",
@@ -251,3 +269,35 @@ def test_when_gettion_info_fro_existing_user_then_returns_the_information():
     assert data2["name"] == data["name"]
     assert data2["phone_number"] == data["phone_number"]
     assert data2["age"] == data["age"]
+
+def test_when_login_to_register_user_with_validad_data_then_it_should_return_token():
+    response = client.post(
+        "users/login", json={"email": "agus3@gmail.com", "password": "87654321"}
+    )
+    assert response.status_code == status.HTTP_200_OK, response.text
+    data = response.json()
+    actual = token_handler.decode_token(data)
+    expected = {
+        "user_id": 1,
+        "user": True,
+    }
+
+    assert actual["user_id"] == expected["user_id"]
+    assert actual["user"] == expected["user"]
+
+def test_when_login_to_register_user_with_invalid_email_then_it_should_not_return_token():
+    response = client.post(
+        "users/login", json={"email": "AGUSTINA12345@gmail.com", "password": "87654321"}
+    )
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED, response.text
+    data = response.json()
+    assert data['detail'] == "The username/password is incorrect"
+
+def test_when_login_to_register_user_with_invalid_password_then_it_should_not_return_token():
+    response = client.post(
+        "users/login", json={"email": "agus3@gmail.com", "password": "12345678"}
+    )
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED, response.text
+    data = response.json()
+    assert data['detail'] == "The username/password is incorrect"
+
