@@ -1,8 +1,8 @@
-from fastapi import APIRouter, status, HTTPException, Depends
+from fastapi import APIRouter, status, HTTPException, Depends, Request
 from sqlalchemy.orm import Session
 from typing import List
-from users_service.database import crud, schema, exceptions, database
-from users_service.utils import token_handler
+from users_service.database import schema, exceptions, database, user_repository
+from users_service.utils import authorization_handler
 
 
 user_router = APIRouter()
@@ -13,45 +13,49 @@ user_router = APIRouter()
     response_model=List[schema.UserResponse],
     status_code=status.HTTP_200_OK,
 )
-def read_users(db: Session = Depends(database.get_db)):
-    users = crud.get_users(db)
-    return users
+def read_users(rq: Request, db: Session = Depends(database.get_db)):
+    try:
+        authorization_handler.is_auth(rq.headers)
+    except (exceptions.UnauthorizeUser) as error:
+        raise HTTPException(**error.__dict__)
+    else:
+        users = user_repository.get_users(db)
+        return users
+
+
+@user_router.get(
+    "/{email}", status_code=status.HTTP_200_OK, response_model=schema.UserInfoResponse
+)
+async def get_user(rq: Request, email: str, db: Session = Depends(database.get_db)):
+    try:
+        authorization_handler.is_auth(rq.headers)
+        user = user_repository.get_user_by_email(email, db)
+        return user
+    except (exceptions.UnauthorizeUser, exceptions.UserNotFoundError) as error:
+        raise HTTPException(**error.__dict__)
 
 
 @user_router.post(
     "",
-    response_model=schema.UserResponse,
+    response_model=schema.UserRegisteredResponse,
     status_code=status.HTTP_201_CREATED,
 )
-async def registrate_user(user: schema.UserBase, db: Session = Depends(database.get_db)):
+async def registrate_user(
+    user: schema.UserBase, db: Session = Depends(database.get_db)
+):
     try:
-        if(user.user_type == "passenger"):
-            user_create = crud.create_passenger(user, db)
-        else:
-            user_create = crud.create_driver(user, db)
-        return user_create
+        return user_repository.create_user(user, db)
     except (exceptions.PassengerAlreadyExists, exceptions.DriverAlreadyExists) as error:
         raise HTTPException(**error.__dict__)
 
-@user_router.patch("/passengers/{passenger_id}", status_code=status.HTTP_200_OK)
-async def add_address(
-    passenger_id: int, passenger: schema.PassengerBase, db: Session = Depends(database.get_db)
+
+@user_router.patch("/{user_id}", status_code=status.HTTP_200_OK)
+async def add_user_info(
+    user_id: int, user: schema.UserPatch, db: Session = Depends(database.get_db)
 ):
 
     try:
-        passenger = crud.add_passenger_address(passenger_id, passenger, db)
-        return passenger
-    except exceptions.UserInfoException as error:
-        raise HTTPException(**error.__dict__)
-
-
-@user_router.patch("/drivers/{driver_id}", status_code=status.HTTP_200_OK)
-async def add_car_info(
-    driver_id:int, driver: schema.DriverBase, db: Session = Depends(database.get_db)
-):
-    try:
-        driver = crud.add_driver_car_info(driver_id, driver, db)
-        return driver
+        return user_repository.add_user_info(user_id, user, db)
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
 
@@ -61,10 +65,16 @@ async def login_user(
     user: schema.UserLogInBase, db: Session = Depends(database.get_db)
 ):
     try:
-        db_user = crud.get_user_log_in(user, db)
-        token = token_handler.create_access_token(db_user)
-        return token
+        return user_repository.login(user, db)
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
 
 
+@user_router.post("/loginGoogle", status_code=status.HTTP_200_OK)
+async def login_google(
+    googleUser: schema.GoogleLogin, db: Session = Depends(database.get_db)
+):
+    try:
+        return user_repository.login_google(googleUser, db)
+    except exceptions.UserInfoException as error:
+        raise HTTPException(**error.__dict__)

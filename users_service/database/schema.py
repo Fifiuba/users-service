@@ -1,3 +1,4 @@
+from typing import Union, List, Dict
 from pydantic import BaseModel
 
 
@@ -5,16 +6,39 @@ class UserBase(BaseModel):
     user_type: str
     name: str
     password: str
-    phone_number: str
-    age: int
+    phone_number: Union[str, None] = None
+    email: str
+    age: Union[int, None] = None
 
 
 class UserResponse(BaseModel):
     id: int
     name: str
-    password: str
-    phone_number: str
-    age: int
+    phone_number: Union[str, None] = None
+    email: str
+    age: Union[int, None] = None
+
+    class Config:
+        orm_mode = True
+
+
+class UserInfoResponse(BaseModel):
+    name: str
+    phone_number: Union[str, None] = None
+    email: str
+    age: Union[int, None] = None
+
+    class Config:
+        orm_mode = True
+
+
+class UserRegisteredResponse(UserResponse):
+    id: int
+    user_type: str
+    name: str
+    phone_number: Union[str, None] = None
+    email: str
+    age: Union[int, None] = None
 
     class Config:
         orm_mode = True
@@ -30,9 +54,17 @@ class DriverBase(BaseModel):
 
 
 class UserLogInBase(BaseModel):
-    name: str
-    password: str
-
-class GoogleLogin(BaseModel):
     email: str
     password: str
+
+
+class GoogleLogin(BaseModel):
+    user_type: str
+    name: str
+    email: str
+    googleId: int
+
+
+class UserPatch(BaseModel):
+    user_type: str
+    fields: List[Dict]
