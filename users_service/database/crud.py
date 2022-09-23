@@ -193,3 +193,21 @@ def edit_driver_info(user_id: int, userInfo: schema.UserEditFields, driverInfo: 
     db.refresh(user)
     db.refresh(driver)
     return user, driver
+
+def delete_passenger(user_id, db):
+    passenger = get_passenger_by_id(user_id, db)
+    if not passenger:
+        raise exceptions.PassengerNotFoundError
+    user = get_user_by_id(user_id, db)
+    db.delete(passenger)
+    db.delete(user)
+    db.commit()
+
+def delete_driver(user_id, db):
+    driver = get_driver_by_id(user_id, db)
+    if not driver:
+        raise exceptions.DriverNotFoundError
+    user = get_user_by_id(user_id, db)
+    db.delete(driver)
+    db.delete(user)
+    db.commit()

@@ -79,3 +79,6 @@ class DriverEditFields(BaseModel):
 class UserPatch(BaseModel):
     user_type: str
     fields: List[Dict]
+
+class TypeOfUser(BaseModel):
+    user_type: str
