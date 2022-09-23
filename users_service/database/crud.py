@@ -52,8 +52,6 @@ def create_user(user: schema.UserBase, db: Session):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    print('passed')
-    print(user.user_type)
     db_user.user_type = user.user_type
     return db_user, False
 

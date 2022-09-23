@@ -22,7 +22,7 @@ def create_access_token(user_id: int, user: bool) -> str:
     return encoded_jwt
 
 
-def decode_token(token):
+def decode_token(token: str):
     decoded_jwt = jwt.decode(token, JWT_SECRET_KEY, algorithms=[ALGORITHM])
 
     return decoded_jwt

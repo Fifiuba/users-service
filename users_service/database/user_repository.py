@@ -48,7 +48,7 @@ def verified_user(email, password: str, db: Session):
 
 def login(user: schema.UserLogInBase, db: Session):
 
-    db_user, password_ok = crud.verified_user(user.email, user.password, db)
+    db_user, password_ok = verified_user(user.email, user.password, db)
     if db_user is None or not password_ok:
         raise exceptions.UserWrongLoginInformation
     token = token_handler.create_access_token(db_user.id, True)

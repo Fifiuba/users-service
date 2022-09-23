@@ -23,7 +23,7 @@ def read_users(rq: Request, db: Session = Depends(database.get_db)):
         return users
 
 
-@user_router.get("/{email}", status_code=status.HTTP_200_OK)
+@user_router.get("/{email}", status_code=status.HTTP_200_OK, response_model=schema.UserInfoResponse)
 async def get_user(rq: Request, email: str, db: Session = Depends(database.get_db)):
     try:
         authorization_handler.is_auth(rq.headers)

@@ -14,7 +14,6 @@ class UserBase(BaseModel):
 class UserResponse(BaseModel):
     id: int
     name: str
-    password: str
     phone_number: Union[str, None] = None
     email: str
     age: Union[int, None] = None
@@ -22,9 +21,25 @@ class UserResponse(BaseModel):
     class Config:
         orm_mode = True
 
+class UserInfoResponse(BaseModel):
+    name: str
+    phone_number: Union[str, None] = None
+    email: str
+    age: Union[int, None] = None
+
+    class Config:
+        orm_mode = True
 
 class UserRegisteredResponse(UserResponse):
+    id: int
     user_type: str
+    name: str
+    phone_number: Union[str, None] = None
+    email: str
+    age: Union[int, None] = None
+    class Config:
+        orm_mode = True
+
 
 
 class PassengerBase(BaseModel):
