@@ -32,6 +32,19 @@ def edit_user_info(user_id, user: schema.UserPatch, db: Session):
         
         return db_user, driver
 
+def user_profile(user_id: int, user_type: str, db: Session):
+    if user_type == "passenger":
+        passenger = crud.get_passenger_by_id(user_id, db)
+        if not passenger:
+            raise exceptions.PassengerNotFoundError
+        user = crud.get_user_by_id(user_id, db)
+        return user, passenger
+    else:
+        driver = crud.get_driver_by_id(user_id, db)
+        if not driver:
+            raise exceptions.DriverNotFoundError
+        user = crud.get_user_by_id(user_id, db)
+        return user, driver
 
 def add_user_info(user_id: int, user: schema.UserPatch, db: Session):
     
@@ -71,3 +84,11 @@ def login_google(googleUser: schema.GoogleLogin, db: Session):
     user_id = crud.login_google(googleUser, db)
     token = token_handler.create_access_token(user_id, True)
     return token
+
+def delete_user(user_id, user_type, db:Session):
+    if user_type == 'passenger':
+        crud.delete_passenger(user_id, db)
+        return user_id
+    else:
+        crud.delete_driver(user_id, db)
+        return user_id

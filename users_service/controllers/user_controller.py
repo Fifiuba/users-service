@@ -88,3 +88,20 @@ async def edit_profile(rq: Request, user: schema.UserPatch, db: Session = Depend
         return user_repository.edit_user_info(user_id, user, db)
     except (exceptions.UnauthorizeUser, exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
+
+@user_router.get("/me/", status_code=status.HTTP_200_OK)
+async def get_profile(rq: Request, user: schema.TypeOfUser, db: Session = Depends(database.get_db)):
+    try:
+        authorization_handler.is_auth(rq.headers)
+        token = authorization_handler.get_token(rq.headers)
+        user_id = token_handler.decode_token(token)["user_id"]
+        return user_repository.user_profile(user_id,user.user_type, db)
+    except (exceptions.UnauthorizeUser, exceptions.UserInfoException) as error:
+        raise HTTPException(**error.__dict__)
+
+@user_router.delete("/{user_id}", status_code=status.HTTP_200_OK)
+async def delete_user(user_id: int, user: schema.TypeOfUser, db: Session = Depends(database.get_db)):
+    try:
+        user_repository.delete_user(user_id, user.user_type, db)
+    except (exceptions.UserInfoException) as error:
+        raise HTTPException(**error.__dict__)
