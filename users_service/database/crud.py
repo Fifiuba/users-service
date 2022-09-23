@@ -37,7 +37,9 @@ def user_exists(username, db: Session):
 
 def create_user(user: schema.UserBase, db: Session):
     user_aux = get_user_by_email(user.email, db)
+    print('accessing')
     if user_aux:
+        user_aux.user_type = user.user_type
         return user_aux, True
     hashed_password = password_handler.get_hashed_password(user.password)
     db_user = models.User(
@@ -50,6 +52,8 @@ def create_user(user: schema.UserBase, db: Session):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
+    print('passed')
+    print(user.user_type)
     db_user.user_type = user.user_type
     return db_user, False
 
@@ -89,7 +93,7 @@ def create_driver(user: schema.UserBase, db: Session):
     ):
         raise exceptions.DriverAlreadyExists
     else:
-        create_driver_with_id(db_user.id, db)
+        create_driver_with_id(db_user.id, db)    
     return db_user
 
 

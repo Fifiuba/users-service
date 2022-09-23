@@ -153,27 +153,27 @@ def test_when_creating_passenger_with_registered_email_doesnot_create_the_passen
     assert data["detail"] == "The passenger already exists"
 
 
-# def test_when_creating_a_driver_withnot_registered_email_creates_the_driver():
-#     response = registerDriver()
+def test_when_creating_a_driver_withnot_registered_email_creates_the_driver(): 
+    response = registerDriver()
 
-#     assert response.status_code == status.HTTP_201_CREATED, response.text
-#     data = response.json()
-#     assert data["name"] == "Sol"
-#     # check de la hashed password?
-#     assert data["email"] == "sol@gmail.com"
-#     assert data["phone_number"] == "12345678"
-#     assert data["age"] == 22
-#     assert "id" in data
+    assert response.status_code == status.HTTP_201_CREATED, response.text
+    data = response.json()
+    assert data["name"] == "Sol"
+     # check de la hashed password?
+    assert data["email"] == "sol@gmail.com"
+    assert data["phone_number"] == "12345678"
+    assert data["age"] == 22
+    assert "id" in data
 
 # faltaria chequear que el id devuelve al user correcto
 
 
-# def test_when_creating_driver_with_registered_email_doesnot_create_the_driver():
-#     registerDriver()
-#     response = registerDriver()
-#     assert response.status_code == status.HTTP_409_CONFLICT, response.text
-#     data = response.json()
-#     assert data["detail"] == "The driver already exists"
+def test_when_creating_driver_with_registered_email_doesnot_create_the_driver():
+    registerDriver()
+    response = registerDriver()
+    assert response.status_code == status.HTTP_409_CONFLICT, response.text
+    data = response.json()
+    assert data["detail"] == "The driver already exists"
 
 
 def test_when_a_passanger_exists_and_add_the_address_then_the_addres_is_add_it():
@@ -193,15 +193,15 @@ def test_when_Passenger_not_exist_and_adds_address_then_the_addres_isnot_addit()
     assert data["detail"] == "The passenger does not exists"
 
 
-# def test_when_driver_exists_and_adds_carInfo_the_carInfo_is_addit():
-#     response = registerDriver2()
-#     data = response.json()
+def test_when_driver_exists_and_adds_carInfo_the_carInfo_is_addit():
+    response = registerDriver2()
+    data = response.json()
 
-#     response = addCarInfoClient("users/" + str(data["id"]))
-#     data = response.json()
-#     assert response.status_code == status.HTTP_200_OK, response.text
-#     assert data["license_plate"] == "ABC123"
-#     assert data["car_model"] == "Ford K"
+    response = addCarInfoClient("users/" + str(data["id"]))
+    data = response.json()
+    assert response.status_code == status.HTTP_200_OK, response.text
+    assert data["license_plate"] == "ABC123"
+    assert data["car_model"] == "Ford K"
 
 
 def test_when_driver_not_exists_and_adds_carInfo_the_carInfo_isnot_addit():
