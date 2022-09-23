@@ -1,4 +1,4 @@
-from typing import Union, List, Dict
+from typing import Optional, Union, List, Dict
 from pydantic import BaseModel
 
 
@@ -64,6 +64,17 @@ class GoogleLogin(BaseModel):
     email: str
     googleId: int
 
+class UserEditFields(BaseModel):
+    name: Optional[str] = None
+    phone_number: Optional[str] = None
+    age: Optional[str] = None
+
+class PassengerEditFields(BaseModel):
+    default_address: Optional[str] = None
+
+class DriverEditFields(BaseModel):
+    license_plate: Optional[str] = None
+    car_model: Optional[str] = None
 
 class UserPatch(BaseModel):
     user_type: str
