@@ -126,15 +126,30 @@ def test_when_app_is_with_no_users_then_get_users_return_an_empty_list():
     data = response.json()
     assert data == []
 
+
 def test_when_app_has_2_user_then_get_users_return_2_users():
-    client.post("/users", json={ "user_type": "passenger", 
-                    "name": "Agus3","email": "agus3@gmail.com",
-                    "password": "87654321", "phone_number": "12345678","age": 22,
-                    },)
-    client.post("/users", json={ "user_type": "passenger", 
-                    "name": "Agus4","email": "agus4@gmail.com",
-                    "password": "87654321", "phone_number": "12345678","age": 22,
-                    },)
+    client.post(
+        "/users",
+        json={
+            "user_type": "passenger",
+            "name": "Agus3",
+            "email": "agus3@gmail.com",
+            "password": "87654321",
+            "phone_number": "12345678",
+            "age": 22,
+        },
+    )
+    client.post(
+        "/users",
+        json={
+            "user_type": "passenger",
+            "name": "Agus4",
+            "email": "agus4@gmail.com",
+            "password": "87654321",
+            "phone_number": "12345678",
+            "age": 22,
+        },
+    )
     token = token_handler.create_access_token(2, True)
     response = client.get("/users/", headers={"Authorization": f"Baerer {token}"})
     assert response.status_code == status.HTTP_200_OK
@@ -142,8 +157,7 @@ def test_when_app_has_2_user_then_get_users_return_2_users():
     data = response.json()
     assert len(data) == 2
     print(data)
-    
-    
+
 
 def test_when_creating_a_passenger_with_not_registered_email_creates_the_user():
     response = registerPassenger()
@@ -171,17 +185,18 @@ def test_when_creating_passenger_with_registered_email_doesnot_create_the_passen
     assert data["detail"] == "The passenger already exists"
 
 
-def test_when_creating_a_driver_withnot_registered_email_creates_the_driver(): 
+def test_when_creating_a_driver_withnot_registered_email_creates_the_driver():
     response = registerDriver()
 
     assert response.status_code == status.HTTP_201_CREATED, response.text
     data = response.json()
     assert data["name"] == "Sol"
-     # check de la hashed password?
+    # check de la hashed password?
     assert data["email"] == "sol@gmail.com"
     assert data["phone_number"] == "12345678"
     assert data["age"] == 22
     assert "id" in data
+
 
 # faltaria chequear que el id devuelve al user correcto
 
@@ -270,6 +285,7 @@ def test_when_gettion_info_from_existing_user_then_returns_the_information():
     assert data2["phone_number"] == data["phone_number"]
     assert data2["age"] == data["age"]
 
+
 def test_when_login_to_register_user_with_validad_data_then_it_should_return_token():
     response = client.post(
         "users/login", json={"email": "agus3@gmail.com", "password": "87654321"}
@@ -285,19 +301,20 @@ def test_when_login_to_register_user_with_validad_data_then_it_should_return_tok
     assert actual["user_id"] == expected["user_id"]
     assert actual["user"] == expected["user"]
 
-def test_when_login_to_register_user_with_invalid_email_then_it_should_not_return_token():
+
+def test_when_login_register_user_with_invalid_email_then_it_should_not_return_token():
     response = client.post(
         "users/login", json={"email": "AGUSTINA12345@gmail.com", "password": "87654321"}
     )
     assert response.status_code == status.HTTP_401_UNAUTHORIZED, response.text
     data = response.json()
-    assert data['detail'] == "The username/password is incorrect"
+    assert data["detail"] == "The username/password is incorrect"
 
-def test_when_login_to_register_user_with_invalid_password_then_it_should_not_return_token():
+
+def test_when_login_register_user_with_invalid_password_it_should_not_return_token():
     response = client.post(
         "users/login", json={"email": "agus3@gmail.com", "password": "12345678"}
     )
     assert response.status_code == status.HTTP_401_UNAUTHORIZED, response.text
     data = response.json()
-    assert data['detail'] == "The username/password is incorrect"
-
+    assert data["detail"] == "The username/password is incorrect"

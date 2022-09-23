@@ -37,7 +37,7 @@ def user_exists(username, db: Session):
 
 def create_user(user: schema.UserBase, db: Session):
     user_aux = get_user_by_email(user.email, db)
-    print('accessing')
+    print("accessing")
     if user_aux:
         user_aux.user_type = user.user_type
         return user_aux, True
@@ -91,7 +91,7 @@ def create_driver(user: schema.UserBase, db: Session):
     ):
         raise exceptions.DriverAlreadyExists
     else:
-        create_driver_with_id(db_user.id, db)    
+        create_driver_with_id(db_user.id, db)
     return db_user
 
 
