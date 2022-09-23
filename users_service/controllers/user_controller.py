@@ -79,7 +79,7 @@ async def login_google(
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
 
-@user_router.patch("/edit/", status_code=status.HTTP_200_OK)
+@user_router.patch("/me/", status_code=status.HTTP_200_OK)
 async def edit_profile(rq: Request, user: schema.UserPatch, db: Session = Depends(database.get_db)):
     try:
         authorization_handler.is_auth(rq.headers)
