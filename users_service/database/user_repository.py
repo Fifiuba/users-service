@@ -1,3 +1,4 @@
+from typing import Union
 from sqlalchemy.orm import Session
 from . import crud, schema, exceptions
 from users_service.utils import token_handler, password_handler
@@ -14,11 +15,11 @@ def get_users(db):
     return crud.get_users(db)
 
 
-def create_user(user: schema.UserBase, db: Session):
+def create_user(token_id: Union[str, None], user: schema.UserBase, db: Session):
     if user.user_type == "passenger":
-        user_create = crud.create_passenger(user, db)
+        user_create = crud.create_passenger(token_id, user, db)
     else:
-        user_create = crud.create_driver(user, db)
+        user_create = crud.create_driver(token_id, user, db)
     return user_create
 
 def edit_user_info(user_id, user: schema.UserPatch, db: Session):
@@ -71,11 +72,14 @@ def verified_user(email, password: str, db: Session):
     return db_user, password_ok
 
 
-def login(user: schema.UserLogInBase, db: Session):
+def login(email, password, token_id, db: Session):
 
-    db_user, password_ok = verified_user(user.email, user.password, db)
+    db_user, password_ok = verified_user(email, password, db)
     if db_user is None or not password_ok:
         raise exceptions.UserWrongLoginInformation
+    if not token_id == db_user.tokenId:
+        raise exceptions.UserWrongLoginInformation
+
     token = token_handler.create_access_token(db_user.id, True)
     return token
 
@@ -92,3 +96,9 @@ def delete_user(user_id, user_type, db:Session):
     else:
         crud.delete_driver(user_id, db)
         return user_id
+
+def get_user_by_id(user_id: int, db: Session):
+    user = crud.get_user_by_id(user_id, db)
+    if not user:
+        raise exceptions.UserNotFoundError
+    return user

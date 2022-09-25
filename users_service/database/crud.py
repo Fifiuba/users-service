@@ -1,3 +1,4 @@
+from typing import Union
 from users_service.utils import password_handler
 from . import models, schema, exceptions
 from sqlalchemy.orm import Session
@@ -35,9 +36,9 @@ def user_exists(username, db: Session):
     return user
 
 
-def create_user(user: schema.UserBase, db: Session):
+def create_user(token_id:  Union[str, None], user: schema.UserBase, db: Session):
     user_aux = get_user_by_email(user.email, db)
-    print("accessing")
+
     if user_aux:
         user_aux.user_type = user.user_type
         return user_aux, True
@@ -48,6 +49,7 @@ def create_user(user: schema.UserBase, db: Session):
         password=hashed_password,
         phone_number=user.phone_number,
         age=user.age,
+        tokenId = token_id, 
     )
     db.add(db_user)
     db.commit()
@@ -70,8 +72,8 @@ def create_driver_with_id(user_id: int, db: Session):
     db.refresh(db_driver)
 
 
-def create_passenger(user: schema.UserBase, db: Session):
-    db_user, already_existing_user = create_user(user, db)
+def create_passenger(token_id: Union[str, None],user: schema.UserBase, db: Session):
+    db_user, already_existing_user = create_user(token_id, user, db)
     if already_existing_user and (
         get_driver_by_id(db_user.id, db) is None
         or get_passenger_by_id(db_user.id, db) is not None
@@ -82,9 +84,9 @@ def create_passenger(user: schema.UserBase, db: Session):
     return db_user
 
 
-def create_driver(user: schema.UserBase, db: Session):
+def create_driver(token_id:  Union[str, None],user: schema.UserBase, db: Session):
 
-    db_user, already_existing_user = create_user(user, db)
+    db_user, already_existing_user = create_user(token_id, user, db)
     if already_existing_user and (
         get_passenger_by_id(db_user.id, db) is None
         or get_driver_by_id(db_user.id, db) is not None

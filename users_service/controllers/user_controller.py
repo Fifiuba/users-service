@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, HTTPException, Depends, Request
 from sqlalchemy.orm import Session
 from typing import List
 from users_service.database import schema, exceptions, database, user_repository
-from users_service.utils import authorization_handler, token_handler
+from users_service.utils import authorization_handler, token_handler, firebase_handler
 
 
 user_router = APIRouter()
@@ -44,7 +44,8 @@ async def registrate_user(
     user: schema.UserBase, db: Session = Depends(database.get_db)
 ):
     try:
-        return user_repository.create_user(user, db)
+        token_id = firebase_handler.create_user(user.email, user.password)
+        return user_repository.create_user(token_id,user, db)
     except (exceptions.PassengerAlreadyExists, exceptions.DriverAlreadyExists) as error:
         raise HTTPException(**error.__dict__)
 
@@ -65,7 +66,9 @@ async def login_user(
     user: schema.UserLogInBase, db: Session = Depends(database.get_db)
 ):
     try:
-        return user_repository.login(user, db)
+        uid = firebase_handler.valid_user(user.email)
+        print(uid)
+        return user_repository.login(user.email, user.password, uid, db)
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
 
@@ -102,6 +105,8 @@ async def get_profile(rq: Request, user: schema.TypeOfUser, db: Session = Depend
 @user_router.delete("/{user_id}", status_code=status.HTTP_200_OK)
 async def delete_user(user_id: int, user: schema.TypeOfUser, db: Session = Depends(database.get_db)):
     try:
+        db_user = user_repository.get_user_by_id(user_id, db)
+        firebase_handler.delete_user(db_user.tokenId)
         user_repository.delete_user(user_id, user.user_type, db)
     except (exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)

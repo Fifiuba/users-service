@@ -15,6 +15,7 @@ class User(Base):
     password = Column("password", String(255), nullable=False)
     phone_number = Column("phone_number", String(255), nullable=True)
     age = Column("age", Integer, nullable=True)
+    tokenId = Column("tokenId", String(255), nullable=True)
 
 
 class Passenger(Base):
