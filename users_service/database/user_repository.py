@@ -22,16 +22,22 @@ def create_user(token_id: Union[str, None], user: schema.UserBase, db: Session):
         user_create = crud.create_driver(token_id, user, db)
     return user_create
 
+
 def edit_user_info(user_id, user: schema.UserPatch, db: Session):
     if user.user_type == "passenger":
-        db_user, passenger = crud.edit_passenger_info(user_id, user.fields[0],user.fields[1], db)
+        db_user, passenger = crud.edit_passenger_info(
+            user_id, user.fields[0], user.fields[1], db
+        )
         db_user.user_type = user.user_type
         return db_user, passenger
     else:
-        db_user, driver = crud.edit_driver_info(user_id, user.fields[0],user.fields[1], db)
+        db_user, driver = crud.edit_driver_info(
+            user_id, user.fields[0], user.fields[1], db
+        )
         db_user.user_type = user.user_type
-        
+
         return db_user, driver
+
 
 def user_profile(user_id: int, user_type: str, db: Session):
     if user_type == "passenger":
@@ -47,11 +53,12 @@ def user_profile(user_id: int, user_type: str, db: Session):
         user = crud.get_user_by_id(user_id, db)
         return user, driver
 
+
 def add_user_info(user_id: int, user: schema.UserPatch, db: Session):
-    
+
     if user.user_type == "passenger":
         passenger = crud.add_passenger_address(
-            user_id, user.fields[0]['default_address'], db
+            user_id, user.fields[0]["default_address"], db
         )
         return passenger
     else:
@@ -89,13 +96,15 @@ def login_google(googleUser: schema.GoogleLogin, db: Session):
     token = token_handler.create_access_token(user_id, True)
     return token
 
-def delete_user(user_id, user_type, db:Session):
-    if user_type == 'passenger':
+
+def delete_user(user_id, user_type, db: Session):
+    if user_type == "passenger":
         crud.delete_passenger(user_id, db)
         return user_id
     else:
         crud.delete_driver(user_id, db)
         return user_id
+
 
 def get_user_by_id(user_id: int, db: Session):
     user = crud.get_user_by_id(user_id, db)

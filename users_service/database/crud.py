@@ -36,7 +36,7 @@ def user_exists(username, db: Session):
     return user
 
 
-def create_user(token_id:  Union[str, None], user: schema.UserBase, db: Session):
+def create_user(token_id: Union[str, None], user: schema.UserBase, db: Session):
     user_aux = get_user_by_email(user.email, db)
 
     if user_aux:
@@ -49,7 +49,7 @@ def create_user(token_id:  Union[str, None], user: schema.UserBase, db: Session)
         password=hashed_password,
         phone_number=user.phone_number,
         age=user.age,
-        tokenId = token_id, 
+        tokenId=token_id,
     )
     db.add(db_user)
     db.commit()
@@ -72,7 +72,7 @@ def create_driver_with_id(user_id: int, db: Session):
     db.refresh(db_driver)
 
 
-def create_passenger(token_id: Union[str, None],user: schema.UserBase, db: Session):
+def create_passenger(token_id: Union[str, None], user: schema.UserBase, db: Session):
     db_user, already_existing_user = create_user(token_id, user, db)
     if already_existing_user and (
         get_driver_by_id(db_user.id, db) is None
@@ -84,7 +84,7 @@ def create_passenger(token_id: Union[str, None],user: schema.UserBase, db: Sessi
     return db_user
 
 
-def create_driver(token_id:  Union[str, None],user: schema.UserBase, db: Session):
+def create_driver(token_id: Union[str, None], user: schema.UserBase, db: Session):
 
     db_user, already_existing_user = create_user(token_id, user, db)
     if already_existing_user and (
@@ -152,12 +152,14 @@ def login_google(googleUser: schema.GoogleLogin, db: Session):
     user = get_user_by_id(relationship.userId, db)
     return user.id
 
+
 def removeNoneValues(dict_aux: dict):
-    dict_aux2  = {}
+    dict_aux2 = {}
     for key, value in dict_aux.items():
         if value is not None:
             dict_aux2[key] = value
     return dict_aux2
+
 
 def edit_user(user_id: int, userInfo: schema.UserEditFields, db: Session):
     user = get_user_by_id(user_id, db)
@@ -168,7 +170,13 @@ def edit_user(user_id: int, userInfo: schema.UserEditFields, db: Session):
     db.refresh(user)
     return user
 
-def edit_passenger_info(user_id: int, userInfo: schema.UserEditFields, passengerInfo: schema.PassengerEditFields, db: Session):
+
+def edit_passenger_info(
+    user_id: int,
+    userInfo: schema.UserEditFields,
+    passengerInfo: schema.PassengerEditFields,
+    db: Session,
+):
     passenger = get_passenger_by_id(user_id, db)
     if not passenger:
         raise exceptions.PassengerNotFoundError
@@ -176,18 +184,24 @@ def edit_passenger_info(user_id: int, userInfo: schema.UserEditFields, passenger
     attribute_passenger = removeNoneValues(passengerInfo)
     for attr, value in attribute_passenger.items():
         setattr(passenger, attr, value)
-    
+
     db.commit()
     db.refresh(user)
     db.refresh(passenger)
     return user, passenger
 
-def edit_driver_info(user_id: int, userInfo: schema.UserEditFields, driverInfo: schema.DriverEditFields, db: Session):
+
+def edit_driver_info(
+    user_id: int,
+    userInfo: schema.UserEditFields,
+    driverInfo: schema.DriverEditFields,
+    db: Session,
+):
     driver = get_driver_by_id(user_id, db)
     if not driver:
         raise exceptions.DriverNotFoundError
     user = edit_user(user_id, userInfo, db)
-   
+
     attribute_passenger = removeNoneValues(driverInfo)
     for attr, value in attribute_passenger.items():
         setattr(driver, attr, value)
@@ -195,6 +209,7 @@ def edit_driver_info(user_id: int, userInfo: schema.UserEditFields, driverInfo: 
     db.refresh(user)
     db.refresh(driver)
     return user, driver
+
 
 def delete_passenger(user_id, db):
     passenger = get_passenger_by_id(user_id, db)
@@ -204,6 +219,7 @@ def delete_passenger(user_id, db):
     db.delete(passenger)
     db.delete(user)
     db.commit()
+
 
 def delete_driver(user_id, db):
     driver = get_driver_by_id(user_id, db)

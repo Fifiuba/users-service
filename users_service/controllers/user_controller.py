@@ -41,11 +41,13 @@ async def get_user(rq: Request, email: str, db: Session = Depends(database.get_d
     status_code=status.HTTP_201_CREATED,
 )
 async def registrate_user(
-    user: schema.UserBase, db: Session = Depends(database.get_db), firebase = Depends(firebase_handler.get_fb)
+    user: schema.UserBase,
+    db: Session = Depends(database.get_db),
+    firebase=Depends(firebase_handler.get_fb),
 ):
     try:
         token_id = firebase.create_user(user.email, user.password)
-        return user_repository.create_user(token_id,user, db)
+        return user_repository.create_user(token_id, user, db)
     except (exceptions.PassengerAlreadyExists, exceptions.DriverAlreadyExists) as error:
         raise HTTPException(**error.__dict__)
 
@@ -63,7 +65,9 @@ async def add_user_info(
 
 @user_router.post("/login", status_code=status.HTTP_200_OK)
 async def login_user(
-    user: schema.UserLogInBase, db: Session = Depends(database.get_db), firebase = Depends(firebase_handler.get_fb)
+    user: schema.UserLogInBase,
+    db: Session = Depends(database.get_db),
+    firebase=Depends(firebase_handler.get_fb),
 ):
     try:
         uid = firebase.valid_user(user.email)
@@ -82,8 +86,11 @@ async def login_google(
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
 
+
 @user_router.patch("/me/", status_code=status.HTTP_200_OK)
-async def edit_profile(rq: Request, user: schema.UserPatch, db: Session = Depends(database.get_db)):
+async def edit_profile(
+    rq: Request, user: schema.UserPatch, db: Session = Depends(database.get_db)
+):
     try:
         authorization_handler.is_auth(rq.headers)
         token = authorization_handler.get_token(rq.headers)
@@ -92,18 +99,27 @@ async def edit_profile(rq: Request, user: schema.UserPatch, db: Session = Depend
     except (exceptions.UnauthorizeUser, exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
 
+
 @user_router.get("/me/", status_code=status.HTTP_200_OK)
-async def get_profile(rq: Request, user: schema.TypeOfUser, db: Session = Depends(database.get_db)):
+async def get_profile(
+    rq: Request, user: schema.TypeOfUser, db: Session = Depends(database.get_db)
+):
     try:
         authorization_handler.is_auth(rq.headers)
         token = authorization_handler.get_token(rq.headers)
         user_id = token_handler.decode_token(token)["user_id"]
-        return user_repository.user_profile(user_id,user.user_type, db)
+        return user_repository.user_profile(user_id, user.user_type, db)
     except (exceptions.UnauthorizeUser, exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
 
+
 @user_router.delete("/{user_id}", status_code=status.HTTP_200_OK)
-async def delete_user(user_id: int, user: schema.TypeOfUser, db: Session = Depends(database.get_db), firebase = Depends(firebase_handler.get_fb)):
+async def delete_user(
+    user_id: int,
+    user: schema.TypeOfUser,
+    db: Session = Depends(database.get_db),
+    firebase=Depends(firebase_handler.get_fb),
+):
     try:
         db_user = user_repository.get_user_by_id(user_id, db)
         firebase.delete_user(db_user.tokenId)
