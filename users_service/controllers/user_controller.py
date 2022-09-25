@@ -41,10 +41,10 @@ async def get_user(rq: Request, email: str, db: Session = Depends(database.get_d
     status_code=status.HTTP_201_CREATED,
 )
 async def registrate_user(
-    user: schema.UserBase, db: Session = Depends(database.get_db)
+    user: schema.UserBase, db: Session = Depends(database.get_db), firebase = Depends(firebase_handler.get_fb)
 ):
     try:
-        token_id = firebase_handler.create_user(user.email, user.password)
+        token_id = firebase.create_user(user.email, user.password)
         return user_repository.create_user(token_id,user, db)
     except (exceptions.PassengerAlreadyExists, exceptions.DriverAlreadyExists) as error:
         raise HTTPException(**error.__dict__)
@@ -63,10 +63,10 @@ async def add_user_info(
 
 @user_router.post("/login", status_code=status.HTTP_200_OK)
 async def login_user(
-    user: schema.UserLogInBase, db: Session = Depends(database.get_db)
+    user: schema.UserLogInBase, db: Session = Depends(database.get_db), firebase = Depends(firebase_handler.get_fb)
 ):
     try:
-        uid = firebase_handler.valid_user(user.email)
+        uid = firebase.valid_user(user.email)
         print(uid)
         return user_repository.login(user.email, user.password, uid, db)
     except exceptions.UserInfoException as error:
@@ -103,10 +103,10 @@ async def get_profile(rq: Request, user: schema.TypeOfUser, db: Session = Depend
         raise HTTPException(**error.__dict__)
 
 @user_router.delete("/{user_id}", status_code=status.HTTP_200_OK)
-async def delete_user(user_id: int, user: schema.TypeOfUser, db: Session = Depends(database.get_db)):
+async def delete_user(user_id: int, user: schema.TypeOfUser, db: Session = Depends(database.get_db), firebase = Depends(firebase_handler.get_fb)):
     try:
         db_user = user_repository.get_user_by_id(user_id, db)
-        firebase_handler.delete_user(db_user.tokenId)
+        firebase.delete_user(db_user.tokenId)
         user_repository.delete_user(user_id, user.user_type, db)
     except (exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
