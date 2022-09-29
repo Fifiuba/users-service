@@ -88,8 +88,31 @@ def login(email, token_id, db: Session):
     return token
 
 
-def login_google(googleUser: schema.GoogleLogin, db: Session):
-    user_id = crud.login_google(googleUser, db)
+def login_google(uid: str, email: str, name: str, user_type:str, db: Session):
+    relationship = crud.get_google_relationship(uid, db)
+    if not relationship:
+        print("email: ", email)
+        user = crud.get_user_by_email(email, db)
+        if user:
+            print("entre a existo")
+            raise exceptions.UserAlreadyExists
+        else:
+            user_aux = schema.UserBase(
+                user_type=user_type,
+                name=name,
+                password= "",
+                phone_number=None,
+                email= email,
+                age=None,
+            )
+            db_user = create_user(uid, user_aux, db)
+            
+            crud.create_google_relationship(uid, db_user.id, db)
+            user_id = db_user.id 
+    else:
+        print("hay relacion")
+        user_id = relationship.userId
+
     token = token_handler.create_access_token(user_id, True)
     return token
 

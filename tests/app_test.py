@@ -291,6 +291,7 @@ def test_when_getting_profile_for_passenger_that_exists_it_should_do_it():
 def test_when_update_passenger_info_it_should_do_it():
     response = registerPassenger2()
     data1 = response.json()
+    print(data1)
     token = token_handler.create_access_token(data1["id"], True)
     response = client.patch(
         "/users/me/",
@@ -362,3 +363,27 @@ def test_when_update_passenger_that_not_exist_it_should_not_do_it():
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
     data = response.json()
     assert data["detail"] == "The passenger does not exists"
+
+def test_when_login_with_google_with_user_not_register_then_it_returns_token():
+    response = client.post("users/loginGoogle", json={"user_type": "passenger", "token": "hfjdshfuidhysvcsbvs83hfsdf"})
+    assert response.status_code == status.HTTP_200_OK, response.text
+    data = response.json()
+    actual = token_handler.decode_token(data)
+    expected = {
+        "user_id": 1,
+        "user": True,
+    }
+
+    assert actual["user_id"] == expected["user_id"]
+    assert actual["user"] == expected["user"]
+    client.delete("/users/" + str(1), json={"user_type": "passenger"})
+
+# def test_when_login_with_google_when_user_register_normaly_does_not_return_token():
+#     response = registerPassenger()
+#     response = client.post("users/loginGoogle", json={"user_type": "passenger", "token": "hfjdshfuidhysvcsbvs83hfsdf"})
+#     assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
+#     data = response.json()
+    
+#     assert data['detail'] == "The user already exists"
+    
+#     client.delete("/users/" + str(1), json={"user_type": "passenger"})

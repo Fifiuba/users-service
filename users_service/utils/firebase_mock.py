@@ -2,18 +2,17 @@ from users_service.database import exceptions
 
 
 class FirebaseMock:
+    user = {"uid": "asdasdasdslwlewed1213123", "email": "agus@gmail.com", "name": "agus"}
 
-    uid = "asdasdasdslwlewed1213123"
-    email = ""
     token = "hfjdshfuidhysvcsbvs83hfsdf"
 
     def create_user(self, email, password):
-        self.email = email
-        return self.uid
+        self.user['email'] = email
+        return self.user['uid']
 
     def valid_user(self, token):
         if token == self.token:
-            return self.uid, self.email
+            return self.user
         else:
             raise exceptions.UserWrongLoginInformation
 

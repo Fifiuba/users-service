@@ -70,18 +70,20 @@ async def login_user(
     firebase=Depends(firebase_handler.get_fb),
 ):
     try:
-        uid, email = firebase.valid_user(user.token)
-        return user_repository.login(email, uid, db)
+        user = firebase.valid_user(user.token)
+        return user_repository.login(user.get("email"), user.get("uid"), db)
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
 
 
 @user_router.post("/loginGoogle", status_code=status.HTTP_200_OK)
 async def login_google(
-    googleUser: schema.GoogleLogin, db: Session = Depends(database.get_db)
+    googleUser: schema.GoogleLogin, db: Session = Depends(database.get_db), firebase = Depends(firebase_handler.get_fb),
 ):
     try:
-        return user_repository.login_google(googleUser, db)
+        user = firebase.valid_user(googleUser.token)
+        print("email: " ,user.get("email"))
+        return user_repository.login_google(user.get("uid"), user.get("email"), user.get("name"), googleUser.user_type, db)
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
 

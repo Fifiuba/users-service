@@ -29,7 +29,9 @@ class Firebase:
 
             raise exceptions.UserWrongLoginInformation
         else:
-            return user.get("uid"), user.get("email")
+            print("entre aca")
+            print("toy en firebase ", user)
+            return user
 
     def delete_user(self, uid):
         try:

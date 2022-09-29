@@ -59,9 +59,7 @@ class UserLogInBase(BaseModel):
 
 class GoogleLogin(BaseModel):
     user_type: str
-    name: str
-    email: str
-    googleId: int
+    token: str
 
 
 class UserEditFields(BaseModel):

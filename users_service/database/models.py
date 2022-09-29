@@ -37,8 +37,8 @@ class GoogleUser(Base):
 
     userId = Column("userId", Integer, ForeignKey("users.id"), nullable=False)
     googleId = Column(
-        "googleId", Integer, primary_key=True
-    )  # TODO: ver si es integer o string el google id
+        "googleId", String(255), primary_key=True
+    )  
 
 
 Base.metadata.drop_all(engine)
