@@ -70,9 +70,8 @@ async def login_user(
     firebase=Depends(firebase_handler.get_fb),
 ):
     try:
-        uid = firebase.valid_user(user.email)
-        print(uid)
-        return user_repository.login(user.email, user.password, uid, db)
+        uid, email = firebase.valid_user(user.token)
+        return user_repository.login(email, uid, db)
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
 

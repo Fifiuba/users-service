@@ -15,13 +15,21 @@ class Firebase:
         else:
             return user.uid
 
-    def valid_user(self, email):
+    def valid_user(self, token):
         try:
-            user = self.auth.get_user_by_email(email, self.app)
-        except (ValueError, self.auth.UserNotFoundError, fb_exceptions.FirebaseError):
+            user = self.auth.verify_id_token(token, app=self.app)
+
+        except (
+            self.auth.UserDisabledError,
+            self.auth.CertificateFetchError,
+            self.auth.RevokedIdTokenError,
+            self.auth.ExpiredIdTokenError,
+            self.auth.InvalidIdTokenError,
+        ):
+
             raise exceptions.UserWrongLoginInformation
         else:
-            return user.uid
+            return user.get("uid"), user.get("email")
 
     def delete_user(self, uid):
         try:

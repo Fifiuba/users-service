@@ -71,18 +71,15 @@ def add_user_info(user_id: int, user: schema.UserPatch, db: Session):
         return driver
 
 
-def verified_user(email, password: str, db: Session):
+def verified_user(email:str , db: Session):
     db_user = crud.get_user_by_email(email, db)
-    password_ok = False
-    if db_user:
-        password_ok = password_handler.verify_password(password, db_user.password)
-    return db_user, password_ok
+    return db_user
 
 
-def login(email, password, token_id, db: Session):
+def login(email, token_id, db: Session):
 
-    db_user, password_ok = verified_user(email, password, db)
-    if db_user is None or not password_ok:
+    db_user = verified_user(email, db)
+    if db_user is None:
         raise exceptions.UserWrongLoginInformation
     if not token_id == db_user.tokenId:
         raise exceptions.UserWrongLoginInformation
