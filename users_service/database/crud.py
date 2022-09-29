@@ -1,5 +1,4 @@
 from typing import Union
-from users_service.utils import password_handler
 from . import models, schema, exceptions
 from sqlalchemy.orm import Session
 

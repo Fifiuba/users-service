@@ -1,7 +1,7 @@
 from typing import Union
 from sqlalchemy.orm import Session
 from . import crud, schema, exceptions
-from users_service.utils import token_handler, password_handler
+from users_service.utils import token_handler
 
 
 def get_user_by_email(email: str, db: Session):
@@ -71,7 +71,7 @@ def add_user_info(user_id: int, user: schema.UserPatch, db: Session):
         return driver
 
 
-def verified_user(email:str , db: Session):
+def verified_user(email: str, db: Session):
     db_user = crud.get_user_by_email(email, db)
     return db_user
 

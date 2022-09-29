@@ -246,9 +246,7 @@ def test_when_gettion_info_from_existing_user_then_returns_the_information():
 
 def test_when_login_to_register_user_with_validad_data_then_it_should_return_token():
     response = registerPassenger2()
-    response = client.post(
-        "users/login", json={"token": "hfjdshfuidhysvcsbvs83hfsdf"}
-    )
+    response = client.post("users/login", json={"token": "hfjdshfuidhysvcsbvs83hfsdf"})
     assert response.status_code == status.HTTP_200_OK, response.text
     data = response.json()
     actual = token_handler.decode_token(data)
@@ -263,9 +261,7 @@ def test_when_login_to_register_user_with_validad_data_then_it_should_return_tok
 
 
 def test_when_login_register_user_with_invalid_email_then_it_should_not_return_token():
-    response = client.post(
-        "users/login", json={"token": "hfjdsvcsbvs83hfsdf"}
-    )
+    response = client.post("users/login", json={"token": "hfjdsvcsbvs83hfsdf"})
     assert response.status_code == status.HTTP_401_UNAUTHORIZED, response.text
     data = response.json()
     assert data["detail"] == "The username/password is incorrect"
