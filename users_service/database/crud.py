@@ -42,11 +42,9 @@ def create_user(token_id: Union[str, None], user: schema.UserBase, db: Session):
     if user_aux:
         user_aux.user_type = user.user_type
         return user_aux, True
-    hashed_password = password_handler.get_hashed_password(user.password)
     db_user = models.User(
         name=user.name,
         email=user.email,
-        password=hashed_password,
         phone_number=user.phone_number,
         age=user.age,
         tokenId=token_id,

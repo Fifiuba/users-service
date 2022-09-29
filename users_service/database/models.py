@@ -12,7 +12,6 @@ class User(Base):
     id = Column("id", Integer, primary_key=True, autoincrement=True)
     name = Column("user_name", String(255), nullable=False)
     email = Column("email", String(255), nullable=False)
-    password = Column("password", String(255), nullable=False)
     phone_number = Column("phone_number", String(255), nullable=True)
     age = Column("age", Integer, nullable=True)
     tokenId = Column("tokenId", String(255), nullable=True)

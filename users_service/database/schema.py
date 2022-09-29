@@ -5,9 +5,9 @@ from pydantic import BaseModel
 class UserBase(BaseModel):
     user_type: str
     name: str
-    password: str
     phone_number: Union[str, None] = None
     email: str
+    password: str
     age: Union[int, None] = None
 
 
@@ -54,8 +54,7 @@ class DriverBase(BaseModel):
 
 
 class UserLogInBase(BaseModel):
-    email: str
-    password: str
+    token: str
 
 
 class GoogleLogin(BaseModel):
