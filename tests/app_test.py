@@ -387,3 +387,32 @@ def test_when_login_with_google_with_user_not_register_then_it_returns_token():
 #     assert data['detail'] == "The user already exists"
     
 #     client.delete("/users/" + str(1), json={"user_type": "passenger"})
+
+def test_when_scoring_a_driver_that_exist_it_does_it():
+    response = registerDriver()
+    data = response.json()
+    token = token_handler.create_access_token(100, True)
+    endpoint = "/users/score/" + str(data['id'])
+    print(endpoint)
+    response = client.patch(endpoint, 
+                headers={"Authorization": f"Baerer {token}"},
+                json = {"user_type": "passenger", "score": 4},)
+    assert response.status_code == status.HTTP_200_OK, response.text
+    data1 = response.json()
+
+    score_expected = (3 + 4)/2
+
+    assert score_expected == data1['score']
+    client.delete("/users/" + str(data['id']), json={"user_type": "driver"})
+
+def test_when_scoring_a_driver_that_does_not_exist_it_does_not_do_it():
+    token = token_handler.create_access_token(100, True)
+    endpoint = "/users/score/101"
+    print(endpoint)
+    response = client.patch(endpoint, 
+                headers={"Authorization": f"Baerer {token}"},
+                json = {"user_type": "passenger", "score": 5},)
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
+    data = response.json()
+    assert data["detail"] == "The driver does not exists"

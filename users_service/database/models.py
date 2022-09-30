@@ -22,6 +22,7 @@ class Passenger(Base):
 
     id = Column("id", Integer, ForeignKey("users.id"), primary_key=True)
     default_address = Column("default_address", String(255), nullable=True)
+    score = Column("score", Integer, nullable=True)
 
 
 class Driver(Base):
@@ -30,6 +31,7 @@ class Driver(Base):
     id = Column("id", Integer, ForeignKey("users.id"), primary_key=True)
     license_plate = Column("license_plate", String(255), nullable=True)
     car_model = Column("car_model", String(255), nullable=True)
+    score = Column("score", Integer, nullable=True)
 
 
 class GoogleUser(Base):

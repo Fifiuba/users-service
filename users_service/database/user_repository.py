@@ -38,6 +38,20 @@ def edit_user_info(user_id, user: schema.UserPatch, db: Session):
 
         return db_user, driver
 
+def score_user(user_id, user:schema.UserScore, db: Session):
+    
+    if user.user_type == 'passenger':
+        db_driver = crud.get_driver_by_id(user_id, db)
+        if not db_driver:
+            raise exceptions.DriverNotFoundError
+        return crud.update_score_driver(db_driver, user.score, db)
+    else:
+        db_passenger = crud.get_passenger_by_id(user_id, db)
+        if not db_passenger:
+            raise exceptions.PassengerNotFoundError
+        return crud.update_score_passenger(db_passenger, user.score, db)
+
+
 
 def user_profile(user_id: int, user_type: str, db: Session):
     if user_type == "passenger":
@@ -52,23 +66,6 @@ def user_profile(user_id: int, user_type: str, db: Session):
             raise exceptions.DriverNotFoundError
         user = crud.get_user_by_id(user_id, db)
         return user, driver
-
-
-def add_user_info(user_id: int, user: schema.UserPatch, db: Session):
-
-    if user.user_type == "passenger":
-        passenger = crud.add_passenger_address(
-            user_id, user.fields[0]["default_address"], db
-        )
-        return passenger
-    else:
-        driver = crud.add_driver_car_info(
-            user_id,
-            user.fields[0]["license_plate"],
-            user.fields[0]["car_model"],
-            db,
-        )
-        return driver
 
 
 def verified_user(email: str, db: Session):

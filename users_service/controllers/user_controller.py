@@ -53,10 +53,9 @@ async def registrate_user(
 
 
 @user_router.patch("/{user_id}", status_code=status.HTTP_200_OK)
-async def add_user_info(
-    user_id: int, user: schema.UserPatch, db: Session = Depends(database.get_db)
+async def edit_user(
+     user_id: int, user: schema.UserPatch, db: Session = Depends(database.get_db)
 ):
-
     try:
         return user_repository.edit_user_info(user_id, user, db)
     except exceptions.UserInfoException as error:
@@ -126,4 +125,14 @@ async def delete_user(
         firebase.delete_user(db_user.tokenId)
         user_repository.delete_user(user_id, user.user_type, db)
     except (exceptions.UserInfoException) as error:
+        raise HTTPException(**error.__dict__)
+
+@user_router.patch("/score/{user_id}", status_code=status.HTTP_200_OK)
+async def score_user(
+     rq: Request, user_id: int, user: schema.UserScore, db: Session = Depends(database.get_db)
+):
+    try:
+        authorization_handler.is_auth(rq.headers)
+        return user_repository.score_user(user_id, user, db)
+    except (exceptions.UnauthorizeUser, exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)

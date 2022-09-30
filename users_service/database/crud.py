@@ -56,14 +56,14 @@ def create_user(token_id: Union[str, None], user: schema.UserBase, db: Session):
 
 
 def create_passenger_with_id(user_id: int, db: Session):
-    db_passenger = models.Passenger(id=user_id, default_address=None)
+    db_passenger = models.Passenger(id=user_id, default_address=None, score= 3)
     db.add(db_passenger)
     db.commit()
     db.refresh(db_passenger)
 
 
 def create_driver_with_id(user_id: int, db: Session):
-    db_driver = models.Driver(id=user_id, license_plate=None, car_model=None)
+    db_driver = models.Driver(id=user_id, license_plate=None, car_model=None, score = 3)
     db.add(db_driver)
     db.commit()
     db.refresh(db_driver)
@@ -207,3 +207,18 @@ def delete_driver(user_id, db):
     db.delete(driver)
     db.delete(user)
     db.commit()
+
+
+def update_score_passenger(passenger: models.Passenger, score: int, db: Session):
+    final_score = (passenger.score + score)/2
+    passenger.score = final_score
+    db.commit()
+    db.refresh(passenger)
+    return passenger
+
+def update_score_driver(driver: models.Driver, score: int, db: Session):
+    final_score = (driver.score + score)/2
+    driver.score = final_score
+    db.commit()
+    db.refresh(driver)
+    return driver
