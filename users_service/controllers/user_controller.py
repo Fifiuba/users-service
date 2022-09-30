@@ -48,7 +48,7 @@ async def registrate_user(
     try:
         token_id = firebase.create_user(user.email, user.password)
         return user_repository.create_user(token_id, user, db)
-    except (exceptions.PassengerAlreadyExists, exceptions.DriverAlreadyExists) as error:
+    except (exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
 
 

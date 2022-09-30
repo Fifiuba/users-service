@@ -10,7 +10,8 @@ class Firebase:
     def create_user(self, email: str, password: str):
         try:
             user = self.auth.create_user(email=email, password=password, app=self.app)
-        except (ValueError, self.auth.UserNotFoundError, fb_exceptions.FirebaseError):
+        except (ValueError, self.auth.UserNotFoundError, fb_exceptions.FirebaseError) as error:
+            print(error)
             raise exceptions.UserWrongLoginInformation
         else:
             return user.uid
