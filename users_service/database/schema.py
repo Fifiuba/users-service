@@ -5,9 +5,9 @@ from pydantic import BaseModel
 class UserBase(BaseModel):
     user_type: str
     name: str
-    password: str
     phone_number: Union[str, None] = None
     email: str
+    password: str
     age: Union[int, None] = None
 
 
@@ -54,31 +54,37 @@ class DriverBase(BaseModel):
 
 
 class UserLogInBase(BaseModel):
-    email: str
-    password: str
+    token: str
 
 
 class GoogleLogin(BaseModel):
     user_type: str
-    name: str
-    email: str
-    googleId: int
+    token: str
+
 
 class UserEditFields(BaseModel):
     name: Optional[str] = None
     phone_number: Optional[str] = None
     age: Optional[str] = None
 
+
 class PassengerEditFields(BaseModel):
     default_address: Optional[str] = None
+
 
 class DriverEditFields(BaseModel):
     license_plate: Optional[str] = None
     car_model: Optional[str] = None
 
+
 class UserPatch(BaseModel):
     user_type: str
     fields: List[Dict]
 
+
 class TypeOfUser(BaseModel):
     user_type: str
+
+class UserScore(BaseModel):
+    user_type: str
+    score: int

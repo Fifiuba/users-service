@@ -12,9 +12,9 @@ class User(Base):
     id = Column("id", Integer, primary_key=True, autoincrement=True)
     name = Column("user_name", String(255), nullable=False)
     email = Column("email", String(255), nullable=False)
-    password = Column("password", String(255), nullable=False)
     phone_number = Column("phone_number", String(255), nullable=True)
     age = Column("age", Integer, nullable=True)
+    tokenId = Column("tokenId", String(255), nullable=True)
 
 
 class Passenger(Base):
@@ -22,6 +22,7 @@ class Passenger(Base):
 
     id = Column("id", Integer, ForeignKey("users.id"), primary_key=True)
     default_address = Column("default_address", String(255), nullable=True)
+    score = Column("score", Integer, nullable=True)
 
 
 class Driver(Base):
@@ -30,6 +31,7 @@ class Driver(Base):
     id = Column("id", Integer, ForeignKey("users.id"), primary_key=True)
     license_plate = Column("license_plate", String(255), nullable=True)
     car_model = Column("car_model", String(255), nullable=True)
+    score = Column("score", Integer, nullable=True)
 
 
 class GoogleUser(Base):
@@ -37,8 +39,8 @@ class GoogleUser(Base):
 
     userId = Column("userId", Integer, ForeignKey("users.id"), nullable=False)
     googleId = Column(
-        "googleId", Integer, primary_key=True
-    )  # TODO: ver si es integer o string el google id
+        "googleId", String(255), primary_key=True
+    )  
 
 
 Base.metadata.drop_all(engine)
