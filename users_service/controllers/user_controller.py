@@ -81,8 +81,9 @@ async def login_google(
 ):
     try:
         user = firebase.valid_user(googleUser.token)
-        print("email: " ,user.get("email"))
-        return user_repository.login_google(user.get("uid"), user.get("email"), user.get("name"), googleUser.user_type, db)
+        email = firebase.get_email(user.get("uid"))     
+        return user_repository.login_google(user.get("uid"), email, user.get("name"), googleUser.user_type, db)
+        
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
 

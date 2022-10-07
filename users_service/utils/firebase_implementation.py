@@ -16,6 +16,11 @@ class Firebase:
         else:
             return user.uid
 
+    def get_email(self, uid: str):
+        user = self.auth.get_user(uid, app=self.app)
+        email = user.__dict__['_data']['providerUserInfo'][0]['email']
+        return email
+
     def valid_user(self, token):
         try:
             user = self.auth.verify_id_token(token, app=self.app)
