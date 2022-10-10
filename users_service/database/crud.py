@@ -2,6 +2,17 @@ from typing import Union
 from . import models, schema, exceptions
 from sqlalchemy.orm import Session
 
+def get_passengers(db: Session):
+    passengers = db.query(models.User
+                        ).join(models.Passenger
+                        ).all()
+    return passengers 
+
+def get_drivers(db: Session):
+    drivers = db.query(models.User, 
+                    ).join(models.Driver
+                    ).all()
+    return drivers
 
 def get_users(db: Session):
     query_response = db.query(models.User).all()
@@ -21,9 +32,8 @@ def get_user_by_id(user_id: int, db: Session):
 
 
 def get_passenger_by_id(passenger_id: int, db: Session):
-    return (
-        db.query(models.Passenger).filter(models.Passenger.id == passenger_id).first()
-    )
+    return db.query(models.Passenger).filter(models.Passenger.id == passenger_id).first()
+    
 
 
 def get_driver_by_id(driver_id: int, db: Session):

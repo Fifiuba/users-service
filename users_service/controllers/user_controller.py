@@ -7,6 +7,15 @@ from users_service.utils import authorization_handler, token_handler, firebase_h
 
 user_router = APIRouter()
 
+@user_router.get("/{user_type}", response_model=List[schema.UserResponse],status_code=status.HTTP_200_OK)
+def get_users(user_type: str, db: Session = Depends(database.get_db)):
+    try:
+        users = user_repository.read_users(user_type, db)
+        print(users)
+        return users
+    except (exceptions.UserInfoException) as error:
+        raise HTTPException(**error.__dict__)
+
 
 @user_router.get(
     "",
@@ -22,14 +31,22 @@ def read_users(rq: Request, db: Session = Depends(database.get_db)):
         users = user_repository.get_users(db)
         return users
 
+@user_router.get("/info/{id}/{user_type}", status_code=status.HTTP_200_OK)
+async def get_user_by_id(id: int, user_type: str, db: Session = Depends(database.get_db)):
+    try:
+        user = user_repository.get_especific_user_by_id(id, user_type, db)
+        return user
+    except (exceptions.UserInfoException) as error:
+        raise HTTPException(**error.__dict__)
+    
 
 @user_router.get(
-    "/{email}", status_code=status.HTTP_200_OK, response_model=schema.UserInfoResponse
+    "/info/{id}", status_code=status.HTTP_200_OK, response_model=schema.UserInfoResponse
 )
-async def get_user(rq: Request, email: str, db: Session = Depends(database.get_db)):
+async def get_user(rq: Request, id: int, db: Session = Depends(database.get_db)):
     try:
         authorization_handler.is_auth(rq.headers)
-        user = user_repository.get_user_by_email(email, db)
+        user = user_repository.get_user_by_id(id, db)
         return user
     except (exceptions.UnauthorizeUser, exceptions.UserNotFoundError) as error:
         raise HTTPException(**error.__dict__)
