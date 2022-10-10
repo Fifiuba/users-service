@@ -10,6 +10,24 @@ def get_user_by_email(email: str, db: Session):
         raise exceptions.UserNotFoundError
     return user
 
+def get_especific_user_by_id(id: int, user_type: str, db: Session):
+    if user_type == 'passenger':
+        user = crud.get_passenger_by_id(id, db)
+        if not user:
+            raise exceptions.PassengerNotFoundError
+        return user
+    else:
+        user = crud.get_driver_by_id(id, db)
+        if not user:
+            raise exceptions.DriverNotFoundError
+        return user
+
+def read_users(user_type: str, db: Session):
+    if user_type == 'passenger':
+        return crud.get_passengers(db)
+    else:
+        return crud.get_drivers(db)
+    
 
 def get_users(db):
     return crud.get_users(db)
