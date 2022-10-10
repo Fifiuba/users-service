@@ -85,6 +85,7 @@ class UserPatch(BaseModel):
 class TypeOfUser(BaseModel):
     user_type: str
 
+
 class UserScore(BaseModel):
     user_type: str
     score: int

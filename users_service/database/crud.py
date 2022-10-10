@@ -2,17 +2,22 @@ from typing import Union
 from . import models, schema, exceptions
 from sqlalchemy.orm import Session
 
+
 def get_passengers(db: Session):
-    passengers = db.query(models.User
-                        ).join(models.Passenger
-                        ).all()
-    return passengers 
+    passengers = db.query(models.User).join(models.Passenger).all()
+    return passengers
+
 
 def get_drivers(db: Session):
-    drivers = db.query(models.User, 
-                    ).join(models.Driver
-                    ).all()
+    drivers = (
+        db.query(
+            models.User,
+        )
+        .join(models.Driver)
+        .all()
+    )
     return drivers
+
 
 def get_users(db: Session):
     query_response = db.query(models.User).all()
@@ -32,8 +37,9 @@ def get_user_by_id(user_id: int, db: Session):
 
 
 def get_passenger_by_id(passenger_id: int, db: Session):
-    return db.query(models.Passenger).filter(models.Passenger.id == passenger_id).first()
-    
+    return (
+        db.query(models.Passenger).filter(models.Passenger.id == passenger_id).first()
+    )
 
 
 def get_driver_by_id(driver_id: int, db: Session):
@@ -66,14 +72,14 @@ def create_user(token_id: Union[str, None], user: schema.UserBase, db: Session):
 
 
 def create_passenger_with_id(user_id: int, db: Session):
-    db_passenger = models.Passenger(id=user_id, default_address=None, score= 3)
+    db_passenger = models.Passenger(id=user_id, default_address=None, score=3)
     db.add(db_passenger)
     db.commit()
     db.refresh(db_passenger)
 
 
 def create_driver_with_id(user_id: int, db: Session):
-    db_driver = models.Driver(id=user_id, license_plate=None, car_model=None, score = 3)
+    db_driver = models.Driver(id=user_id, license_plate=None, car_model=None, score=3)
     db.add(db_driver)
     db.commit()
     db.refresh(db_driver)
@@ -126,19 +132,15 @@ def add_driver_car_info(
     db.refresh(db_driver)
     return db_driver
 
-def get_google_relationship(uid:str, db: Session):
-    return (db.query(models.GoogleUser)
-        .filter(models.GoogleUser.googleId == uid)
-        .first()
-    )
 
-def create_google_relationship(uid:str, id: int, db:Session):
-    db_google_user = models.GoogleUser(
-            userId=id, googleId=uid
-    )
+def get_google_relationship(uid: str, db: Session):
+    return db.query(models.GoogleUser).filter(models.GoogleUser.googleId == uid).first()
+
+
+def create_google_relationship(uid: str, id: int, db: Session):
+    db_google_user = models.GoogleUser(userId=id, googleId=uid)
     db.add(db_google_user)
     db.commit()
-    
 
 
 def removeNoneValues(dict_aux: dict):
@@ -220,14 +222,15 @@ def delete_driver(user_id, db):
 
 
 def update_score_passenger(passenger: models.Passenger, score: int, db: Session):
-    final_score = (passenger.score + score)/2
+    final_score = (passenger.score + score) / 2
     passenger.score = final_score
     db.commit()
     db.refresh(passenger)
     return passenger
 
+
 def update_score_driver(driver: models.Driver, score: int, db: Session):
-    final_score = (driver.score + score)/2
+    final_score = (driver.score + score) / 2
     driver.score = final_score
     db.commit()
     db.refresh(driver)

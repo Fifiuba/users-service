@@ -38,9 +38,7 @@ class GoogleUser(Base):
     __tablename__ = "googleUser"
 
     userId = Column("userId", Integer, ForeignKey("users.id"), nullable=False)
-    googleId = Column(
-        "googleId", String(255), primary_key=True
-    )  
+    googleId = Column("googleId", String(255), primary_key=True)
 
 
 Base.metadata.drop_all(engine)

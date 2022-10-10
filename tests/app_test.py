@@ -106,6 +106,7 @@ def test_when_app_is_with_no_users_then_get_users_return_an_empty_list():
     data = response.json()
     assert data == []
 
+
 def test_when_app_has_2_passengers_then_get_passengers_return_2_users():
     registerPassenger()
     registerPassenger2()
@@ -117,6 +118,7 @@ def test_when_app_has_2_passengers_then_get_passengers_return_2_users():
     assert len(data) == 2
     client.delete("/users/" + str(data[0]["id"]), json={"user_type": "passenger"})
     client.delete("/users/" + str(data[1]["id"]), json={"user_type": "passenger"})
+
 
 def test_when_app_has_2_user_then_get_users_return_2_users():
 
@@ -132,15 +134,17 @@ def test_when_app_has_2_user_then_get_users_return_2_users():
     client.delete("/users/" + str(data[0]["id"]), json={"user_type": "passenger"})
     client.delete("/users/" + str(data[1]["id"]), json={"user_type": "passenger"})
 
+
 def test_when_getting_a_passenger_info_that_existis_then_it_returns_it():
     response = registerPassenger()
     data = response.json()
-    endpoint = "/users/info/" + str(data['id']) + "/passenger"
+    endpoint = "/users/info/" + str(data["id"]) + "/passenger"
     response = client.get(endpoint)
     assert response.status_code == status.HTTP_200_OK
     data1 = response.json()
     print("test ", data1)
     client.delete("/users/" + str(data["id"]), json={"user_type": "passenger"})
+
 
 def test_when_creating_a_passenger_with_not_registered_email_creates_the_user():
     response = registerPassenger()
@@ -232,9 +236,7 @@ def test_when_driver_not_exists_and_adds_carInfo_the_carInfo_isnot_addit():
 
 def test_when_getting_information_for_nonexisting_user_then_returns_user_not_exist():
     token = token_handler.create_access_token(1, True)
-    response = client.get(
-        "/users/info/1", headers={"Authorization": f"Baerer {token}"}
-    )
+    response = client.get("/users/info/1", headers={"Authorization": f"Baerer {token}"})
     print(response.status_code)
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
 
@@ -249,7 +251,7 @@ def test_when_gettion_info_from_existing_user_then_returns_the_information():
     data = response.json()
 
     response = client.get(
-        "/users/info/" + str(data["id"]) , headers={"Authorization": f"Baerer {token}"}
+        "/users/info/" + str(data["id"]), headers={"Authorization": f"Baerer {token}"}
     )
 
     assert response.status_code == status.HTTP_200_OK, response.text
@@ -384,8 +386,12 @@ def test_when_update_passenger_that_not_exist_it_should_not_do_it():
     data = response.json()
     assert data["detail"] == "The passenger does not exists"
 
+
 def test_when_login_with_google_with_user_not_register_then_it_returns_token():
-    response = client.post("users/loginGoogle", json={"user_type": "passenger", "token": "hfjdshfuidhysvcsbvs83hfsdf"})
+    response = client.post(
+        "users/loginGoogle",
+        json={"user_type": "passenger", "token": "hfjdshfuidhysvcsbvs83hfsdf"},
+    )
     assert response.status_code == status.HTTP_200_OK, response.text
     data = response.json()
     actual = token_handler.decode_token(data)
@@ -398,40 +404,48 @@ def test_when_login_with_google_with_user_not_register_then_it_returns_token():
     assert actual["user"] == expected["user"]
     client.delete("/users/" + str(1), json={"user_type": "passenger"})
 
+
 # def test_when_login_with_google_when_user_register_normaly_does_not_return_token():
 #     response = registerPassenger()
-#     response = client.post("users/loginGoogle", json={"user_type": "passenger", "token": "hfjdshfuidhysvcsbvs83hfsdf"})
+#     response = client.post("users/loginGoogle", json={"user_type": "passenger",
+#                           "token": "hfjdshfuidhysvcsbvs83hfsdf"})
 #     assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
 #     data = response.json()
-    
+
 #     assert data['detail'] == "The user already exists"
-    
+
 #     client.delete("/users/" + str(1), json={"user_type": "passenger"})
+
 
 def test_when_scoring_a_driver_that_exist_it_does_it():
     response = registerDriver()
     data = response.json()
     token = token_handler.create_access_token(100, True)
-    endpoint = "/users/score/" + str(data['id'])
+    endpoint = "/users/score/" + str(data["id"])
     print(endpoint)
-    response = client.patch(endpoint, 
-                headers={"Authorization": f"Baerer {token}"},
-                json = {"user_type": "passenger", "score": 4},)
+    response = client.patch(
+        endpoint,
+        headers={"Authorization": f"Baerer {token}"},
+        json={"user_type": "passenger", "score": 4},
+    )
     assert response.status_code == status.HTTP_200_OK, response.text
     data1 = response.json()
 
-    score_expected = (3 + 4)/2
+    score_expected = (3 + 4) / 2
 
-    assert score_expected == data1['score']
-    client.delete("/users/" + str(data['id']), json={"user_type": "driver"})
+    assert score_expected == data1["score"]
+    client.delete("/users/" + str(data["id"]), json={"user_type": "driver"})
+
 
 def test_when_scoring_a_driver_that_does_not_exist_it_does_not_do_it():
     token = token_handler.create_access_token(100, True)
     endpoint = "/users/score/101"
     print(endpoint)
-    response = client.patch(endpoint, 
-                headers={"Authorization": f"Baerer {token}"},
-                json = {"user_type": "passenger", "score": 5},)
+    response = client.patch(
+        endpoint,
+        headers={"Authorization": f"Baerer {token}"},
+        json={"user_type": "passenger", "score": 5},
+    )
 
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
     data = response.json()

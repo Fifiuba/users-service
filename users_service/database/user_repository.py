@@ -10,8 +10,9 @@ def get_user_by_email(email: str, db: Session):
         raise exceptions.UserNotFoundError
     return user
 
+
 def get_especific_user_by_id(id: int, user_type: str, db: Session):
-    if user_type == 'passenger':
+    if user_type == "passenger":
         user = crud.get_passenger_by_id(id, db)
         if not user:
             raise exceptions.PassengerNotFoundError
@@ -22,12 +23,13 @@ def get_especific_user_by_id(id: int, user_type: str, db: Session):
             raise exceptions.DriverNotFoundError
         return user
 
+
 def read_users(user_type: str, db: Session):
-    if user_type == 'passenger':
+    if user_type == "passenger":
         return crud.get_passengers(db)
     else:
         return crud.get_drivers(db)
-    
+
 
 def get_users(db):
     return crud.get_users(db)
@@ -56,9 +58,10 @@ def edit_user_info(user_id, user: schema.UserPatch, db: Session):
 
         return db_user, driver
 
-def score_user(user_id, user:schema.UserScore, db: Session):
-    
-    if user.user_type == 'passenger':
+
+def score_user(user_id, user: schema.UserScore, db: Session):
+
+    if user.user_type == "passenger":
         db_driver = crud.get_driver_by_id(user_id, db)
         if not db_driver:
             raise exceptions.DriverNotFoundError
@@ -68,7 +71,6 @@ def score_user(user_id, user:schema.UserScore, db: Session):
         if not db_passenger:
             raise exceptions.PassengerNotFoundError
         return crud.update_score_passenger(db_passenger, user.score, db)
-
 
 
 def user_profile(user_id: int, user_type: str, db: Session):
@@ -103,7 +105,7 @@ def login(email, token_id, db: Session):
     return token
 
 
-def login_google(uid: str, email: str, name: str, user_type:str, db: Session):
+def login_google(uid: str, email: str, name: str, user_type: str, db: Session):
     relationship = crud.get_google_relationship(uid, db)
     if not relationship:
         print("email: ", email)
@@ -115,15 +117,15 @@ def login_google(uid: str, email: str, name: str, user_type:str, db: Session):
             user_aux = schema.UserBase(
                 user_type=user_type,
                 name=name,
-                password= "",
+                password="",
                 phone_number=None,
-                email= email,
+                email=email,
                 age=None,
             )
             db_user = create_user(uid, user_aux, db)
-            
+
             crud.create_google_relationship(uid, db_user.id, db)
-            user_id = db_user.id 
+            user_id = db_user.id
     else:
         print("hay relacion")
         user_id = relationship.userId
