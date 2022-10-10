@@ -106,6 +106,17 @@ def test_when_app_is_with_no_users_then_get_users_return_an_empty_list():
     data = response.json()
     assert data == []
 
+def test_when_app_has_2_passengers_then_get_passengers_return_2_users():
+    registerPassenger()
+    registerPassenger2()
+    response = client.get("/users/passenger")
+    assert response.status_code == status.HTTP_200_OK
+
+    data = response.json()
+    print(data)
+    assert len(data) == 2
+    client.delete("/users/" + str(data[0]["id"]), json={"user_type": "passenger"})
+    client.delete("/users/" + str(data[1]["id"]), json={"user_type": "passenger"})
 
 def test_when_app_has_2_user_then_get_users_return_2_users():
 
@@ -121,6 +132,15 @@ def test_when_app_has_2_user_then_get_users_return_2_users():
     client.delete("/users/" + str(data[0]["id"]), json={"user_type": "passenger"})
     client.delete("/users/" + str(data[1]["id"]), json={"user_type": "passenger"})
 
+def test_when_getting_a_passenger_info_that_existis_then_it_returns_it():
+    response = registerPassenger()
+    data = response.json()
+    endpoint = "/users/info/" + str(data['id']) + "/passenger"
+    response = client.get(endpoint)
+    assert response.status_code == status.HTTP_200_OK
+    data1 = response.json()
+    print("test ", data1)
+    client.delete("/users/" + str(data["id"]), json={"user_type": "passenger"})
 
 def test_when_creating_a_passenger_with_not_registered_email_creates_the_user():
     response = registerPassenger()
@@ -213,7 +233,7 @@ def test_when_driver_not_exists_and_adds_carInfo_the_carInfo_isnot_addit():
 def test_when_getting_information_for_nonexisting_user_then_returns_user_not_exist():
     token = token_handler.create_access_token(1, True)
     response = client.get(
-        "/users/EXAMPLE@gamil.com", headers={"Authorization": f"Baerer {token}"}
+        "/users/info/1", headers={"Authorization": f"Baerer {token}"}
     )
     print(response.status_code)
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
@@ -229,7 +249,7 @@ def test_when_gettion_info_from_existing_user_then_returns_the_information():
     data = response.json()
 
     response = client.get(
-        "/users/" + data["email"], headers={"Authorization": f"Baerer {token}"}
+        "/users/info/" + str(data["id"]) , headers={"Authorization": f"Baerer {token}"}
     )
 
     assert response.status_code == status.HTTP_200_OK, response.text
