@@ -6,7 +6,11 @@ validator = re.compile(r"^(Baerer\s)(.*)")
 
 def is_auth(headers):
     header = headers.get("authorization")
-    if header is None or not validator.match(header):
+    if header is None:
+        print("no me llego un header")
+        raise exceptions.UnauthorizeUser
+    if not validator.match(header):
+        print("No soy un header valido")
         raise exceptions.UnauthorizeUser
 
 
