@@ -1,1 +1,1 @@
-RUN_ENV='test' poetry run pytest -v
+RUN_ENV='test' poetry run pytest -v -s
