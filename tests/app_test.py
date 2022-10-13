@@ -99,8 +99,8 @@ def test_has_table():
 
 
 def test_when_app_is_with_no_users_then_get_users_return_an_empty_list():
-    token = token_handler.create_access_token(1, True)
-    response = client.get("/users/", headers={"Authorization": f"Baerer {token}"})
+    
+    response = client.get("/users/", json={})
     assert response.status_code == status.HTTP_200_OK
 
     data = response.json()
@@ -108,14 +108,16 @@ def test_when_app_is_with_no_users_then_get_users_return_an_empty_list():
 
 
 def test_when_app_has_2_passengers_then_get_passengers_return_2_users():
-    registerPassenger()
+    response1 = registerPassenger()
+    data1 = response1.json()
     registerPassenger2()
-    response = client.get("/users/passenger")
+    response = client.get("/users/", json = {"user_type": "passenger"})
     assert response.status_code == status.HTTP_200_OK
 
     data = response.json()
     print(data)
     assert len(data) == 2
+    assert data[0]['id'] == data1['id']
     client.delete("/users/" + str(data[0]["id"]), json={"user_type": "passenger"})
     client.delete("/users/" + str(data[1]["id"]), json={"user_type": "passenger"})
 
@@ -124,8 +126,8 @@ def test_when_app_has_2_user_then_get_users_return_2_users():
 
     registerPassenger()
     registerPassenger2()
-    token = token_handler.create_access_token(2, True)
-    response = client.get("/users/", headers={"Authorization": f"Baerer {token}"})
+
+    response = client.get("/users/", json={})
     assert response.status_code == status.HTTP_200_OK
 
     data = response.json()

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status, HTTPException, Depends, Request
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Union
 from users_service.database import schema, exceptions, database, user_repository
 from users_service.utils import authorization_handler, token_handler, firebase_handler
 
@@ -8,18 +8,18 @@ from users_service.utils import authorization_handler, token_handler, firebase_h
 user_router = APIRouter()
 
 
-@user_router.get(
-    "/{user_type}",
-    response_model=List[schema.UserResponse],
-    status_code=status.HTTP_200_OK,
-)
-def get_users(user_type: str, db: Session = Depends(database.get_db)):
-    try:
-        users = user_repository.read_users(user_type, db)
-        print(users)
-        return users
-    except (exceptions.UserInfoException) as error:
-        raise HTTPException(**error.__dict__)
+# @user_router.get(
+#     "/{user_type}",
+#     response_model=List[schema.UserResponse],
+#     status_code=status.HTTP_200_OK,
+# )
+# def get_users(user_type: str, db: Session = Depends(database.get_db)):
+#     try:
+#         users = user_repository.read_users(user_type, db)
+#         print(users)
+#         return users
+#     except (exceptions.UserInfoException) as error:
+#         raise HTTPException(**error.__dict__)
 
 
 @user_router.get(
@@ -27,14 +27,13 @@ def get_users(user_type: str, db: Session = Depends(database.get_db)):
     response_model=List[schema.UserResponse],
     status_code=status.HTTP_200_OK,
 )
-def read_users(rq: Request, db: Session = Depends(database.get_db)):
-    try:
-        authorization_handler.is_auth(rq.headers)
-    except (exceptions.UnauthorizeUser) as error:
-        raise HTTPException(**error.__dict__)
-    else:
+def read_users(user: schema.TypeOfUser, db: Session = Depends(database.get_db)):
+    print(user.user_type)
+    if (user.user_type is None): 
         users = user_repository.get_users(db)
-        return users
+    else:
+        users = user_repository.read_users(user.user_type, db)
+    return users
 
 
 @user_router.get("/info/{id}/{user_type}", status_code=status.HTTP_200_OK)

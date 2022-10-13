@@ -83,7 +83,7 @@ class UserPatch(BaseModel):
 
 
 class TypeOfUser(BaseModel):
-    user_type: str
+    user_type: Optional[str] = None
 
 
 class UserScore(BaseModel):
