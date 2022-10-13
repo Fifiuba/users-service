@@ -42,5 +42,5 @@ class GoogleUser(Base):
     googleId = Column("googleId", String(255), primary_key=True)
 
 
-Base.metadata.drop_all(engine)
+#Base.metadata.drop_all(engine)
 Base.metadata.create_all(engine)

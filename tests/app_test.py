@@ -100,7 +100,7 @@ def test_has_table():
 
 def test_when_app_is_with_no_users_then_get_users_return_an_empty_list():
     
-    response = client.get("/users/", json={})
+    response = client.get("/users/")
     assert response.status_code == status.HTTP_200_OK
 
     data = response.json()
@@ -111,7 +111,7 @@ def test_when_app_has_2_passengers_then_get_passengers_return_2_users():
     response1 = registerPassenger()
     data1 = response1.json()
     registerPassenger2()
-    response = client.get("/users/", json = {"user_type": "passenger"})
+    response = client.get("/users/?user_type=passenger")
     assert response.status_code == status.HTTP_200_OK
 
     data = response.json()
@@ -127,7 +127,7 @@ def test_when_app_has_2_user_then_get_users_return_2_users():
     registerPassenger()
     registerPassenger2()
 
-    response = client.get("/users/", json={})
+    response = client.get("/users/")
     assert response.status_code == status.HTTP_200_OK
 
     data = response.json()
@@ -296,9 +296,8 @@ def test_when_getting_profile_for_passenger_that_exists_it_should_do_it():
     data1 = response.json()
     token = token_handler.create_access_token(data1["id"], True)
     response = client.get(
-        "/users/me/",
+        "/users/me/?user_type=passenger",
         headers={"Authorization": f"Bearer {token}"},
-        json={"user_type": "passenger"},
     )
 
     assert response.status_code == status.HTTP_200_OK, response.text
