@@ -8,31 +8,17 @@ from users_service.utils import authorization_handler, token_handler, firebase_h
 user_router = APIRouter()
 
 
-# @user_router.get(
-#     "/{user_type}",
-#     response_model=List[schema.UserResponse],
-#     status_code=status.HTTP_200_OK,
-# )
-# def get_users(user_type: str, db: Session = Depends(database.get_db)):
-#     try:
-#         users = user_repository.read_users(user_type, db)
-#         print(users)
-#         return users
-#     except (exceptions.UserInfoException) as error:
-#         raise HTTPException(**error.__dict__)
-
-
 @user_router.get(
     "",
     response_model=List[schema.UserResponse],
     status_code=status.HTTP_200_OK,
 )
-def read_users(user: schema.TypeOfUser, db: Session = Depends(database.get_db)):
-    print(user.user_type)
-    if (user.user_type is None): 
+def read_users(user_type: Union[str, None] = None, db: Session = Depends(database.get_db)):
+    print(user_type)
+    if (user_type is None): 
         users = user_repository.get_users(db)
     else:
-        users = user_repository.read_users(user.user_type, db)
+        users = user_repository.read_users(user_type, db)
     return users
 
 
@@ -130,13 +116,13 @@ async def edit_profile(
 
 @user_router.get("/me/", status_code=status.HTTP_200_OK)
 async def get_profile(
-    rq: Request, user: schema.TypeOfUser, db: Session = Depends(database.get_db)
+    rq: Request, user_type: str, db: Session = Depends(database.get_db)
 ):
     try:
         authorization_handler.is_auth(rq.headers)
         token = authorization_handler.get_token(rq.headers)
         user_id = token_handler.decode_token(token)["user_id"]
-        return user_repository.user_profile(user_id, user.user_type, db)
+        return user_repository.user_profile(user_id, user_type, db)
     except (exceptions.UnauthorizeUser, exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
 
