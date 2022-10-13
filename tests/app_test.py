@@ -238,7 +238,7 @@ def test_when_driver_not_exists_and_adds_carInfo_the_carInfo_isnot_addit():
 
 def test_when_getting_information_for_nonexisting_user_then_returns_user_not_exist():
     token = token_handler.create_access_token(1, True)
-    response = client.get("/users/info/1", headers={"Authorization": f"Baerer {token}"})
+    response = client.get("/users/info/1", headers={"Authorization": f"Bearer {token}"})
     print(response.status_code)
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
 
@@ -253,7 +253,7 @@ def test_when_gettion_info_from_existing_user_then_returns_the_information():
     data = response.json()
 
     response = client.get(
-        "/users/info/" + str(data["id"]), headers={"Authorization": f"Baerer {token}"}
+        "/users/info/" + str(data["id"]), headers={"Authorization": f"Bearer {token}"}
     )
 
     assert response.status_code == status.HTTP_200_OK, response.text
@@ -297,7 +297,7 @@ def test_when_getting_profile_for_passenger_that_exists_it_should_do_it():
     token = token_handler.create_access_token(data1["id"], True)
     response = client.get(
         "/users/me/",
-        headers={"Authorization": f"Baerer {token}"},
+        headers={"Authorization": f"Bearer {token}"},
         json={"user_type": "passenger"},
     )
 
@@ -319,7 +319,7 @@ def test_when_update_passenger_info_it_should_do_it():
     token = token_handler.create_access_token(data1["id"], True)
     response = client.patch(
         "/users/me/",
-        headers={"Authorization": f"Baerer {token}"},
+        headers={"Authorization": f"Bearer {token}"},
         json={
             "user_type": "passenger",
             "fields": [{"age": 25}, {"default_address": "example"}],
@@ -340,7 +340,7 @@ def test_when_update_driver_info_it_should_do_it():
     token = token_handler.create_access_token(data1["id"], True)
     response = client.patch(
         "/users/me/",
-        headers={"Authorization": f"Baerer {token}"},
+        headers={"Authorization": f"Bearer {token}"},
         json={
             "user_type": "driver",
             "fields": [{"age": 14, "phone_number": "436278"}, {"model_car": "Audi"}],
@@ -361,7 +361,7 @@ def test_when_update_driver_that_not_exist_it_should_not_do_it():
     token = token_handler.create_access_token(100, True)
     response = client.patch(
         "/users/me/",
-        headers={"Authorization": f"Baerer {token}"},
+        headers={"Authorization": f"Bearer {token}"},
         json={
             "user_type": "driver",
             "fields": [{"age": 14, "phone_number": "436278"}, {"model_car": "Audi"}],
@@ -377,7 +377,7 @@ def test_when_update_passenger_that_not_exist_it_should_not_do_it():
     token = token_handler.create_access_token(100, True)
     response = client.patch(
         "/users/me/",
-        headers={"Authorization": f"Baerer {token}"},
+        headers={"Authorization": f"Bearer {token}"},
         json={
             "user_type": "passenger",
             "fields": [{"age": 25}, {"default_address": "example"}],
@@ -427,7 +427,7 @@ def test_when_scoring_a_driver_that_exist_it_does_it():
     print(endpoint)
     response = client.patch(
         endpoint,
-        headers={"Authorization": f"Baerer {token}"},
+        headers={"Authorization": f"Bearer {token}"},
         json={"user_type": "passenger", "score": 4},
     )
     assert response.status_code == status.HTTP_200_OK, response.text
@@ -445,7 +445,7 @@ def test_when_scoring_a_driver_that_does_not_exist_it_does_not_do_it():
     print(endpoint)
     response = client.patch(
         endpoint,
-        headers={"Authorization": f"Baerer {token}"},
+        headers={"Authorization": f"Bearer {token}"},
         json={"user_type": "passenger", "score": 5},
     )
 

@@ -1,7 +1,7 @@
 import re
 from users_service.database import exceptions
 
-validator = re.compile(r"^(Baerer\s)(.*)")
+validator = re.compile(r"^(Bearer\s)(.*)")
 
 
 def is_auth(headers):
