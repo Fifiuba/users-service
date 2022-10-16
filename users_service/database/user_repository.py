@@ -105,7 +105,7 @@ def login(email, token_id, db: Session):
     return token
 
 
-def login_google(uid: str, email: str, name: str, user_type: str, db: Session):
+def login_google(uid: str, email: str, name: str, picture: str, user_type: str, db: Session):
     relationship = crud.get_google_relationship(uid, db)
     if not relationship:
         print("email: ", email)
@@ -121,6 +121,7 @@ def login_google(uid: str, email: str, name: str, user_type: str, db: Session):
                 phone_number=None,
                 email=email,
                 age=None,
+                picture=picture,
             )
             db_user = create_user(uid, user_aux, db)
 

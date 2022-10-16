@@ -6,6 +6,7 @@ class FirebaseMock:
         "uid": "asdasdasdslwlewed1213123",
         "email": "agus@gmail.com",
         "name": "agus",
+        "picture": "picture",
     }
 
     token = "hfjdshfuidhysvcsbvs83hfsdf"

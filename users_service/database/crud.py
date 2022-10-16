@@ -62,6 +62,7 @@ def create_user(token_id: Union[str, None], user: schema.UserBase, db: Session):
         email=user.email,
         phone_number=user.phone_number,
         age=user.age,
+        picture=user.picture,
         tokenId=token_id,
     )
     db.add(db_user)

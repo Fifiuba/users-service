@@ -14,6 +14,7 @@ class User(Base):
     email = Column("email", String(255), nullable=False)
     phone_number = Column("phone_number", String(255), nullable=True)
     age = Column("age", Integer, nullable=True)
+    picture = Column("picture", String(255), nullable=True)
     tokenId = Column("tokenId", String(255), nullable=True)
 
 

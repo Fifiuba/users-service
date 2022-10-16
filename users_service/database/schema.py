@@ -8,6 +8,7 @@ class UserBase(BaseModel):
     phone_number: Union[str, None] = None
     email: str
     password: str
+    picture: Union[str, None] = None
     age: Union[int, None] = None
 
 
@@ -17,6 +18,7 @@ class UserResponse(BaseModel):
     phone_number: Union[str, None] = None
     email: str
     age: Union[int, None] = None
+    picture: Union[str, None] = None
 
     class Config:
         orm_mode = True

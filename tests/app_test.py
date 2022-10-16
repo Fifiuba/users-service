@@ -35,6 +35,7 @@ def registerPassenger():
             "password": "87654321",
             "phone_number": "12345678",
             "age": 22,
+            "picture": "picture",
         },
     )
     return response
@@ -132,7 +133,7 @@ def test_when_app_has_2_user_then_get_users_return_2_users():
 
     data = response.json()
     assert len(data) == 2
-
+    print(data)
     client.delete("/users/" + str(data[0]["id"]), json={"user_type": "passenger"})
     client.delete("/users/" + str(data[1]["id"]), json={"user_type": "passenger"})
 
@@ -159,6 +160,7 @@ def test_when_creating_a_passenger_with_not_registered_email_creates_the_user():
     assert data["age"] == 22
     assert data["email"] == "sol@gmail.com"
     assert "id" in data
+    assert data["picture"] == "picture"
     client.delete("/users/" + str(data["id"]), json={"user_type": "passenger"})
 
 

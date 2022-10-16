@@ -95,7 +95,7 @@ async def login_google(
         email = firebase.get_email(user.get("uid"))
         print("email: ", email)
         return user_repository.login_google(
-                        user.get("uid"), email, user.get("name"), googleUser.user_type, db
+                        user.get("uid"), email, user.get("name"), user.get("picture"), googleUser.user_type, db
                     )
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
