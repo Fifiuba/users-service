@@ -140,7 +140,7 @@ def test_when_app_has_2_user_then_get_users_return_2_users():
 def test_when_getting_a_passenger_info_that_existis_then_it_returns_it():
     response = registerPassenger()
     data = response.json()
-    endpoint = "/users/info/" + str(data["id"]) + "/passenger"
+    endpoint = "/users/" + str(data["id"]) + "/?user_type=passenger"
     response = client.get(endpoint)
     assert response.status_code == status.HTTP_200_OK
     data1 = response.json()

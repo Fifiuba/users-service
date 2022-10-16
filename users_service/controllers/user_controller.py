@@ -22,7 +22,7 @@ def read_users(user_type: Union[str, None] = None, db: Session = Depends(databas
     return users
 
 
-@user_router.get("/info/{id}/{user_type}", status_code=status.HTTP_200_OK)
+@user_router.get("/{id}", status_code=status.HTTP_200_OK)
 async def get_user_by_id(
     id: int, user_type: str, db: Session = Depends(database.get_db)
 ):
