@@ -1,9 +1,12 @@
 from fastapi.testclient import TestClient
 from fastapi import status
 from users_service.app import app
-from users_service.database.database import engine
-import sqlalchemy as sa
+
 from users_service.utils import token_handler
+from tests import test_config
+
+session = test_config.init_database(app)
+test_config.init_firebase(app)
 
 
 client = TestClient(app)
@@ -93,14 +96,8 @@ def addCarInfoClient(endpoint):
     return response
 
 
-def test_has_table():
-    assert sa.inspect(engine).has_table("users")
-    assert sa.inspect(engine).has_table("passengers")
-    assert sa.inspect(engine).has_table("drivers")
-
-
 def test_when_app_is_with_no_users_then_get_users_return_an_empty_list():
-    
+
     response = client.get("/users/")
     assert response.status_code == status.HTTP_200_OK
 
@@ -118,7 +115,7 @@ def test_when_app_has_2_passengers_then_get_passengers_return_2_users():
     data = response.json()
     print(data)
     assert len(data) == 2
-    assert data[0]['id'] == data1['id']
+    assert data[0]["id"] == data1["id"]
     client.delete("/users/" + str(data[0]["id"]), json={"user_type": "passenger"})
     client.delete("/users/" + str(data[1]["id"]), json={"user_type": "passenger"})
 
