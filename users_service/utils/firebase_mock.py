@@ -20,7 +20,9 @@ class FirebaseMock:
             return self.user
         else:
             raise exceptions.UserWrongLoginInformation
+
     def get_email(self, uid):
-        return self.user['email']
+        return self.user["email"]
+
     def delete_user(self, uid_user):
         pass

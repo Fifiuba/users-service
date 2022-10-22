@@ -1,14 +1,12 @@
 import os
-from datetime import datetime, timedelta
-
 from jose import jwt
 
 if "RUN_ENV" in os.environ.keys() and os.environ["RUN_ENV"] == "test":
     JWT_SECRET_KEY = "testcase"
     ALGORITHM = "HS256"
 else:
-    JWT_SECRET_KEY = "superscreatekey" #os.getenv("JWT_SECRET_KEY")
-    ALGORITHM = "HS256" #os.getenv("ALGORITHM")
+    JWT_SECRET_KEY = "superscreatekey"  # os.getenv("JWT_SECRET_KEY")
+    ALGORITHM = "HS256"  # os.getenv("ALGORITHM")
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 5
 

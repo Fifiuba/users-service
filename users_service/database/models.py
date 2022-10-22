@@ -1,7 +1,7 @@
 from sqlalchemy.schema import Column, ForeignKey
 from sqlalchemy.types import String, Integer, Boolean
 from sqlalchemy.ext.declarative import declarative_base
-from .database import engine
+
 
 Base = declarative_base()
 
@@ -41,7 +41,3 @@ class GoogleUser(Base):
 
     userId = Column("userId", Integer, ForeignKey("users.id"), nullable=False)
     googleId = Column("googleId", String(255), primary_key=True)
-
-
-#Base.metadata.drop_all(engine)
-Base.metadata.create_all(engine)
