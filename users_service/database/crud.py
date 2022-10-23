@@ -1,7 +1,16 @@
 from typing import Union
 from . import models, schema, exceptions
 from sqlalchemy.orm import Session
+import logging
 
+logging.basicConfig(
+    filename='test.log',
+    filemode='a',
+    level=logging.DEBUG,
+    format = '%(asctime)s - %(levelname)s: %(message)s',
+    force=True,
+)
+logger = logging.getLogger()
 
 def get_passengers(db: Session):
     passengers = db.query(models.User).join(models.Passenger).all()
@@ -92,9 +101,12 @@ def create_passenger(token_id: Union[str, None], user: schema.UserBase, db: Sess
         get_driver_by_id(db_user.id, db) is None
         or get_passenger_by_id(db_user.id, db) is not None
     ):
+        logger.warning("Passenger %d already exists", db_user.id)
         raise exceptions.PassengerAlreadyExists
     else:
         create_passenger_with_id(db_user.id, db)
+    logger.debug("Create passenger %d with email %s", db_user.id, db_user.email)
+    logger.info("Passenger created")
     return db_user
 
 
@@ -104,20 +116,26 @@ def create_driver(token_id: Union[str, None], user: schema.UserBase, db: Session
     if already_existing_user and (
         get_passenger_by_id(db_user.id, db) is None
         or get_driver_by_id(db_user.id, db) is not None
-    ):
+    ):  
+        logger.warning("Driver %d already exists", db_user.id)
         raise exceptions.DriverAlreadyExists
     else:
         create_driver_with_id(db_user.id, db)
+    logger.debug("Create driver %d with email %s", db_user.id, db_user.email)
+    logger.info("Driver created")
     return db_user
 
 
 def add_passenger_address(passenger_id: int, default_address: str, db: Session):
     db_passenger = get_passenger_by_id(passenger_id, db)
     if db_passenger is None:
+        logger.warning("Passenger %d not found", passenger_id)
         raise exceptions.PassengerNotFoundError
     db_passenger.default_address = default_address
     db.commit()
     db.refresh(db_passenger)
+    logger.debug("Updated passenger %d", db_passenger.id)
+    logger.info("Passenger updated")
     return db_passenger
 
 
@@ -126,11 +144,14 @@ def add_driver_car_info(
 ):
     db_driver = get_driver_by_id(driver_id, db)
     if db_driver is None:
+        logger.warning("Driver %d not found", driver_id)
         raise exceptions.DriverNotFoundError
     db_driver.license_plate = license_plate
     db_driver.car_model = car_model
     db.commit()
     db.refresh(db_driver)
+    logger.debug("Updated driver %d", db_driver.id)
+    logger.info("Driver updated")
     return db_driver
 
 
@@ -142,6 +163,8 @@ def create_google_relationship(uid: str, id: int, db: Session):
     db_google_user = models.GoogleUser(userId=id, googleId=uid)
     db.add(db_google_user)
     db.commit()
+    logger.debug("Create google user %s", uid)
+    logger.info("Create google user")
 
 
 def removeNoneValues(dict_aux: dict):
@@ -170,6 +193,7 @@ def edit_passenger_info(
 ):
     passenger = get_passenger_by_id(user_id, db)
     if not passenger:
+        logger.warning("Passenger %d not found", user_id)
         raise exceptions.PassengerNotFoundError
     user = edit_user(user_id, userInfo, db)
     attribute_passenger = removeNoneValues(passengerInfo)
@@ -179,6 +203,8 @@ def edit_passenger_info(
     db.commit()
     db.refresh(user)
     db.refresh(passenger)
+    logger.debug("Updated passenger %d info", passenger.id)
+    logger.info("Passenger updated")
     return user, passenger
 
 
@@ -190,6 +216,7 @@ def edit_driver_info(
 ):
     driver = get_driver_by_id(user_id, db)
     if not driver:
+        logger.warning("Driver %d not found", user_id)
         raise exceptions.DriverNotFoundError
     user = edit_user(user_id, userInfo, db)
 
@@ -199,27 +226,35 @@ def edit_driver_info(
     db.commit()
     db.refresh(user)
     db.refresh(driver)
+    logger.debug("Updated driver %d info", driver.id)
+    logger.info("Driver updated")
     return user, driver
 
 
 def delete_passenger(user_id, db):
     passenger = get_passenger_by_id(user_id, db)
     if not passenger:
+        logger.warning("Passenger %d not found", user_id)
         raise exceptions.PassengerNotFoundError
     user = get_user_by_id(user_id, db)
     db.delete(passenger)
     db.delete(user)
     db.commit()
+    logger.debug("Delete passenger %d", passenger.id)
+    logger.info("Passenger deleted")
 
 
 def delete_driver(user_id, db):
     driver = get_driver_by_id(user_id, db)
     if not driver:
+        logger.warning("Driver %d not found", user_id)
         raise exceptions.DriverNotFoundError
     user = get_user_by_id(user_id, db)
     db.delete(driver)
     db.delete(user)
     db.commit()
+    logger.debug("Delete driver %d", driver.id)
+    logger.info("Driver deleted")
 
 
 def update_score_passenger(passenger: models.Passenger, score: int, db: Session):
@@ -227,6 +262,8 @@ def update_score_passenger(passenger: models.Passenger, score: int, db: Session)
     passenger.score = final_score
     db.commit()
     db.refresh(passenger)
+    logger.debug("Updated passenger %d score", passenger.id)
+    logger.info("Passenger updated")
     return passenger
 
 
@@ -235,4 +272,6 @@ def update_score_driver(driver: models.Driver, score: int, db: Session):
     driver.score = final_score
     db.commit()
     db.refresh(driver)
+    logger.debug("Updated driver %d score", driver.id)
+    logger.info("Driver updated")
     return driver
