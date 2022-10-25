@@ -97,19 +97,29 @@ def addCarInfoClient(endpoint):
 
 
 def test_when_app_is_with_no_users_then_get_users_return_an_empty_list():
-
-    response = client.get("/users/")
+    token = token_handler.create_access_token(1, "admin")
+    response = client.get("/users/", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == status.HTTP_200_OK
 
     data = response.json()
     assert data == []
 
+def test_someone_that_is_not_an_admin_access_to_get_users_it_cannot_do_it():
+
+    token = token_handler.create_access_token(1, "example")
+    response = client.get("/users/?user_type=passenger", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    data = response.json()
+
+    assert data['detail'] == "The user is not authorize"
 
 def test_when_app_has_2_passengers_then_get_passengers_return_2_users():
     response1 = registerPassenger()
     data1 = response1.json()
     registerPassenger2()
-    response = client.get("/users/?user_type=passenger")
+    token = token_handler.create_access_token(1, "admin")
+    response = client.get("/users/?user_type=passenger", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == status.HTTP_200_OK
 
     data = response.json()
@@ -124,8 +134,8 @@ def test_when_app_has_2_user_then_get_users_return_2_users():
 
     registerPassenger()
     registerPassenger2()
-
-    response = client.get("/users/")
+    token = token_handler.create_access_token(1, "admin")
+    response = client.get("/users/", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == status.HTTP_200_OK
 
     data = response.json()
@@ -236,7 +246,7 @@ def test_when_driver_not_exists_and_adds_carInfo_the_carInfo_isnot_addit():
 
 
 def test_when_getting_information_for_nonexisting_user_then_returns_user_not_exist():
-    token = token_handler.create_access_token(1, True)
+    token = token_handler.create_access_token(1, "user")
     response = client.get("/users/info/1", headers={"Authorization": f"Bearer {token}"})
     print(response.status_code)
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
@@ -247,7 +257,7 @@ def test_when_getting_information_for_nonexisting_user_then_returns_user_not_exi
 
 
 def test_when_gettion_info_from_existing_user_then_returns_the_information():
-    token = token_handler.create_access_token(1, True)
+    token = token_handler.create_access_token(1, "user")
     response = registerPassenger2()
     data = response.json()
 
@@ -275,7 +285,7 @@ def test_when_login_to_register_user_with_validad_data_then_it_should_return_tok
     actual = token_handler.decode_token(data)
     expected = {
         "user_id": 1,
-        "user": True,
+        "user": "user",
     }
 
     assert actual["user_id"] == expected["user_id"]
@@ -293,7 +303,7 @@ def test_when_login_register_user_with_invalid_email_then_it_should_not_return_t
 def test_when_getting_profile_for_passenger_that_exists_it_should_do_it():
     response = registerPassenger2()
     data1 = response.json()
-    token = token_handler.create_access_token(data1["id"], True)
+    token = token_handler.create_access_token(data1["id"], "user")
     response = client.get(
         "/users/me/?user_type=passenger",
         headers={"Authorization": f"Bearer {token}"},
@@ -314,7 +324,7 @@ def test_when_update_passenger_info_it_should_do_it():
     response = registerPassenger2()
     data1 = response.json()
     print(data1)
-    token = token_handler.create_access_token(data1["id"], True)
+    token = token_handler.create_access_token(data1["id"], "user")
     response = client.patch(
         "/users/me/",
         headers={"Authorization": f"Bearer {token}"},
@@ -335,7 +345,7 @@ def test_when_update_passenger_info_it_should_do_it():
 def test_when_update_driver_info_it_should_do_it():
     response = registerDriver()
     data1 = response.json()
-    token = token_handler.create_access_token(data1["id"], True)
+    token = token_handler.create_access_token(data1["id"], "user")
     response = client.patch(
         "/users/me/",
         headers={"Authorization": f"Bearer {token}"},
@@ -356,7 +366,7 @@ def test_when_update_driver_info_it_should_do_it():
 
 
 def test_when_update_driver_that_not_exist_it_should_not_do_it():
-    token = token_handler.create_access_token(100, True)
+    token = token_handler.create_access_token(100, "user")
     response = client.patch(
         "/users/me/",
         headers={"Authorization": f"Bearer {token}"},
@@ -372,7 +382,7 @@ def test_when_update_driver_that_not_exist_it_should_not_do_it():
 
 
 def test_when_update_passenger_that_not_exist_it_should_not_do_it():
-    token = token_handler.create_access_token(100, True)
+    token = token_handler.create_access_token(100, "user")
     response = client.patch(
         "/users/me/",
         headers={"Authorization": f"Bearer {token}"},
@@ -397,7 +407,7 @@ def test_when_login_with_google_with_user_not_register_then_it_returns_token():
     actual = token_handler.decode_token(data)
     expected = {
         "user_id": 1,
-        "user": True,
+        "user": "user",
     }
 
     assert actual["user_id"] == expected["user_id"]
@@ -420,7 +430,7 @@ def test_when_login_with_google_with_user_not_register_then_it_returns_token():
 def test_when_scoring_a_driver_that_exist_it_does_it():
     response = registerDriver()
     data = response.json()
-    token = token_handler.create_access_token(100, True)
+    token = token_handler.create_access_token(100, "user")
     endpoint = "/users/score/" + str(data["id"])
     print(endpoint)
     response = client.patch(
@@ -438,7 +448,7 @@ def test_when_scoring_a_driver_that_exist_it_does_it():
 
 
 def test_when_scoring_a_driver_that_does_not_exist_it_does_not_do_it():
-    token = token_handler.create_access_token(100, True)
+    token = token_handler.create_access_token(100, "user")
     endpoint = "/users/score/101"
     print(endpoint)
     response = client.patch(
