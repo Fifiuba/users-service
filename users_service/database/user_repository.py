@@ -101,11 +101,13 @@ def login(email, token_id, db: Session):
     if not token_id == db_user.tokenId:
         raise exceptions.UserWrongLoginInformation
 
-    token = token_handler.create_access_token(db_user.id, True)
+    token = token_handler.create_access_token(db_user.id, "user")
     return token
 
 
-def login_google(uid: str, email: str, name: str, picture: str, user_type: str, db: Session):
+def login_google(
+    uid: str, email: str, name: str, picture: str, user_type: str, db: Session
+):
     relationship = crud.get_google_relationship(uid, db)
     if not relationship:
         print("email: ", email)
@@ -131,7 +133,7 @@ def login_google(uid: str, email: str, name: str, picture: str, user_type: str, 
         print("hay relacion")
         user_id = relationship.userId
 
-    token = token_handler.create_access_token(user_id, True)
+    token = token_handler.create_access_token(user_id, "user")
     return token
 
 
