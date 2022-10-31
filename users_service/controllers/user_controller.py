@@ -5,6 +5,15 @@ from typing import List, Union
 from users_service.database import schema, exceptions, database, user_repository
 from users_service.utils import authorization_handler, token_handler, firebase_handler
 
+# Datadog tracing
+from ddtrace import tracer
+
+# Network sockets
+tracer.configure(
+    https=False,
+    hostname="localhost",
+    port="8126",
+)
 
 user_router = APIRouter()
 
@@ -20,6 +29,8 @@ def validated_admin(headers):
     response_model=List[schema.UserResponse],
     status_code=status.HTTP_200_OK,
 )
+
+@tracer.wrap(service="users-service", resource="Users")
 def read_users(
     rq: Request, user_type: Union[str, None] = None, db: Session = Depends(database.get_db)
 ):
@@ -33,7 +44,7 @@ def read_users(
     except (exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
 
-
+@tracer.wrap(service="users-service", resource="Get user by id")
 @user_router.get("/{id}", status_code=status.HTTP_200_OK)
 async def get_user_by_id(
     id: int, user_type: str, db: Session = Depends(database.get_db)
@@ -44,7 +55,7 @@ async def get_user_by_id(
     except (exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
 
-
+@tracer.wrap(service="users-service", resource="Get user information")
 @user_router.get(
     "/info/{id}", status_code=status.HTTP_200_OK, response_model=schema.UserInfoResponse
 )
@@ -62,6 +73,7 @@ async def get_user(rq: Request, id: int, db: Session = Depends(database.get_db))
     response_model=schema.UserRegisteredResponse,
     status_code=status.HTTP_201_CREATED,
 )
+@tracer.wrap(service="users-service", resource="Register user")
 async def registrate_user(
     user: schema.UserBase,
     db: Session = Depends(database.get_db),
