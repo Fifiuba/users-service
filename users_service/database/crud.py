@@ -1,16 +1,18 @@
 from typing import Union
 from . import models, schema, exceptions
 from sqlalchemy.orm import Session
+import json_log_formatter
 import logging
 
-logging.basicConfig(
-    filename='test.log',
-    filemode='a',
-    level=logging.DEBUG,
-    format = '%(asctime)s - %(levelname)s: %(message)s',
-    force=True,
-)
-logger = logging.getLogger()
+formatter = json_log_formatter.JSONFormatter()
+
+json_handler = logging.FileHandler(filename='./logs.log')
+json_handler.setFormatter(formatter)
+
+logger = logging.getLogger('users_service_logger')
+logger.addHandler(json_handler)
+logger.setLevel(logging.DEBUG)
+
 
 def get_passengers(db: Session):
     passengers = db.query(models.User).join(models.Passenger).all()
