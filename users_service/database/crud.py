@@ -13,7 +13,6 @@ logger = logging.getLogger('users_service_logger')
 logger.addHandler(json_handler)
 logger.setLevel(logging.DEBUG)
 
-
 def get_passengers(db: Session):
     passengers = db.query(models.User).join(models.Passenger).all()
     return passengers
@@ -166,7 +165,11 @@ def create_google_relationship(uid: str, id: int, db: Session):
     db.add(db_google_user)
     db.commit()
     logger.debug("Create google user %s", uid)
-    logger.info("Create google user")
+    logger.info("Create google user", extra= {'type': 'INFO', 
+                                            'endpoint': '/users/loginGoogle',
+                                            'method': 'POST', 
+                                            'operation': 'register',
+                                            'status': 200})
 
 
 def removeNoneValues(dict_aux: dict):

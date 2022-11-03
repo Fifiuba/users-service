@@ -97,10 +97,24 @@ def login(email, token_id, db: Session):
 
     db_user = verified_user(email, db)
     if db_user is None:
+        crud.logger.warning("Login with email", extra={'type': 'WARN', 
+                                                        'endpoint': '/users/loginEmail',
+                                                         'method': 'POST', 
+                                                         'operation': 'login',
+                                                         'status': 409})
         raise exceptions.UserWrongLoginInformation
     if not token_id == db_user.tokenId:
+        crud.logger.warning("Login with email", extra={'type': 'WARN', 
+                                                        'endpoint': '/users/loginGoogle',
+                                                         'method': 'POST', 
+                                                         'operation': 'login',
+                                                         'status': 409})
         raise exceptions.UserWrongLoginInformation
-
+    crud.logger.info("Login with email", extra={'type': 'INFO', 
+                                                'endpoint': '/users/loginEmail',
+                                                'method': 'POST', 
+                                                'operation': 'login',
+                                                'status': 200})
     token = token_handler.create_access_token(db_user.id, "user")
     return token
 
@@ -113,7 +127,11 @@ def login_google(
         print("email: ", email)
         user = crud.get_user_by_email(email, db)
         if user:
-            print("entre a existo")
+            crud.logger.warning("Login with Goggle", extra={'type': 'WARN', 
+                                                        'endpoint': '/users/loginGoogle',
+                                                         'method': 'POST', 
+                                                         'operation': 'login',
+                                                         'status': 401})
             raise exceptions.UserAlreadyExists
         else:
             user_aux = schema.UserBase(
@@ -126,12 +144,21 @@ def login_google(
                 picture=picture,
             )
             db_user = create_user(uid, user_aux, db)
-
+            crud.logger.info("Login with Goggle", extra={'type': 'INFO', 
+                                                        'endpoint': '/users/loginGoogle',
+                                                         'method': 'POST', 
+                                                         'operation': 'login',
+                                                         'status': 200})
             crud.create_google_relationship(uid, db_user.id, db)
             user_id = db_user.id
     else:
-        print("hay relacion")
+        
         user_id = relationship.userId
+        crud.logger.info("Login with Goggle", extra={'type': 'INFO', 
+                                                        'endpoint': '/users/loginGoogle',
+                                                         'method': 'POST', 
+                                                         'operation': 'login',
+                                                         'status': 200})
 
     token = token_handler.create_access_token(user_id, "user")
     return token
