@@ -40,6 +40,11 @@ def create_user(token_id: Union[str, None], user: schema.UserBase, db: Session):
         user_create = crud.create_passenger(token_id, user, db)
     else:
         user_create = crud.create_driver(token_id, user, db)
+    crud.logger.info("Register user", extra={'type': 'INFO', 
+                                                        'endpoint': '/users',
+                                                         'method': 'POST', 
+                                                         'operation': 'Register',
+                                                         'status': 200})
     return user_create
 
 

@@ -102,12 +102,19 @@ def create_passenger(token_id: Union[str, None], user: schema.UserBase, db: Sess
         get_driver_by_id(db_user.id, db) is None
         or get_passenger_by_id(db_user.id, db) is not None
     ):
-        logger.warning("Passenger %d already exists", db_user.id)
+        logger.warning("Passenger with id %d already exists", db_user.id, extra={'type': 'WARN', 
+                                                        'endpoint': '/users',
+                                                         'method': 'POST', 
+                                                         'operation': 'Register',
+                                                         'status': 401})
         raise exceptions.PassengerAlreadyExists
     else:
         create_passenger_with_id(db_user.id, db)
-    logger.debug("Create passenger %d with email %s", db_user.id, db_user.email)
-    logger.info("Passenger created")
+    logger.debug("Create passenger %d with email %s", db_user.id, db_user.email, extra= {'type': 'DEBUG', 
+                                                        'endpoint': '/users',
+                                                         'method': 'POST', 
+                                                         'operation': 'Register',
+                                                         'status': 200})
     return db_user
 
 
@@ -118,11 +125,19 @@ def create_driver(token_id: Union[str, None], user: schema.UserBase, db: Session
         get_passenger_by_id(db_user.id, db) is None
         or get_driver_by_id(db_user.id, db) is not None
     ):  
-        logger.warning("Driver %d already exists", db_user.id)
+        logger.warning("Driver with id %d already exists", db_user.id, extra={'type': 'WARN', 
+                                                        'endpoint': '/users',
+                                                         'method': 'POST', 
+                                                         'operation': 'Register',
+                                                         'status': 401})
         raise exceptions.DriverAlreadyExists
     else:
         create_driver_with_id(db_user.id, db)
-    logger.debug("Create driver %d with email %s", db_user.id, db_user.email)
+    logger.debug("Create driver %d with email %s", db_user.id, db_user.email, extra= {'type': 'DEBUG', 
+                                                        'endpoint': '/users',
+                                                         'method': 'POST', 
+                                                         'operation': 'Register',
+                                                         'status': 200})
     logger.info("Driver created")
     return db_user
 
@@ -130,12 +145,20 @@ def create_driver(token_id: Union[str, None], user: schema.UserBase, db: Session
 def add_passenger_address(passenger_id: int, default_address: str, db: Session):
     db_passenger = get_passenger_by_id(passenger_id, db)
     if db_passenger is None:
-        logger.warning("Passenger %d not found", passenger_id)
+        logger.warning("Passenger %d not found", passenger_id, extra={'type': 'WARN', 
+                                                        'endpoint': '/users/',
+                                                         'method': 'PATCH', 
+                                                         'operation': 'add user info',
+                                                         'status': 404})
         raise exceptions.PassengerNotFoundError
     db_passenger.default_address = default_address
     db.commit()
     db.refresh(db_passenger)
-    logger.debug("Updated passenger %d", db_passenger.id)
+    logger.debug("Updated passenger %d", db_passenger.id, extra= {'type': 'DEBUG', 
+                                                        'endpoint': '/users/',
+                                                         'method': 'PATCH', 
+                                                         'operation': 'add user info',
+                                                         'status': 200})
     logger.info("Passenger updated")
     return db_passenger
 
@@ -145,13 +168,21 @@ def add_driver_car_info(
 ):
     db_driver = get_driver_by_id(driver_id, db)
     if db_driver is None:
-        logger.warning("Driver %d not found", driver_id)
+        logger.warning("Driver %d not found", driver_id,extra= {'type': 'WARN', 
+                                                        'endpoint': '/users/',
+                                                         'method': 'PATCH', 
+                                                         'operation': 'add user info',
+                                                         'status': 404})
         raise exceptions.DriverNotFoundError
     db_driver.license_plate = license_plate
     db_driver.car_model = car_model
     db.commit()
     db.refresh(db_driver)
-    logger.debug("Updated driver %d", db_driver.id)
+    logger.debug("Updated driver %d", db_driver.id,  extra={'type': 'DEBUG', 
+                                                        'endpoint': '/users/',
+                                                         'method': 'PATCH', 
+                                                         'operation': 'add user info',
+                                                         'status': 200})
     logger.info("Driver updated")
     return db_driver
 
@@ -198,7 +229,11 @@ def edit_passenger_info(
 ):
     passenger = get_passenger_by_id(user_id, db)
     if not passenger:
-        logger.warning("Passenger %d not found", user_id)
+        logger.warning("Passenger %d not found", user_id,extra={'type': 'WARN', 
+                                                        'endpoint': '/users/me',
+                                                         'method': 'PATCH', 
+                                                         'operation': 'update user info',
+                                                         'status': 404})
         raise exceptions.PassengerNotFoundError
     user = edit_user(user_id, userInfo, db)
     attribute_passenger = removeNoneValues(passengerInfo)
@@ -208,7 +243,11 @@ def edit_passenger_info(
     db.commit()
     db.refresh(user)
     db.refresh(passenger)
-    logger.debug("Updated passenger %d info", passenger.id)
+    logger.debug("Updated passenger %d info", passenger.id,extra= {'type': 'DEBUF', 
+                                                        'endpoint': '/users/me',
+                                                         'method': 'PATCH', 
+                                                         'operation': 'update user info',
+                                                         'status': 200})
     logger.info("Passenger updated")
     return user, passenger
 
@@ -221,7 +260,11 @@ def edit_driver_info(
 ):
     driver = get_driver_by_id(user_id, db)
     if not driver:
-        logger.warning("Driver %d not found", user_id)
+        logger.warning("Driver %d not found", user_id,extra= {'type': 'WARN', 
+                                                        'endpoint': '/users/me',
+                                                         'method': 'PATCH', 
+                                                         'operation': 'update user info',
+                                                         'status': 404})
         raise exceptions.DriverNotFoundError
     user = edit_user(user_id, userInfo, db)
 
@@ -231,7 +274,11 @@ def edit_driver_info(
     db.commit()
     db.refresh(user)
     db.refresh(driver)
-    logger.debug("Updated driver %d info", driver.id)
+    logger.debug("Updated driver %d info", driver.id, extra={'type': 'INFO', 
+                                                        'endpoint': '/users/me',
+                                                         'method': 'PATCH', 
+                                                         'operation': 'update user info',
+                                                         'status': 200})
     logger.info("Driver updated")
     return user, driver
 
@@ -239,26 +286,42 @@ def edit_driver_info(
 def delete_passenger(user_id, db):
     passenger = get_passenger_by_id(user_id, db)
     if not passenger:
-        logger.warning("Passenger %d not found", user_id)
+        logger.warning("Passenger %d not found", user_id, extra={'type': 'WARN', 
+                                                        'endpoint': '/users/',
+                                                         'method': 'DETELE', 
+                                                         'operation': 'udelete user',
+                                                         'status': 404})
         raise exceptions.PassengerNotFoundError
     user = get_user_by_id(user_id, db)
     db.delete(passenger)
     db.delete(user)
     db.commit()
-    logger.debug("Delete passenger %d", passenger.id)
+    logger.debug("Delete passenger %d", passenger.id, extra={'type': 'DEBUG', 
+                                                        'endpoint': '/users/',
+                                                         'method': 'DELETE', 
+                                                         'operation': 'delete user',
+                                                         'status': 200})
     logger.info("Passenger deleted")
 
 
 def delete_driver(user_id, db):
     driver = get_driver_by_id(user_id, db)
     if not driver:
-        logger.warning("Driver %d not found", user_id)
+        logger.warning("Driver %d not found", user_id,  extra={'type': 'WARN', 
+                                                        'endpoint': '/users/',
+                                                         'method': 'DETELE', 
+                                                         'operation': 'udelete user',
+                                                         'status': 404})
         raise exceptions.DriverNotFoundError
     user = get_user_by_id(user_id, db)
     db.delete(driver)
     db.delete(user)
     db.commit()
-    logger.debug("Delete driver %d", driver.id)
+    logger.debug("Delete driver %d", driver.id, extra={'type': 'DEBUG', 
+                                                        'endpoint': '/users/',
+                                                         'method': 'DELETE', 
+                                                         'operation': 'delete user',
+                                                         'status': 200})
     logger.info("Driver deleted")
 
 
@@ -267,7 +330,11 @@ def update_score_passenger(passenger: models.Passenger, score: int, db: Session)
     passenger.score = final_score
     db.commit()
     db.refresh(passenger)
-    logger.debug("Updated passenger %d score", passenger.id)
+    logger.debug("Updated passenger %d score", passenger.id, extra={'type': 'DEBUG', 
+                                                        'endpoint': '/users/score',
+                                                         'method': 'PATCH', 
+                                                         'operation': 'update user score',
+                                                         'status': 200})
     logger.info("Passenger updated")
     return passenger
 
@@ -277,6 +344,10 @@ def update_score_driver(driver: models.Driver, score: int, db: Session):
     driver.score = final_score
     db.commit()
     db.refresh(driver)
-    logger.debug("Updated driver %d score", driver.id)
+    logger.debug("Updated driver %d score", driver.id, extra={'type': 'DEBUG', 
+                                                        'endpoint': '/users/score',
+                                                         'method': 'PATCH', 
+                                                         'operation': 'update user score',
+                                                         'status': 200})
     logger.info("Driver updated")
     return driver
