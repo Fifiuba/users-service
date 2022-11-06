@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .controllers import user_controller
 
-app = FastAPI(docs_url='/users/docs')
+app = FastAPI()
 
 
 app.add_middleware(
