@@ -4,3 +4,4 @@ test.db
 .pytest_cache
 __pycache__/
 *.pyc
+firebase_keys.json
