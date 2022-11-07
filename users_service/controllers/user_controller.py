@@ -5,15 +5,6 @@ from typing import List, Union
 from users_service.database import schema, exceptions, database, user_repository
 from users_service.utils import authorization_handler, token_handler, firebase_handler
 
-# Datadog tracing
-from ddtrace import tracer
-
-# Network sockets
-tracer.configure(
-    https=False,
-    hostname="localhost",
-    port="8126",
-)
 
 user_router = APIRouter()
 

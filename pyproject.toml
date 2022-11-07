@@ -21,7 +21,6 @@ firebase-admin = "^5.4.0"
 JSON-log-formatter = "^0.5.1"
 logging = "^0.4.9.6"
 jsonschema = "^4.16.0"
-ddtrace = "^1.5.3"
 
 
 [tool.poetry.group.dev.dependencies]
