@@ -20,6 +20,7 @@ def validated_admin(headers):
     response_model=List[schema.UserResponse],
     status_code=status.HTTP_200_OK,
 )
+
 def read_users(
     rq: Request, user_type: Union[str, None] = None, db: Session = Depends(database.get_db)
 ):
@@ -33,7 +34,6 @@ def read_users(
     except (exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
 
-
 @user_router.get("/{id}", status_code=status.HTTP_200_OK)
 async def get_user_by_id(
     id: int, user_type: str, db: Session = Depends(database.get_db)
@@ -43,7 +43,6 @@ async def get_user_by_id(
         return user
     except (exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
-
 
 @user_router.get(
     "/info/{id}", status_code=status.HTTP_200_OK, response_model=schema.UserInfoResponse
