@@ -155,12 +155,14 @@ async def get_profile(
 
 @user_router.delete("/{user_id}", status_code=status.HTTP_200_OK)
 async def delete_user(
+    rq: Request,
     user_id: int,
     user: schema.TypeOfUser,
     db: Session = Depends(database.get_db),
     firebase=Depends(firebase_handler.get_fb),
 ):
     try:
+        validated_admin(rq.headers)
         db_user = user_repository.get_user_by_id(user_id, db)
         firebase.delete_user(db_user.tokenId)
         user_repository.delete_user(user_id, user.user_type, db)

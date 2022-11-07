@@ -13,6 +13,7 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - postgres-okteto:/var/lib/postgresql/data
     
     
   # Servicio de backend
@@ -31,9 +32,11 @@ services:
       - PGADMIN_DEFAULT_EMAIL=admin@mail.com
       - PGADMIN_DEFAULT_PASSWORD=admin
     ports:
-      - "9999:80"
+      - "80:8080"
     depends_on:
       - postgres
+volumes:
+  postgres-okteto:
 
   
 
