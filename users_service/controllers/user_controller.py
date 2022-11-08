@@ -85,13 +85,13 @@ async def edit_user(
 
 @user_router.post("/login", status_code=status.HTTP_200_OK)
 async def login_user(
-    user: schema.UserLogInBase,
+    userlogin: schema.UserLogInBase,
     db: Session = Depends(database.get_db),
     firebase=Depends(firebase_handler.get_fb),
 ):
     try:
-        user = firebase.valid_user(user.token)
-        return user_repository.login(user.get("email"), user.get("uid"), db)
+        user = firebase.valid_user(userlogin.token)
+        return user_repository.login(user.get("email"), user.get("uid"), userlogin.user_type, db)
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
 

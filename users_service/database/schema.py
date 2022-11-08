@@ -56,6 +56,7 @@ class DriverBase(BaseModel):
 
 
 class UserLogInBase(BaseModel):
+    user_type: str
     token: str
 
 
