@@ -314,12 +314,12 @@ def test_when_login_to_register_user_with_validad_data_then_it_should_return_tok
     data = response.json()
     actual = token_handler.decode_token(data)
     expected = {
-        "user_id": 1,
-        "user": "user",
+        "id": 1,
+        "rol": "user",
     }
 
-    assert actual["user_id"] == expected["user_id"]
-    assert actual["user"] == expected["user"]
+    assert actual["id"] == expected["id"]
+    assert actual["rol"] == expected["rol"]
     client.delete("/users/" + str(1), json={"user_type": "passenger"}, headers={"Authorization": f"Bearer {adminToken()}"})
 
 
@@ -436,12 +436,12 @@ def test_when_login_with_google_with_user_not_register_then_it_returns_token():
     data = response.json()
     actual = token_handler.decode_token(data)
     expected = {
-        "user_id": 1,
-        "user": "user",
+        "id": 1,
+        "rol": "user",
     }
 
-    assert actual["user_id"] == expected["user_id"]
-    assert actual["user"] == expected["user"]
+    assert actual["id"] == expected["id"]
+    assert actual["rol"] == expected["rol"]
     client.delete("/users/" + str(1), json={"user_type": "driver"}, headers={"Authorization": f"Bearer {adminToken()}"})
 
 

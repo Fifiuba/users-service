@@ -11,7 +11,9 @@ user_router = APIRouter()
 def validated_admin(headers):
     authorization_handler.is_auth(headers)
     token = authorization_handler.get_token(headers)
-    user = token_handler.decode_token(token)["user"]
+    payload = token_handler.decode_token(token)
+    print(payload)
+    user = payload["rol"]
     authorization_handler.is_admin(user)
 
 
@@ -125,8 +127,8 @@ async def edit_profile(
     try:
         authorization_handler.is_auth(rq.headers)
         token = authorization_handler.get_token(rq.headers)
-        user_id = token_handler.decode_token(token)["user_id"]
-        return user_repository.edit_user_info(user_id, user, db)
+        id = token_handler.decode_token(token)["id"]
+        return user_repository.edit_user_info(id, user, db)
     except (exceptions.UnauthorizeUser, exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
 
@@ -138,8 +140,8 @@ async def get_profile(
     try:
         authorization_handler.is_auth(rq.headers)
         token = authorization_handler.get_token(rq.headers)
-        user_id = token_handler.decode_token(token)["user_id"]
-        return user_repository.user_profile(user_id, user_type, db)
+        id = token_handler.decode_token(token)["id"]
+        return user_repository.user_profile(id, user_type, db)
     except (exceptions.UnauthorizeUser, exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
 

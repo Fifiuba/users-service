@@ -11,11 +11,11 @@ else:
 ACCESS_TOKEN_EXPIRE_MINUTES = 5
 
 
-def create_access_token(user_id: int, user: str) -> str:
+def create_access_token(user_id: int, rol: str) -> str:
 
     # expires_delta = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
-    to_encode = {"user_id": user_id, "user": user}
+    to_encode = {"id": user_id, "rol": rol}
     encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, ALGORITHM)
     return encoded_jwt
 
