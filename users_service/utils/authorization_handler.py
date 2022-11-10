@@ -21,5 +21,6 @@ def get_token(headers):
 
 def is_admin(user):
     if user != "admin":
+        print("no soy admin")
         raise exceptions.UnauthorizeUser
     

@@ -156,6 +156,7 @@ async def delete_user(
 ):
     try:
         validated_admin(rq.headers)
+        print("si llegue hasta aca es xq tengo perimos sde admin")
         db_user = user_repository.get_user_by_id(user_id, db)
         firebase.delete_user(db_user.tokenId)
         return user_repository.delete_user(user_id, user.user_type, db)
