@@ -21,6 +21,12 @@ class FirebaseMock:
         "name": "ale",
         "picture": "picture"
     }
+    usersfireabse["ueywepd"] = {
+        "uid": "poiyres",
+        "email": "franco@gmail.com",
+        "name": "franco",
+        "picture": "picture"
+    }
 
 
     def create_user(self, email, password):

@@ -526,3 +526,13 @@ def test_when_deleting_a_user_with_no_autherization_it_does_bot_do_it():
     data = response.json()
 
     assert data['detail'] == "The user is not authorize"
+
+def test_delete_google_user():
+    client.post(
+        "users/loginGoogle",
+        json={"user_type": "driver", "token": "ueywepd"},
+    )
+    response = client.delete("/users/" + str(1), json={"user_type": "driver"}, headers={"Authorization": f"Bearer {adminToken()}"})
+    assert response.status_code == status.HTTP_200_OK, response.text
+    data1 = response.json()
+    assert data1 == 1

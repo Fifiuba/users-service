@@ -190,8 +190,16 @@ def login_google(
     token = token_handler.create_access_token(user_id, "user")
     return token
 
+def get_google_user(user_id, db):
+    google_user = crud.get_google_user(user_id, db)
+    print("entre")
+    return google_user 
 
 def delete_user(user_id, user_type, db: Session):
+    google_user = get_google_user(user_id, db)
+    if google_user != None:
+        print("entre")
+        crud.delete_google_user(google_user, db)
     if user_type == "passenger":
         crud.delete_passenger(user_id, db)
         return user_id

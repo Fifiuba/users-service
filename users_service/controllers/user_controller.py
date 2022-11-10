@@ -158,7 +158,7 @@ async def delete_user(
         validated_admin(rq.headers)
         db_user = user_repository.get_user_by_id(user_id, db)
         firebase.delete_user(db_user.tokenId)
-        user_repository.delete_user(user_id, user.user_type, db)
+        return user_repository.delete_user(user_id, user.user_type, db)
     except (exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
 

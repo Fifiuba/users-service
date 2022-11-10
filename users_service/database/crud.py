@@ -370,3 +370,16 @@ def update_score_driver(driver: models.Driver, score: int, db: Session):
                                                          'status': 200})
     logger.info("Driver updated")
     return driver
+
+def get_google_user(user_id, db):
+    return db.query(models.GoogleUser).filter(models.GoogleUser.userId == user_id).first()
+
+def delete_google_user(google_user, db):
+    db.delete(google_user)
+    db.commit()
+    logger.debug("Google user  %d deleted", google_user.userId, extra={'type': 'DEBUG', 
+                                                        'endpoint': '/users/',
+                                                         'method': 'DELETE', 
+                                                         'operation': 'delete user',
+                                                         'status': 200})
+    logger.info("Google User deleted")
