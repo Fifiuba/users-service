@@ -456,6 +456,33 @@ def test_when_login_with_google_with_user_not_register_then_it_returns_token():
 
 #     client.delete("/users/" + str(1), json={"user_type": "passenger"})
 
+def test_when_scorring_a_passenger_that_existis_it_returns_the_avg():
+    response = registerPassenger()
+    data = response.json()
+    token = token_handler.create_access_token(100, "user")
+    endpoint = "/users/score/" + str(data["id"])
+    response = client.patch(
+        endpoint,
+        headers={"Authorization": f"Bearer {token}"},
+        json={"user_type": "driver", "score": 4},
+    )
+    response = client.patch(
+        endpoint,
+        headers={"Authorization": f"Bearer {token}"},
+        json={"user_type": "driver", "score": 2},
+    )
+    response = client.patch(
+        endpoint,
+        headers={"Authorization": f"Bearer {token}"},
+        json={"user_type": "driver", "score": 1},
+    )
+    assert response.status_code == status.HTTP_200_OK, response.text
+    data1 = response.json()
+
+    score_expected = (4+2+1)/3
+
+    assert score_expected == data1["score"]
+    client.delete("/users/" + str(data["id"]), json={"user_type": "passenger"}, headers={"Authorization": f"Bearer {adminToken()}"})
 
 def test_when_scoring_a_driver_that_exist_it_does_it():
     response = registerDriver()
@@ -471,7 +498,7 @@ def test_when_scoring_a_driver_that_exist_it_does_it():
     assert response.status_code == status.HTTP_200_OK, response.text
     data1 = response.json()
 
-    score_expected = (3 + 4) / 2
+    score_expected = 4
 
     assert score_expected == data1["score"]
     client.delete("/users/" + str(data["id"]), json={"user_type": "driver"}, headers={"Authorization": f"Bearer {adminToken()}"})

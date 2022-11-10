@@ -83,14 +83,14 @@ def create_user(token_id: Union[str, None], user: schema.UserBase, db: Session):
 
 
 def create_passenger_with_id(user_id: int, db: Session):
-    db_passenger = models.Passenger(id=user_id, default_address=None, score=3)
+    db_passenger = models.Passenger(id=user_id, default_address=None, score=0)
     db.add(db_passenger)
     db.commit()
     db.refresh(db_passenger)
 
 
 def create_driver_with_id(user_id: int, db: Session):
-    db_driver = models.Driver(id=user_id, license_plate=None, car_model=None, score=3)
+    db_driver = models.Driver(id=user_id, license_plate=None, car_model=None, score=0)
     db.add(db_driver)
     db.commit()
     db.refresh(db_driver)
@@ -324,9 +324,24 @@ def delete_driver(user_id, db):
                                                          'status': 200})
     logger.info("Driver deleted")
 
+def get_total_score_for_passenger(passenger_id, score, db):
+    scores = db.query(models.PassengerScores).filter(models.PassengerScores.userId == passenger_id).all()
+    total_score = (sum([s.rating for s in scores]))/len(scores)
+    return total_score
+
+def get_total_score_for_driver(driver_id,score ,db):
+    scores = db.query(models.DriverScores).filter(models.DriverScores.userId== driver_id).all()
+    total_score = (sum([s.rating for s in scores]))/len(scores)
+    return total_score
+
+
 
 def update_score_passenger(passenger: models.Passenger, score: int, db: Session):
-    final_score = (passenger.score + score) / 2
+    newScore = models.PassengerScores(userId = passenger.id, rating=score)
+    db.add(newScore)
+    db.commit()
+    db.refresh(newScore)
+    final_score = get_total_score_for_passenger(passenger.id, score, db)
     passenger.score = final_score
     db.commit()
     db.refresh(passenger)
@@ -340,7 +355,11 @@ def update_score_passenger(passenger: models.Passenger, score: int, db: Session)
 
 
 def update_score_driver(driver: models.Driver, score: int, db: Session):
-    final_score = (driver.score + score) / 2
+    newScore = models.DriverScores(userId = driver.id, rating=score)
+    db.add(newScore)
+    db.commit()
+
+    final_score = get_total_score_for_driver(driver.id, score, db)
     driver.score = final_score
     db.commit()
     db.refresh(driver)

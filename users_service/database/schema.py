@@ -1,5 +1,5 @@
 from typing import Optional, Union, List, Dict
-from pydantic import BaseModel
+from pydantic import BaseModel,  Field
 
 
 class UserBase(BaseModel):
@@ -91,4 +91,4 @@ class TypeOfUser(BaseModel):
 
 class UserScore(BaseModel):
     user_type: str
-    score: int
+    score: int = Field(..., ge=1, le=5)
