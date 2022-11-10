@@ -284,8 +284,10 @@ def edit_driver_info(
 
 
 def delete_passenger(user_id, db):
+    print("voy a borrar pasajerp")
     passenger = get_passenger_by_id(user_id, db)
     if not passenger:
+        print("no existe pasajero")
         logger.warning("Passenger %d not found", user_id, extra={'type': 'WARN', 
                                                         'endpoint': '/users/',
                                                          'method': 'DETELE', 
@@ -294,6 +296,7 @@ def delete_passenger(user_id, db):
         raise exceptions.PassengerNotFoundError
     user = get_user_by_id(user_id, db)
     db.delete(passenger)
+    print(user)
     db.delete(user)
     db.commit()
     logger.debug("Delete passenger %d", passenger.id, extra={'type': 'DEBUG', 

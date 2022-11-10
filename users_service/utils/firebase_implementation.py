@@ -52,4 +52,5 @@ class Firebase:
         try:
             self.auth.delete_user(uid, app=self.app)
         except (ValueError, self.auth.UserNotFoundError, fb_exceptions.FirebaseError):
-            raise exceptions.UserWrongLoginInformation
+            print("error de firebase")
+            raise exceptions.UserNotFoundError

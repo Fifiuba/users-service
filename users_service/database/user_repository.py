@@ -196,6 +196,7 @@ def get_google_user(user_id, db):
     return google_user 
 
 def delete_user(user_id, user_type, db: Session):
+    print("toy en delete user")
     google_user = get_google_user(user_id, db)
     if google_user != None:
         print("entre")
