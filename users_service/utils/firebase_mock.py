@@ -13,30 +13,28 @@ class FirebaseMock:
         "uid": "djdhdhdhd",
         "email": "sol@gmail.com",
         "name": "sol",
-        "picture": "picture"
+        "picture": "picture",
     }
     usersfireabse["eujthfydhd"] = {
         "uid": "shdashdHSDY",
         "email": "ale@gmail.com",
         "name": "ale",
-        "picture": "picture"
+        "picture": "picture",
     }
     usersfireabse["ueywepd"] = {
         "uid": "poiyres",
         "email": "franco@gmail.com",
         "name": "franco",
-        "picture": "picture"
+        "picture": "picture",
     }
-
 
     def create_user(self, email, password):
         uid = None
         for value in self.usersfireabse.values():
             print(value)
-            if value['email'] == email:
-                uid = value['uid']
+            if value["email"] == email:
+                uid = value["uid"]
         return uid
-
 
     def valid_user(self, token):
         if token in self.usersfireabse.keys():
@@ -48,8 +46,8 @@ class FirebaseMock:
         email = None
         for value in self.usersfireabse.values():
             print(value)
-            if value['uid'] == uid:
-                email = value['email']
+            if value["uid"] == uid:
+                email = value["email"]
         return email
 
     def delete_user(self, uid_user):

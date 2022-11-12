@@ -16,11 +16,17 @@ class Firebase:
             fb_exceptions.FirebaseError,
         ) as error:
             print(error)
-            crud.logger.warning("firebase error %s", error, extra={'type': 'WARN', 
-                                                        'endpoint': '/users',
-                                                         'method': 'POST', 
-                                                         'operation': 'Register',
-                                                         'status': 401})
+            crud.logger.warning(
+                "firebase error %s",
+                error,
+                extra={
+                    "type": "WARN",
+                    "endpoint": "/users",
+                    "method": "POST",
+                    "operation": "Register",
+                    "status": 401,
+                },
+            )
             raise exceptions.UserWrongLoginInformation
         else:
             return user.uid

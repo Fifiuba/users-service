@@ -1,5 +1,5 @@
 from typing import Optional, Union, List, Dict
-from pydantic import BaseModel,  Field
+from pydantic import BaseModel, Field
 
 
 class UserBase(BaseModel):

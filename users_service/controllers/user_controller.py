@@ -1,4 +1,3 @@
-from email import header
 from fastapi import APIRouter, status, HTTPException, Depends, Request
 from sqlalchemy.orm import Session
 from typing import List, Union
@@ -7,6 +6,7 @@ from users_service.utils import authorization_handler, token_handler, firebase_h
 
 
 user_router = APIRouter()
+
 
 def validated_admin(headers):
     authorization_handler.is_auth(headers)
@@ -22,9 +22,10 @@ def validated_admin(headers):
     response_model=List[schema.UserResponse],
     status_code=status.HTTP_200_OK,
 )
-
 def read_users(
-    rq: Request, user_type: Union[str, None] = None, db: Session = Depends(database.get_db)
+    rq: Request,
+    user_type: Union[str, None] = None,
+    db: Session = Depends(database.get_db),
 ):
     try:
         validated_admin(rq.headers)
@@ -36,6 +37,7 @@ def read_users(
     except (exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
 
+
 @user_router.get("/{id}", status_code=status.HTTP_200_OK)
 async def get_user_by_id(
     id: int, user_type: str, db: Session = Depends(database.get_db)
@@ -45,6 +47,7 @@ async def get_user_by_id(
         return user
     except (exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
+
 
 @user_router.get(
     "/info/{id}", status_code=status.HTTP_200_OK, response_model=schema.UserInfoResponse
@@ -93,7 +96,9 @@ async def login_user(
 ):
     try:
         user = firebase.valid_user(userlogin.token)
-        return user_repository.login(user.get("email"), user.get("uid"), userlogin.user_type, db)
+        return user_repository.login(
+            user.get("email"), user.get("uid"), userlogin.user_type, db
+        )
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
 

@@ -40,11 +40,16 @@ def create_user(token_id: Union[str, None], user: schema.UserBase, db: Session):
         user_create = crud.create_passenger(token_id, user, db)
     else:
         user_create = crud.create_driver(token_id, user, db)
-    crud.logger.info("Register user", extra={'type': 'INFO', 
-                                                        'endpoint': '/users',
-                                                         'method': 'POST', 
-                                                         'operation': 'Register',
-                                                         'status': 200})
+    crud.logger.info(
+        "Register user",
+        extra={
+            "type": "INFO",
+            "endpoint": "/users",
+            "method": "POST",
+            "operation": "Register",
+            "status": 200,
+        },
+    )
     return user_create
 
 
@@ -97,51 +102,78 @@ def verified_user(email: str, db: Session):
     db_user = crud.get_user_by_email(email, db)
     return db_user
 
+
 def login_verify_user_type(id, user_type, login_type, db):
     if user_type == "passenger":
         user = crud.get_passenger_by_id(id, db)
         if not user:
-            crud.logger.warning("Login with " + login_type + ", passenger does not exists ", extra={'type': 'WARN', 
-                                                        'endpoint': '/users/loginEmail',
-                                                         'method': 'POST', 
-                                                         'operation': 'login',
-                                                         'status': 409})
+            crud.logger.warning(
+                "Login with " + login_type + ", passenger does not exists ",
+                extra={
+                    "type": "WARN",
+                    "endpoint": "/users/loginEmail",
+                    "method": "POST",
+                    "operation": "login",
+                    "status": 409,
+                },
+            )
             raise exceptions.PassengerNotFoundError
         return user
     else:
         user = crud.get_driver_by_id(id, db)
         if not user:
-            crud.logger.warning("Login with " + login_type + ", driver does not exists ", extra={'type': 'WARN', 
-                                                        'endpoint': '/users/loginEmail',
-                                                         'method': 'POST', 
-                                                         'operation': 'login',
-                                                         'status': 409})
+            crud.logger.warning(
+                "Login with " + login_type + ", driver does not exists ",
+                extra={
+                    "type": "WARN",
+                    "endpoint": "/users/loginEmail",
+                    "method": "POST",
+                    "operation": "login",
+                    "status": 409,
+                },
+            )
             raise exceptions.DriverNotFoundError
-        return user 
+        return user
+
 
 def login(email: str, token_id: str, user_type: str, db: Session):
 
     db_user = verified_user(email, db)
     if db_user is None:
-        crud.logger.warning("Login with email, cannot find user ", extra={'type': 'WARN', 
-                                                        'endpoint': '/users/loginEmail',
-                                                         'method': 'POST', 
-                                                         'operation': 'login',
-                                                         'status': 409})
+        crud.logger.warning(
+            "Login with email, cannot find user ",
+            extra={
+                "type": "WARN",
+                "endpoint": "/users/loginEmail",
+                "method": "POST",
+                "operation": "login",
+                "status": 409,
+            },
+        )
         raise exceptions.UserWrongLoginInformation
     if not token_id == db_user.tokenId:
-        crud.logger.warning("Login with email, invalid uid", extra={'type': 'WARN', 
-                                                        'endpoint': '/users/loginGoogle',
-                                                         'method': 'POST', 
-                                                         'operation': 'login',
-                                                         'status': 409})
+        crud.logger.warning(
+            "Login with email, invalid uid",
+            extra={
+                "type": "WARN",
+                "endpoint": "/users/loginGoogle",
+                "method": "POST",
+                "operation": "login",
+                "status": 409,
+            },
+        )
         raise exceptions.UserWrongLoginInformation
-    login_verify_user_type(db_user.id, user_type,"email", db)
-    crud.logger.info("Login with email", extra={'type': 'INFO', 
-                                                'endpoint': '/users/loginEmail',
-                                                'method': 'POST', 
-                                                'operation': 'login',
-                                                'status': 200})
+    login_verify_user_type(db_user.id, user_type, "email", db)
+    crud.logger.info(
+        "Login with email",
+        extra={
+            "type": "INFO",
+            "endpoint": "/users/loginEmail",
+            "method": "POST",
+            "operation": "login",
+            "status": 200,
+        },
+    )
     token = token_handler.create_access_token(db_user.id, "user")
     return token
 
@@ -154,11 +186,16 @@ def login_google(
         print("email: ", email)
         user = crud.get_user_by_email(email, db)
         if user:
-            crud.logger.warning("Login with Google", extra={'type': 'WARN', 
-                                                        'endpoint': '/users/loginGoogle',
-                                                         'method': 'POST', 
-                                                         'operation': 'login',
-                                                         'status': 401})
+            crud.logger.warning(
+                "Login with Google",
+                extra={
+                    "type": "WARN",
+                    "endpoint": "/users/loginGoogle",
+                    "method": "POST",
+                    "operation": "login",
+                    "status": 401,
+                },
+            )
             raise exceptions.UserAlreadyExists
         else:
             user_aux = schema.UserBase(
@@ -171,34 +208,46 @@ def login_google(
                 picture=picture,
             )
             db_user = create_user(uid, user_aux, db)
-            crud.logger.info("Login with Google", extra={'type': 'INFO', 
-                                                        'endpoint': '/users/loginGoogle',
-                                                         'method': 'POST', 
-                                                         'operation': 'login',
-                                                         'status': 200})
+            crud.logger.info(
+                "Login with Google",
+                extra={
+                    "type": "INFO",
+                    "endpoint": "/users/loginGoogle",
+                    "method": "POST",
+                    "operation": "login",
+                    "status": 200,
+                },
+            )
             crud.create_google_relationship(uid, db_user.id, db)
             user_id = db_user.id
     else:
         user_id = relationship.userId
         login_verify_user_type(user_id, user_type, "google", db)
-        crud.logger.info("Login with Google", extra={'type': 'INFO', 
-                                                        'endpoint': '/users/loginGoogle',
-                                                         'method': 'POST', 
-                                                         'operation': 'login',
-                                                         'status': 200})
+        crud.logger.info(
+            "Login with Google",
+            extra={
+                "type": "INFO",
+                "endpoint": "/users/loginGoogle",
+                "method": "POST",
+                "operation": "login",
+                "status": 200,
+            },
+        )
 
     token = token_handler.create_access_token(user_id, "user")
     return token
 
+
 def get_google_user(user_id, db):
     google_user = crud.get_google_user(user_id, db)
     print("entre")
-    return google_user 
+    return google_user
+
 
 def delete_user(user_id, user_type, db: Session):
     print("toy en delete user")
     google_user = get_google_user(user_id, db)
-    if google_user != None:
+    if google_user is not None:
         print("entre")
         crud.delete_google_user(google_user, db)
     if user_type == "passenger":

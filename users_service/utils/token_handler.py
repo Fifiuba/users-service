@@ -24,4 +24,3 @@ def decode_token(token: str):
     decoded_jwt = jwt.decode(token, JWT_SECRET_KEY, algorithms=[ALGORITHM])
 
     return decoded_jwt
-

@@ -19,8 +19,8 @@ def get_token(headers):
     _b, token = validator.search(header).groups()
     return token
 
+
 def is_admin(user):
     if user != "admin":
         print("no soy admin")
         raise exceptions.UnauthorizeUser
-    

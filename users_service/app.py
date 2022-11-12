@@ -3,14 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .controllers import user_controller
 from .database.crud import logger
 
-import uvicorn
-# from users_service.utils import firebase_handler
-# from users_service.database import database
-
-# database.init_database()
-# firebase_handler.init_firebase()
-
-logger.info('Starting server')
+logger.info("Starting server")
 
 app = FastAPI()
 
