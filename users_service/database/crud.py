@@ -1,3 +1,4 @@
+import sys
 from typing import Union
 from . import models, schema, exceptions
 from sqlalchemy.orm import Session
@@ -9,8 +10,13 @@ formatter = json_log_formatter.JSONFormatter()
 json_handler = logging.FileHandler(filename='./logs.log')
 json_handler.setFormatter(formatter)
 
+console_handler = logging.StreamHandler(sys.stdout)
+console_handler.setFormatter(formatter)
+
+
 logger = logging.getLogger('users_service_logger')
 logger.addHandler(json_handler)
+logger.addHandler(console_handler)
 logger.setLevel(logging.DEBUG)
 
 def get_passengers(db: Session):
