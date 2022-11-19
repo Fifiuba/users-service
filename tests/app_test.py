@@ -7,6 +7,7 @@ from tests import test_config
 
 session = test_config.init_database(app)
 test_config.init_firebase(app)
+test_config.init_events(app)
 
 
 client = TestClient(app)

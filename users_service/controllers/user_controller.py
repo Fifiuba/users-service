@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, HTTPException, Depends, Request
 from sqlalchemy.orm import Session
 from typing import List, Union
 from users_service.database import schema, exceptions, database, user_repository
-from users_service.utils import authorization_handler, token_handler, firebase_handler
+from users_service.utils import authorization_handler, token_handler, firebase_handler, events_handler
 
 
 user_router = APIRouter()
@@ -70,10 +70,17 @@ async def registrate_user(
     user: schema.UserBase,
     db: Session = Depends(database.get_db),
     firebase=Depends(firebase_handler.get_fb),
+    events=Depends(events_handler.get_event),
 ):
     try:
         token_id = firebase.create_user(user.email, user.password)
-        return user_repository.create_user(token_id, user, db)
+        value = user_repository.create_user(token_id, user, db)
+        events.create_event("Register user with email", "A user was register", "info", ["type:INFO",
+            "endpoint:/users",
+            "method:POST",
+            "operation:Register",
+            "status:200"])
+        return value
     except (exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
 
@@ -93,12 +100,20 @@ async def login_user(
     userlogin: schema.UserLogInBase,
     db: Session = Depends(database.get_db),
     firebase=Depends(firebase_handler.get_fb),
+    events=Depends(events_handler.get_event),
 ):
     try:
         user = firebase.valid_user(userlogin.token)
-        return user_repository.login(
+        token = user_repository.login(
             user.get("email"), user.get("uid"), userlogin.user_type, db
         )
+        events.create_event("Login with Email", "A user login in the system via Email", "info", ["type:INFO",
+            "type:INFO",
+            "endpoint:/users/loginEmail",
+            "method:POST",
+            "operation:login",
+            "status:200"])
+        return token
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
 
@@ -108,12 +123,13 @@ async def login_google(
     googleUser: schema.GoogleLogin,
     db: Session = Depends(database.get_db),
     firebase=Depends(firebase_handler.get_fb),
+    events=Depends(events_handler.get_event),
 ):
     try:
         user = firebase.valid_user(googleUser.token)
         email = firebase.get_email(user.get("uid"))
         print("email: ", email)
-        return user_repository.login_google(
+        token, isNewUser= user_repository.login_google(
             user.get("uid"),
             email,
             user.get("name"),
@@ -121,6 +137,19 @@ async def login_google(
             googleUser.user_type,
             db,
         )
+        if isNewUser :
+            events.create_event("Register user with google", "A user registers the systems with google", "info", ["type:INFO",
+                    "endpoint:/users/loginGoogle",
+                    "method:POST",
+                    "operation:login",
+                    "status:200",])
+
+        events.create_event("Login with google", "A user login in the system via google", "info", ["type:INFO",
+                    "endpoint:/users/loginGoogle",
+                    "method:POST",
+                    "operation:login",
+                    "status:200",])        
+        return token
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)
 
@@ -133,7 +162,7 @@ async def edit_profile(
         authorization_handler.is_auth(rq.headers)
         token = authorization_handler.get_token(rq.headers)
         id = token_handler.decode_token(token)["id"]
-        return user_repository.edit_user_info(id, user, db)
+        user_repository.edit_user_info(id, user, db)
     except (exceptions.UnauthorizeUser, exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
 

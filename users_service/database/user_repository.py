@@ -1,5 +1,6 @@
 from typing import Union
 from sqlalchemy.orm import Session
+
 from . import crud, schema, exceptions
 from users_service.utils import token_handler
 
@@ -182,6 +183,7 @@ def login_google(
     uid: str, email: str, name: str, picture: str, user_type: str, db: Session
 ):
     relationship = crud.get_google_relationship(uid, db)
+    isnewUser = False
     if not relationship:
         print("email: ", email)
         user = crud.get_user_by_email(email, db)
@@ -207,6 +209,7 @@ def login_google(
                 age=None,
                 picture=picture,
             )
+            isnewUser = True
             db_user = create_user(uid, user_aux, db)
             crud.logger.info(
                 "Login with Google",
@@ -221,6 +224,7 @@ def login_google(
             crud.create_google_relationship(uid, db_user.id, db)
             user_id = db_user.id
     else:
+        isnewUser = False
         user_id = relationship.userId
         login_verify_user_type(user_id, user_type, "google", db)
         crud.logger.info(
@@ -235,7 +239,7 @@ def login_google(
         )
 
     token = token_handler.create_access_token(user_id, "user")
-    return token
+    return token, isnewUser
 
 
 def get_google_user(user_id, db):
