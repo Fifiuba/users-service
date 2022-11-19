@@ -162,7 +162,7 @@ async def edit_profile(
         authorization_handler.is_auth(rq.headers)
         token = authorization_handler.get_token(rq.headers)
         id = token_handler.decode_token(token)["id"]
-        user_repository.edit_user_info(id, user, db)
+        return user_repository.edit_user_info(id, user, db)
     except (exceptions.UnauthorizeUser, exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
 

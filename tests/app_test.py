@@ -432,7 +432,7 @@ def test_when_getting_profile_for_passenger_that_exists_it_should_do_it():
 
 
 def test_when_update_passenger_info_it_should_do_it():
-    response = registerPassenger2()
+    response = registerPassenger()
     data1 = response.json()
     print(data1)
     token = token_handler.create_access_token(data1["id"], "user")
@@ -447,7 +447,7 @@ def test_when_update_passenger_info_it_should_do_it():
 
     assert response.status_code == status.HTTP_200_OK, response.text
     data = response.json()
-
+    print(data)
     assert data[0]["age"] == 25
     assert data[1]["default_address"] == "example"
     client.delete(
@@ -472,7 +472,7 @@ def test_when_update_driver_info_it_should_do_it():
 
     assert response.status_code == status.HTTP_200_OK, response.text
     data = response.json()
-
+    print(data)
     assert data[0]["age"] == 14
     assert data[0]["phone_number"] == "436278"
     assert data[1]["model_car"] == "Audi"
