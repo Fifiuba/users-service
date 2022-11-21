@@ -32,4 +32,4 @@ COPY ./users_service/ ./users_service
 EXPOSE 8000
 
 # Corro comando para levantar el servidor
-CMD poetry run uvicorn users_service.main:app --host 0.0.0.0
+CMD DD_SITE="datadoghq.com" DD_API_KEY="4b2775504fd5213fe333889241576508" poetry run uvicorn users_service.main:app --host 0.0.0.0

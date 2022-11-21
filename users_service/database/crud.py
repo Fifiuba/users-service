@@ -505,6 +505,13 @@ def update_score_driver(driver: models.Driver, score: int, db: Session):
     logger.info("Driver updated")
     return driver
 
+def toggle_block_user(user: models.User, block: bool, db:Session):
+    user.isBlock = block
+    db.commit()
+    db.refresh(user)
+    return user
+
+
 
 def get_google_user(user_id, db):
     return (

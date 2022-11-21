@@ -2,6 +2,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from users_service.database import models, database
+from users_service.utils.events_handler import get_event
+from users_service.utils.events_mockup import EventsMock
 from users_service.utils.firebase_mock import FirebaseMock
 from users_service.utils.firebase_handler import get_fb
 
@@ -30,6 +32,16 @@ def init_database(app):
     app.dependency_overrides[database.get_db] = override_get_db
     return TestingSessionLocal()
 
+def init_events(app):
+    events = EventsMock()
+
+    def override_get_events():
+        try:
+            yield events
+        finally:
+            events
+
+    app.dependency_overrides[get_event] = override_get_events
 
 # firebase
 def init_firebase(app):

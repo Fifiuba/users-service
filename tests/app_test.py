@@ -7,6 +7,7 @@ from tests import test_config
 
 session = test_config.init_database(app)
 test_config.init_firebase(app)
+test_config.init_events(app)
 
 
 client = TestClient(app)
@@ -431,7 +432,7 @@ def test_when_getting_profile_for_passenger_that_exists_it_should_do_it():
 
 
 def test_when_update_passenger_info_it_should_do_it():
-    response = registerPassenger2()
+    response = registerPassenger()
     data1 = response.json()
     print(data1)
     token = token_handler.create_access_token(data1["id"], "user")
@@ -446,7 +447,7 @@ def test_when_update_passenger_info_it_should_do_it():
 
     assert response.status_code == status.HTTP_200_OK, response.text
     data = response.json()
-
+    print(data)
     assert data[0]["age"] == 25
     assert data[1]["default_address"] == "example"
     client.delete(
@@ -471,7 +472,7 @@ def test_when_update_driver_info_it_should_do_it():
 
     assert response.status_code == status.HTTP_200_OK, response.text
     data = response.json()
-
+    print(data)
     assert data[0]["age"] == 14
     assert data[0]["phone_number"] == "436278"
     assert data[1]["model_car"] == "Audi"
@@ -648,3 +649,33 @@ def test_delete_google_user():
     assert response.status_code == status.HTTP_200_OK, response.text
     data1 = response.json()
     assert data1 == 1
+def test_when_blocking_a_user_it_shoudl_be_block():
+    response = registerPassenger2()
+    data = response.json()
+    id = data['id']
+    response = client.patch("/users/block/" + str(id) + "?block=true")
+    assert response.status_code == status.HTTP_200_OK, response.text
+    data2 = response.json()
+    assert data2['isBlock'] == True
+    client.delete(
+        "/users/" + str(id),
+        json={"user_type": "passenger"},
+        headers={"Authorization": f"Bearer {adminToken()}"},)
+
+def test_when_block_user_it_cannot_loggin():
+    response = registerPassenger2()
+    data = response.json()
+    id = data['id']
+    client.patch("/users/block/" + str(id) + "?block=true")
+    response = client.post(
+        "users/login",
+        json={"token": "hfjdshfuidhysvcsbvs83hfsdf", "user_type": "passenger"},
+    )
+    assert response.status_code == status.HTTP_409_CONFLICT, response.text
+    data2 = response.json()
+    assert data2['detail'] == "The user is block"
+    
+    client.delete(
+        "/users/" + str(id),
+        json={"user_type": "passenger"},
+        headers={"Authorization": f"Bearer {adminToken()}"},)
