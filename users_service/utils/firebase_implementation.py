@@ -39,9 +39,8 @@ class Firebase:
     def valid_user(self, token):
         try:
             user = self.auth.verify_id_token(token, app=self.app)
-
+            return user
         except (
-            self.auth.UserDisabledError,
             self.auth.CertificateFetchError,
             self.auth.RevokedIdTokenError,
             self.auth.ExpiredIdTokenError,
@@ -49,14 +48,20 @@ class Firebase:
         ) as error:
             print(error)
             raise exceptions.UserWrongLoginInformation
-        else:
-            print("entre aca")
-            print("toy en firebase ", user)
-            return user
+        except (self.auth.UserDisabledError) as error:
+            print(error)
+            raise exceptions.UserIsBlock
 
     def delete_user(self, uid):
         try:
             self.auth.delete_user(uid, app=self.app)
         except (ValueError, self.auth.UserNotFoundError, fb_exceptions.FirebaseError):
             print("error de firebase")
+            raise exceptions.UserNotFoundError
+    
+    def block_user(self, uid, block):
+        try:
+            self.auth.update_user(uid, disabled=block)
+        except (ValueError, self.auth.UserNotFoundError, fb_exceptions.FirebaseError) as err:
+            print("error de firebase ", err)
             raise exceptions.UserNotFoundError
