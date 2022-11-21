@@ -653,7 +653,7 @@ def test_when_blocking_a_user_it_shoudl_be_block():
     response = registerPassenger2()
     data = response.json()
     id = data['id']
-    response = client.patch("/users/block/" + str(id) + "?block=true")
+    response = client.patch("/users/block/" + str(id) + "?block=true", headers={"Authorization": f"Bearer {adminToken()}"})
     assert response.status_code == status.HTTP_200_OK, response.text
     data2 = response.json()
     assert data2['isBlock'] == True
@@ -666,7 +666,7 @@ def test_when_block_user_it_cannot_loggin():
     response = registerPassenger2()
     data = response.json()
     id = data['id']
-    client.patch("/users/block/" + str(id) + "?block=true")
+    client.patch("/users/block/" + str(id) + "?block=true",  headers={"Authorization": f"Bearer {adminToken()}"})
     response = client.post(
         "users/login",
         json={"token": "hfjdshfuidhysvcsbvs83hfsdf", "user_type": "passenger"},
@@ -679,3 +679,13 @@ def test_when_block_user_it_cannot_loggin():
         "/users/" + str(id),
         json={"user_type": "passenger"},
         headers={"Authorization": f"Bearer {adminToken()}"},)
+
+def test_when_getting_services_it_returns_it():
+    response = client.get("/")
+    assert response.status_code == status.HTTP_200_OK, response.text 
+    data = response.json()
+    assert data['service'] == "Users Service!"
+    assert data['created_on'] == "7-9-22"
+    assert data["descripcion"]== "User services is the responsable of handle the users of the fifiuba app"
+   
+    
