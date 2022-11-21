@@ -267,3 +267,7 @@ def get_user_by_id(user_id: int, db: Session):
     if not user:
         raise exceptions.UserNotFoundError
     return user
+
+def block_user(user, block: bool, db: Session):
+    
+    return crud.toggle_block_user(user, block, db)

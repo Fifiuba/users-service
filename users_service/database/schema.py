@@ -19,6 +19,7 @@ class UserResponse(BaseModel):
     email: str
     age: Union[int, None] = None
     picture: Union[str, None] = None
+    isBlock: bool
 
     class Config:
         orm_mode = True

@@ -16,6 +16,7 @@ class User(Base):
     age = Column("age", Integer, nullable=True)
     picture = Column("picture", String(255), nullable=True)
     tokenId = Column("tokenId", String(255), nullable=True)
+    isBlock = Column("score",  Boolean, unique=False, default=False)
 
 
 class Passenger(Base):
@@ -24,6 +25,7 @@ class Passenger(Base):
     id = Column("id", Integer, ForeignKey("users.id"), primary_key=True)
     default_address = Column("default_address", String(255), nullable=True)
     score = Column("score", Integer, nullable=True)
+    
 
 
 class Driver(Base):
