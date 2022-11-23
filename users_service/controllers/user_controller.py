@@ -214,17 +214,17 @@ async def score_user(
 
 
 @user_router.patch("/block/{user_id}", status_code=status.HTTP_200_OK)
-async def block_user( rq: Request, user_id: int, block: bool, db: Session = Depends(database.get_db), firebase=Depends(firebase_handler.get_fb), events=Depends(events_handler.get_event)):
+async def block_user( rq: Request, user_id: int, userBlock: schema.BlockUser, db: Session = Depends(database.get_db), firebase=Depends(firebase_handler.get_fb), events=Depends(events_handler.get_event)):
     try: 
         validated_admin(rq.headers)
         db_user = user_repository.get_user_by_id(user_id, db)
-        firebase.block_user(db_user.tokenId, block)
+        firebase.block_user(db_user.tokenId, userBlock.block)
         events.create_event("Block User", "A user was block by an admin", "info", ["type:INFO",
                     "endpoint:/users/block",
                     "method:PATCH",
                     "operation:block",
                     "status:200",])
-        return user_repository.block_user(db_user, block, db)
+        return user_repository.block_user(db_user, userBlock.block, db)
     except (exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
 

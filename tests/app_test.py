@@ -680,7 +680,7 @@ def test_when_blocking_a_user_it_shoudl_be_block():
     response = registerPassenger2()
     data = response.json()
     id = data['id']
-    response = client.patch("/users/block/" + str(id) + "?block=true", headers={"Authorization": f"Bearer {adminToken()}"})
+    response = client.patch("/users/block/" + str(id), json={'block': True}, headers={"Authorization": f"Bearer {adminToken()}"})
     assert response.status_code == status.HTTP_200_OK, response.text
     data2 = response.json()
     assert data2['isBlock'] == True
@@ -693,7 +693,7 @@ def test_when_block_user_it_cannot_loggin():
     response = registerPassenger2()
     data = response.json()
     id = data['id']
-    client.patch("/users/block/" + str(id) + "?block=true",  headers={"Authorization": f"Bearer {adminToken()}"})
+    client.patch("/users/block/" + str(id) , json={'block': True},  headers={"Authorization": f"Bearer {adminToken()}"})
     response = client.post(
         "users/login",
         json={"token": "hfjdshfuidhysvcsbvs83hfsdf", "user_type": "passenger"},
