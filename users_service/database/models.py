@@ -50,6 +50,7 @@ class PassengerScores(Base):
     scoreid = Column("id", Integer, primary_key=True, autoincrement=True)
     userId = Column("userId", Integer, ForeignKey("passengers.id"), nullable=False)
     rating = Column("score", Integer, nullable=True)
+    opinion = Column("opinion", String(255), nullable = True)
 
 
 class DriverScores(Base):
@@ -57,3 +58,4 @@ class DriverScores(Base):
     scoreid = Column("id", Integer, primary_key=True, autoincrement=True)
     userId = Column("userId", Integer, ForeignKey("drivers.id"), nullable=False)
     rating = Column("score", Integer, nullable=True)
+    opinion = Column("opinion", String(255), nullable = True)

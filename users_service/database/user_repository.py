@@ -76,12 +76,12 @@ def score_user(user_id, user: schema.UserScore, db: Session):
         db_driver = crud.get_driver_by_id(user_id, db)
         if not db_driver:
             raise exceptions.DriverNotFoundError
-        return crud.update_score_driver(db_driver, user.score, db)
+        return crud.update_score_driver(db_driver, user, db)
     else:
         db_passenger = crud.get_passenger_by_id(user_id, db)
         if not db_passenger:
             raise exceptions.PassengerNotFoundError
-        return crud.update_score_passenger(db_passenger, user.score, db)
+        return crud.update_score_passenger(db_passenger, user, db)
 
 
 def user_profile(user_id: int, user_type: str, db: Session):

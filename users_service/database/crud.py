@@ -438,7 +438,7 @@ def delete_driver(user_id, db):
     logger.info("Driver deleted")
 
 
-def get_total_score_for_passenger(passenger_id, score, db):
+def get_total_score_for_passenger(passenger_id, db):
     scores = (
         db.query(models.PassengerScores)
         .filter(models.PassengerScores.userId == passenger_id)
@@ -448,7 +448,7 @@ def get_total_score_for_passenger(passenger_id, score, db):
     return total_score
 
 
-def get_total_score_for_driver(driver_id, score, db):
+def get_total_score_for_driver(driver_id, db):
     scores = (
         db.query(models.DriverScores)
         .filter(models.DriverScores.userId == driver_id)
@@ -458,15 +458,18 @@ def get_total_score_for_driver(driver_id, score, db):
     return total_score
 
 
-def update_score_passenger(passenger: models.Passenger, score: int, db: Session):
-    newScore = models.PassengerScores(userId=passenger.id, rating=score)
+def update_score_passenger(passenger: models.Passenger, userScore: schema.UserScore, db: Session):
+    opinion = None 
+    if userScore.opinion is not None:
+        opinion = userScore.opinion
+    newScore = models.PassengerScores(userId=passenger.id, rating=userScore.score, opinion=opinion)
     db.add(newScore)
     db.commit()
-    db.refresh(newScore)
-    final_score = get_total_score_for_passenger(passenger.id, score, db)
+    
+    final_score = get_total_score_for_passenger(passenger.id, db)
     passenger.score = final_score
     db.commit()
-    db.refresh(passenger)
+    db.refresh(newScore)
     logger.debug(
         "Updated passenger %d score",
         passenger.id,
@@ -479,15 +482,19 @@ def update_score_passenger(passenger: models.Passenger, score: int, db: Session)
         },
     )
     logger.info("Passenger updated")
-    return passenger
+    info = {'score': final_score, 'userId': newScore.userId, 'opinion': newScore.opinion}
+    return info
 
 
-def update_score_driver(driver: models.Driver, score: int, db: Session):
-    newScore = models.DriverScores(userId=driver.id, rating=score)
+def update_score_driver(driver: models.Driver, userScore: schema.UserScore, db: Session):
+    opinion = None 
+    if userScore.opinion is not None:
+        opinion = userScore.opinion
+    newScore = models.DriverScores(userId=driver.id, rating=userScore.score, opinion=opinion)
     db.add(newScore)
     db.commit()
 
-    final_score = get_total_score_for_driver(driver.id, score, db)
+    final_score = get_total_score_for_driver(driver.id, db)
     driver.score = final_score
     db.commit()
     db.refresh(driver)
@@ -503,7 +510,8 @@ def update_score_driver(driver: models.Driver, score: int, db: Session):
         },
     )
     logger.info("Driver updated")
-    return driver
+    info = {'score': final_score, 'userId': newScore.userId, 'opinion': newScore.opinion}
+    return info
 
 def toggle_block_user(user: models.User, block: bool, db:Session):
     user.isBlock = block

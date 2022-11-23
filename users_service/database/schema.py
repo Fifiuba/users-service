@@ -93,3 +93,4 @@ class TypeOfUser(BaseModel):
 class UserScore(BaseModel):
     user_type: str
     score: int = Field(..., ge=1, le=5)
+    opinion: Optional[str] = None

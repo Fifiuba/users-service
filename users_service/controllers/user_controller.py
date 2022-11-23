@@ -207,7 +207,8 @@ async def score_user(
 ):
     try:
         authorization_handler.is_auth(rq.headers)
-        return user_repository.score_user(user_id, user, db)
+        user = user_repository.score_user(user_id, user, db)
+        return user
     except (exceptions.UnauthorizeUser, exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
 

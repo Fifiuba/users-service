@@ -572,7 +572,7 @@ def test_when_scorring_a_passenger_that_existis_it_returns_the_avg():
     )
     assert response.status_code == status.HTTP_200_OK, response.text
     data1 = response.json()
-
+    print(data1)
     score_expected = (4 + 2 + 1) / 3
 
     assert score_expected == data1["score"]
@@ -598,6 +598,7 @@ def test_when_scoring_a_driver_that_exist_it_does_it():
     data1 = response.json()
 
     score_expected = 4
+    print(data1)
 
     assert score_expected == data1["score"]
     client.delete(
@@ -605,6 +606,32 @@ def test_when_scoring_a_driver_that_exist_it_does_it():
         json={"user_type": "driver"},
         headers={"Authorization": f"Bearer {adminToken()}"},
     )
+
+def test_when_a_passenger_does_an_opinion_to_driver_it_does_it():
+    response = registerDriver()
+    data = response.json()
+    token = token_handler.create_access_token(100, "user")
+    endpoint = "/users/score/" + str(data["id"])
+    print(endpoint)
+    response = client.patch(
+        endpoint,
+        headers={"Authorization": f"Bearer {token}"},
+        json={"user_type": "passenger", "score": 4, "opinion": "Muy buen chofer"},
+    )
+    assert response.status_code == status.HTTP_200_OK, response.text
+    data1 = response.json()
+
+    score_expected = 4
+    opinion = "Muy buen chofer"
+
+    assert score_expected == data1["score"]
+    assert opinion == data1["opinion"]
+    client.delete(
+        "/users/" + str(data["id"]),
+        json={"user_type": "driver"},
+        headers={"Authorization": f"Bearer {adminToken()}"},
+    )
+
 
 
 def test_when_scoring_a_driver_that_does_not_exist_it_does_not_do_it():
