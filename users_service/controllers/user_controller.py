@@ -141,7 +141,7 @@ async def login_google(
             events.create_event("Register user with google", "A user registers the systems with google", "info", ["type:INFO",
                     "endpoint:/users/loginGoogle",
                     "method:POST",
-                    "operation:login",
+                    "operation:Register",
                     "status:200",])
 
         events.create_event("Login with google", "A user login in the system via google", "info", ["type:INFO",
