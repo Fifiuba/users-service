@@ -713,6 +713,6 @@ def test_when_getting_services_it_returns_it():
     data = response.json()
     assert data['service'] == "Users Service!"
     assert data['created_on'] == "7-9-22"
-    assert data["descripcion"]== "User services is the responsable of handle the users of the fifiuba app"
+    assert data["description"]== "User services is the responsable of handle the users of the fifiuba app"
    
     
