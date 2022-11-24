@@ -632,6 +632,7 @@ def test_when_a_passenger_does_an_opinion_to_driver_it_does_it():
         json={"user_type": "driver"},
         headers={"Authorization": f"Bearer {adminToken()}"},
     )
+    response = client.get("/users/opinions/1?user_type=passenger&amount=2")
 
 
 
@@ -717,22 +718,24 @@ def test_when_getting_services_it_returns_it():
     assert data["description"]== "User services is the responsable of handle the users of the fifiuba app"
    
 def test_when_getting_opinions_for_user_that_exists_it_returns_it():
-    response = registerDriver()
+    response = registerPassenger()
     data = response.json()
     token = token_handler.create_access_token(100, "user")
     endpoint = "/users/score/" + str(data["id"])
     client.patch(
         endpoint,
         headers={"Authorization": f"Bearer {token}"},
-        json={"user_type": "passenger", "score": 4, "opinion": "Muy buen chofer"},
+        json={"user_type": "driver", "score": 4, "opinion": "Muy buen chofer"},
     )
     client.patch(
         endpoint,
         headers={"Authorization": f"Bearer {token}"},
-        json={"user_type": "passenger", "score": 3, "opinion": "Cumplico con su trabajo"},
+        json={"user_type": "driver", "score": 3, "opinion": "Cumplio con su trabajo"},
     )
 
     response = client.get("/users/opinions/1?user_type=passenger&amount=2")
     assert response.status_code == status.HTTP_200_OK, response.text
     data = response.json()
+    assert data[0]['opinion'] == 'Muy buen chofer'
+    assert data[1]['opinion'] == 'Cumplio con su trabajo'
     print(data)
