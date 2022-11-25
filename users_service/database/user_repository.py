@@ -11,15 +11,17 @@ def get_user_by_email(email: str, db: Session):
         raise exceptions.UserNotFoundError
     return user
 
-def get_opinions_users(id:int, user_type:str, amount:int, db:Session):
+def get_opinions_users(id:int, user_type:str, db:Session):
     if user_type == "passenger":
-        print("soy pasajero")
-        opinions = crud.get_opinions_passenger(id, amount, db)
-        if not opinions:
+        opinions, found = crud.get_opinions_passenger(id, db)
+        if not opinions and not found:
             raise exceptions.PassengerNotFoundError
         return opinions
     else:
-        pass
+        opinions, found = crud.get_opinions_passenger(id, db)
+        if not opinions and not found:
+            raise exceptions.PassengerNotFoundError
+        return opinions
 
 def get_especific_user_by_id(id: int, user_type: str, db: Session):
     if user_type == "passenger":

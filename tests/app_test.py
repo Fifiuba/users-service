@@ -732,7 +732,7 @@ def test_when_getting_opinions_for_user_that_exists_it_returns_it():
         json={"user_type": "passenger", "score": 3, "opinion": "Cumplico con su trabajo"},
     )
 
-    response = client.get("/users/opinions/1?user_type=passenger&amount=2")
+    response = client.get("/users/opinions/1?user_type=passenger")
     assert response.status_code == status.HTTP_200_OK, response.text
     data = response.json()
     print(data)

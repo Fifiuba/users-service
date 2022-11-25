@@ -52,8 +52,19 @@ def get_user_by_email(email: str, db: Session):
 def get_user_by_id(user_id: int, db: Session):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
-def get_opinions_passenger(user_id, amount, db:Session):
-    return db.query(models.PassengerScores).filter(models.PassengerScores.userId == user_id).all()
+def get_opinions_passenger(user_id, db:Session):
+    passenger = get_passenger_by_id(user_id, db)
+    found = True
+    if not passenger:
+        found = False
+    return db.query(models.PassengerScores).filter(models.PassengerScores.userId == user_id).order_by(models.PassengerScores.scoreid.desc()).limit(3).all(), found
+
+def get_opinions_driver(user_id, db:Session):
+    driver = get_driver_by_id(user_id, db)
+    found = True
+    if not driver :
+        found = False
+    return db.query(models.DriverScores).filter(models.DriverScores.userId == user_id).order_by(models.DriverScores.scoreid.desc()).limit(3).all(), found
 
 def get_passenger_by_id(passenger_id: int, db: Session):
     return db.query(models.Passenger).filter(models.Passenger.id == passenger_id).first()

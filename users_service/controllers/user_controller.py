@@ -38,10 +38,9 @@ def read_users(
         raise HTTPException(**error.__dict__)
 
 @user_router.get("/opinions/{id}",  status_code=status.HTTP_200_OK)
-async def get_opinions_user(id:int, user_type: str, amount: int, db: Session = Depends(database.get_db)):
+async def get_opinions_user(id:int, user_type: str, db: Session = Depends(database.get_db)):
     try:
-        print("entre")
-        return user_repository.get_opinions_users(id, user_type, amount, db)
+        return user_repository.get_opinions_users(id, user_type, db)
         
     except (exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
