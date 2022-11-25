@@ -431,6 +431,16 @@ def test_when_getting_profile_for_passenger_that_exists_it_should_do_it():
         headers={"Authorization": f"Bearer {adminToken()}"},
     )
 
+def test_when_getting_profile_for_passenger_that_not_exists_it_should_not_return_it():
+    token = token_handler.create_access_token(1, "user")
+    response = client.get(
+        "/users/me/?user_type=passenger",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
+    data = response.json()
+    assert data["detail"] == "The passenger does not exists"
+
 
 def test_when_update_passenger_info_it_should_do_it():
     response = registerPassenger()
@@ -709,6 +719,13 @@ def test_when_block_user_it_cannot_loggin():
         json={"user_type": "passenger"},
         headers={"Authorization": f"Bearer {adminToken()}"},)
 
+def test_when_blocking_a_user_that_not_exists_it_cannot_do_it():
+    response = client.patch("/users/block/1" , json={'block': True},  headers={"Authorization": f"Bearer {adminToken()}"})
+    assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
+    data = response.json()
+    assert data["detail"] == "The user does not exists"
+    print(data)
+
 def test_when_getting_services_it_returns_it():
     response = client.get("/")
     assert response.status_code == status.HTTP_200_OK, response.text 
@@ -764,3 +781,9 @@ def test_when_driver_dont_existis_cannot_get_opinions():
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
     data = response.json()
     assert data["detail"] == "The driver does not exists"
+
+def test_when_getting_especific_user_that_does_not_exist_it_does_not_return_it():
+    response = client.get("/users/1?user_type=passenger")
+    assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
+    data = response.json()
+    assert data["detail"] == "The passenger does not exists"

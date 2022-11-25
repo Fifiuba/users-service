@@ -280,6 +280,7 @@ def delete_user(user_id, user_type, db: Session):
 def get_user_by_id(user_id: int, db: Session):
     user = crud.get_user_by_id(user_id, db)
     if not user:
+        print("no existe")
         raise exceptions.UserNotFoundError
     return user
 
