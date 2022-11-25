@@ -52,11 +52,12 @@ def get_user_by_email(email: str, db: Session):
 def get_user_by_id(user_id: int, db: Session):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
+def get_opinions_passenger(user_id, amount, db:Session):
+    return db.query(models.PassengerScores).filter(models.PassengerScores.userId == user_id).all()
 
 def get_passenger_by_id(passenger_id: int, db: Session):
-    return (
-        db.query(models.Passenger).filter(models.Passenger.id == passenger_id).first()
-    )
+    return db.query(models.Passenger).filter(models.Passenger.id == passenger_id).first()
+    
 
 
 def get_driver_by_id(driver_id: int, db: Session):
@@ -459,17 +460,16 @@ def get_total_score_for_driver(driver_id, db):
 
 
 def update_score_passenger(passenger: models.Passenger, userScore: schema.UserScore, db: Session):
-    opinion = None 
-    if userScore.opinion is not None:
-        opinion = userScore.opinion
-    newScore = models.PassengerScores(userId=passenger.id, rating=userScore.score, opinion=opinion)
+    print("score: ", userScore.score)
+    print("opinion: ", userScore.opinion)
+    newScore = models.PassengerScores(userId=passenger.id, rating=userScore.score, opinion=userScore.opinion)
     db.add(newScore)
     db.commit()
     
     final_score = get_total_score_for_passenger(passenger.id, db)
     passenger.score = final_score
     db.commit()
-    db.refresh(newScore)
+    db.refresh(passenger)
     logger.debug(
         "Updated passenger %d score",
         passenger.id,
@@ -487,13 +487,12 @@ def update_score_passenger(passenger: models.Passenger, userScore: schema.UserSc
 
 
 def update_score_driver(driver: models.Driver, userScore: schema.UserScore, db: Session):
-    opinion = None 
-    if userScore.opinion is not None:
-        opinion = userScore.opinion
-    newScore = models.DriverScores(userId=driver.id, rating=userScore.score, opinion=opinion)
+    print("score ", userScore.score)
+    print("opinion: ", userScore.opinion)
+    newScore = models.DriverScores(userId=driver.id, rating=userScore.score, opinion=userScore.opinion)
     db.add(newScore)
     db.commit()
-
+    db.refresh(newScore)
     final_score = get_total_score_for_driver(driver.id, db)
     driver.score = final_score
     db.commit()

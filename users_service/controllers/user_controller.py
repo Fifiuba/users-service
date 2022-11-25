@@ -37,6 +37,14 @@ def read_users(
     except (exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
 
+@user_router.get("/opinions/{id}",  status_code=status.HTTP_200_OK)
+async def get_opinions_user(id:int, user_type: str, amount: int, db: Session = Depends(database.get_db)):
+    try:
+        print("entre")
+        return user_repository.get_opinions_users(id, user_type, amount, db)
+        
+    except (exceptions.UserInfoException) as error:
+        raise HTTPException(**error.__dict__)
 
 @user_router.get("/{id}", status_code=status.HTTP_200_OK)
 async def get_user_by_id(
@@ -206,6 +214,7 @@ async def score_user(
     db: Session = Depends(database.get_db),
 ):
     try:
+        print("opinion recibida: ", user.opinion)
         authorization_handler.is_auth(rq.headers)
         user = user_repository.score_user(user_id, user, db)
         return user

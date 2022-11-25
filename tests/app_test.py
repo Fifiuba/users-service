@@ -176,6 +176,7 @@ def test_when_app_has_2_user_then_get_users_return_2_users():
 def test_when_getting_a_passenger_info_that_existis_then_it_returns_it():
     response = registerPassenger()
     data = response.json()
+    print(data)
     endpoint = "/users/" + str(data["id"]) + "/?user_type=passenger"
     response = client.get(endpoint)
     assert response.status_code == status.HTTP_200_OK
@@ -715,4 +716,23 @@ def test_when_getting_services_it_returns_it():
     assert data['created_on'] == "7-9-22"
     assert data["description"]== "User services is the responsable of handle the users of the fifiuba app"
    
-    
+def test_when_getting_opinions_for_user_that_exists_it_returns_it():
+    response = registerDriver()
+    data = response.json()
+    token = token_handler.create_access_token(100, "user")
+    endpoint = "/users/score/" + str(data["id"])
+    client.patch(
+        endpoint,
+        headers={"Authorization": f"Bearer {token}"},
+        json={"user_type": "passenger", "score": 4, "opinion": "Muy buen chofer"},
+    )
+    client.patch(
+        endpoint,
+        headers={"Authorization": f"Bearer {token}"},
+        json={"user_type": "passenger", "score": 3, "opinion": "Cumplico con su trabajo"},
+    )
+
+    response = client.get("/users/opinions/1?user_type=passenger&amount=2")
+    assert response.status_code == status.HTTP_200_OK, response.text
+    data = response.json()
+    print(data)

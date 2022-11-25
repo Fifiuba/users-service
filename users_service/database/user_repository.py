@@ -11,6 +11,15 @@ def get_user_by_email(email: str, db: Session):
         raise exceptions.UserNotFoundError
     return user
 
+def get_opinions_users(id:int, user_type:str, amount:int, db:Session):
+    if user_type == "passenger":
+        print("soy pasajero")
+        opinions = crud.get_opinions_passenger(id, amount, db)
+        if not opinions:
+            raise exceptions.PassengerNotFoundError
+        return opinions
+    else:
+        pass
 
 def get_especific_user_by_id(id: int, user_type: str, db: Session):
     if user_type == "passenger":
@@ -76,11 +85,13 @@ def score_user(user_id, user: schema.UserScore, db: Session):
         db_driver = crud.get_driver_by_id(user_id, db)
         if not db_driver:
             raise exceptions.DriverNotFoundError
+        print("opinion recibida en repocitory: ", user.opinion)
         return crud.update_score_driver(db_driver, user, db)
     else:
         db_passenger = crud.get_passenger_by_id(user_id, db)
         if not db_passenger:
             raise exceptions.PassengerNotFoundError
+        print("opinion recibida en repocitory: ", user.opinion)
         return crud.update_score_passenger(db_passenger, user, db)
 
 
