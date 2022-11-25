@@ -719,9 +719,9 @@ def test_when_getting_services_it_returns_it():
    
 def test_when_getting_opinions_for_user_that_exists_it_returns_it():
     response = registerPassenger()
-    data = response.json()
+    data1 = response.json()
     token = token_handler.create_access_token(100, "user")
-    endpoint = "/users/score/" + str(data["id"])
+    endpoint = "/users/score/" + str(data1["id"])
     client.patch(
         endpoint,
         headers={"Authorization": f"Bearer {token}"},
@@ -736,6 +736,31 @@ def test_when_getting_opinions_for_user_that_exists_it_returns_it():
     response = client.get("/users/opinions/1?user_type=passenger")
     assert response.status_code == status.HTTP_200_OK, response.text
     data = response.json()
-    assert data[0]['opinion'] == 'Muy buen chofer'
-    assert data[1]['opinion'] == 'Cumplio con su trabajo'
+    assert data[1]['opinion'] == 'Muy buen chofer'
+    assert data[0]['opinion'] == 'Cumplio con su trabajo'
     print(data)
+    client.delete(
+        "/users/" + str(data1['id']),
+        json={"user_type": "passenger"},
+        headers={"Authorization": f"Bearer {adminToken()}"},)
+
+
+def test_when_driver_dont_have_opinions_it_return_an_empty_array():
+    response = registerDriver()
+    data = response.json()
+    token = token_handler.create_access_token(100, "user")
+    response = client.get("/users/opinions/" + str(data['id']) + "?user_type=driver")
+    assert response.status_code == status.HTTP_200_OK, response.text
+    data1 = response.json()
+    assert len(data1) == 0
+    assert data1 == []
+    client.delete(
+        "/users/" + str(data['id']),
+        json={"user_type": "driver"},
+        headers={"Authorization": f"Bearer {adminToken()}"},)
+
+def test_when_driver_dont_existis_cannot_get_opinions():
+    response = client.get("/users/opinions/1?user_type=driver")
+    assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
+    data = response.json()
+    assert data["detail"] == "The driver does not exists"

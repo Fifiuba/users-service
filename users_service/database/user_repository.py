@@ -18,9 +18,11 @@ def get_opinions_users(id:int, user_type:str, db:Session):
             raise exceptions.PassengerNotFoundError
         return opinions
     else:
-        opinions, found = crud.get_opinions_passenger(id, db)
+        opinions, found = crud.get_opinions_driver(id, db)
+        print(found)
         if not opinions and not found:
-            raise exceptions.PassengerNotFoundError
+            print("no existe driver")
+            raise exceptions.DriverNotFoundError
         return opinions
 
 def get_especific_user_by_id(id: int, user_type: str, db: Session):

@@ -56,6 +56,7 @@ def get_opinions_passenger(user_id, db:Session):
     passenger = get_passenger_by_id(user_id, db)
     found = True
     if not passenger:
+        print("entre")
         found = False
     return db.query(models.PassengerScores).filter(models.PassengerScores.userId == user_id).order_by(models.PassengerScores.scoreid.desc()).limit(3).all(), found
 
@@ -63,6 +64,7 @@ def get_opinions_driver(user_id, db:Session):
     driver = get_driver_by_id(user_id, db)
     found = True
     if not driver :
+        print("no existe")
         found = False
     return db.query(models.DriverScores).filter(models.DriverScores.userId == user_id).order_by(models.DriverScores.scoreid.desc()).limit(3).all(), found
 
