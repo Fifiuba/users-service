@@ -38,8 +38,9 @@ def read_users(
         raise HTTPException(**error.__dict__)
 
 @user_router.get("/opinions/{id}",  status_code=status.HTTP_200_OK)
-async def get_opinions_user(id:int, user_type: str, db: Session = Depends(database.get_db)):
+async def get_opinions_user(rq: Request, id:int, user_type: str, db: Session = Depends(database.get_db)):
     try:
+        authorization_handler.is_auth(rq.headers)
         return user_repository.get_opinions_users(id, user_type, db)
         
     except (exceptions.UserInfoException) as error:
