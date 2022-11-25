@@ -380,6 +380,18 @@ def edit_driver_info(
     logger.info("Driver updated")
     return user, driver
 
+def delete_scores_for_passenger(user_id: int, db:Session):
+    scores = db.query(models.PassengerScores).filter(models.PassengerScores.userId == user_id)
+    for score in scores:
+        db.delete(score)
+        db.commit()
+
+def delete_scores_for_driver(user_id:int, db:Session):
+    scores = db.query(models.DriverScores).filter(models.DriverScores.userId == user_id)
+    for score in scores:
+        db.delete(score)
+        db.commit()
+
 
 def delete_passenger(user_id, db):
     print("voy a borrar pasajerp")
@@ -393,12 +405,13 @@ def delete_passenger(user_id, db):
                 "type": "WARN",
                 "endpoint": "/users/",
                 "method": "DETELE",
-                "operation": "udelete user",
+                "operation": "delete user",
                 "status": 404,
             },
         )
         raise exceptions.PassengerNotFoundError
     user = get_user_by_id(user_id, db)
+    delete_scores_for_passenger(user_id, db)
     db.delete(passenger)
     print(user)
     db.delete(user)
@@ -426,13 +439,14 @@ def delete_driver(user_id, db):
             extra={
                 "type": "WARN",
                 "endpoint": "/users/",
-                "method": "DETELE",
-                "operation": "udelete user",
+                "method": "DELETE",
+                "operation": "delete user",
                 "status": 404,
             },
         )
         raise exceptions.DriverNotFoundError
     user = get_user_by_id(user_id, db)
+    delete_scores_for_driver(user_id, db)
     db.delete(driver)
     db.delete(user)
     db.commit()
@@ -504,6 +518,8 @@ def update_score_driver(driver: models.Driver, userScore: schema.UserScore, db: 
     db.add(newScore)
     db.commit()
     db.refresh(newScore)
+    if (newScore.opinion is not None):
+        print("despues de guardar la opinion es: " + newScore.opinion + " y new score: " + str(newScore.rating))
     final_score = get_total_score_for_driver(driver.id, db)
     driver.score = final_score
     db.commit()
