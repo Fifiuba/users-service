@@ -229,13 +229,26 @@ async def block_user( rq: Request, user_id: int, userBlock: schema.BlockUser, db
         db_user = user_repository.get_user_by_id(user_id, db)
         print(db_user.id)
         firebase.block_user(db_user.tokenId, userBlock.block)
-        print("toy aca")
+        
         events.create_event("Block User", "A user was block by an admin", "info", ["type:INFO",
                     "endpoint:/users/block",
                     "method:PATCH",
                     "operation:block",
                     "status:200",])
-        return user_repository.block_user(db_user, userBlock.block, db)
+        user = user_repository.block_user(db_user, userBlock.block, db)
+        if userBlock.block :
+            events.create_event("Block User", "A user was block by an admin", "info", ["type:INFO",
+                                    "endpoint:/users/block",
+                                    "method:PATCH",
+                                    "operation:block",
+                                    "status:200",])
+        else :
+             events.create_event("Unlock User", "A user was unblock by an admin", "info", ["type:INFO",
+                                    "endpoint:/users/block",
+                                    "method:PATCH",
+                                    "operation:unblock",
+                                    "status:200",])
+        return user
     except (exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
 
