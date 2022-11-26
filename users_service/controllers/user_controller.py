@@ -252,4 +252,18 @@ async def block_user( rq: Request, user_id: int, userBlock: schema.BlockUser, db
     except (exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
 
+
+@user_router.post("/restorePassword/{user_id}", status_code=status.HTTP_200_OK)
+async def restore_password(rq: Request, user_id: int,db: Session = Depends(database.get_db), events=Depends(events_handler.get_event)):
+    try:
+        authorization_handler.is_auth(rq.headers)
+        user = user_repository.get_user_by_id(user_id, db)
+        events.create_event("Restore password User", "A user restore its password", "info", ["type:INFO",
+                                    "endpoint:/users/restorePassword",
+                                    "method:POST",
+                                    "operation:restorePassword",
+                                    "status:200",])
+        return user
+    except (exceptions.UserInfoException) as error:
+        raise HTTPException(**error.__dict__)
         
