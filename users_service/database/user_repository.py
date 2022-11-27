@@ -270,11 +270,11 @@ def delete_user(user_id, user_type, db: Session):
         print("entre")
         crud.delete_google_user(google_user, db)
     if user_type == "passenger":
-        crud.delete_passenger(user_id, db)
-        return user_id
+        user = crud.delete_passenger(user_id, db)
+        return user 
     else:
-        crud.delete_driver(user_id, db)
-        return user_id
+        user = crud.delete_driver(user_id, db)
+        return user
 
 
 def get_user_by_id(user_id: int, db: Session):

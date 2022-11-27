@@ -430,6 +430,7 @@ def delete_passenger(user_id, db):
         },
     )
     logger.info("Passenger deleted")
+    return {'id': user_id}
 
 
 def delete_driver(user_id, db):
@@ -465,6 +466,7 @@ def delete_driver(user_id, db):
     )
     logger.info("Driver deleted")
 
+    return {'id': user_id}
 
 def get_total_score_for_passenger(passenger_id, db):
     scores = (
