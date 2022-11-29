@@ -337,9 +337,30 @@ def test_when_gettion_info_from_existing_user_then_returns_the_information():
         headers={"Authorization": f"Bearer {adminToken()}"},
     )
 
+def test_when_login_google_as_passenger_for_the_first_time_it_does_return_the_token():
+    response = client.post(
+        "users/loginGoogle",
+        json={"user_type": "passenger", "token": "hfjdshfuidhysvcsbvs83hfsdf"},
+    )
+    assert response.status_code == status.HTTP_200_OK, response.text
+    data = response.json()
+    actual = token_handler.decode_token(data)
+    expected = {
+        "id": 1,
+        "rol": "user",
+    }
 
-def test_when_login_google_as_passenger_when_register_as_driver_doesnt_return_token():
-    client.post(
+    assert actual["id"] == expected["id"]
+    assert actual["rol"] == expected["rol"]
+    client.delete(
+        "/users/" + str(1),
+        json={"user_type": "passenger"},
+        headers={"Authorization": f"Bearer {adminToken()}"},
+    )
+
+
+def test_when_login_google_as_driver_when_register_as_passenger_does_it_and_return_token():
+    response1 = client.post(
         "users/loginGoogle",
         json={"user_type": "driver", "token": "hfjdshfuidhysvcsbvs83hfsdf"},
     )
@@ -347,9 +368,21 @@ def test_when_login_google_as_passenger_when_register_as_driver_doesnt_return_to
         "users/loginGoogle",
         json={"user_type": "passenger", "token": "hfjdshfuidhysvcsbvs83hfsdf"},
     )
-    assert response.status_code == status.HTTP_404_NOT_FOUND
-    data1 = response.json()
-    assert data1["detail"] == "The passenger does not exists"
+    assert response.status_code == status.HTTP_200_OK, response.text
+    data = response.json()
+    actual = token_handler.decode_token(data)
+    expected = {
+        "id": 1,
+        "rol": "user",
+    }
+
+    assert actual["id"] == expected["id"]
+    assert actual["rol"] == expected["rol"]
+    client.delete(
+        "/users/" + str(1),
+        json={"user_type": "passenger"},
+        headers={"Authorization": f"Bearer {adminToken()}"},
+    )
     client.delete(
         "/users/" + str(1),
         json={"user_type": "driver"},
@@ -357,7 +390,7 @@ def test_when_login_google_as_passenger_when_register_as_driver_doesnt_return_to
     )
 
 
-def test_when_login_google_as_driver_when_register_as_passenger_doesnt_return_token():
+def test_when_login_google_as_passenger_when_register_as_driver_does_it_and_return_token():
     client.post(
         "users/loginGoogle",
         json={"user_type": "passenger", "token": "ahsgdhauiwhfdiwhf"},
@@ -366,14 +399,27 @@ def test_when_login_google_as_driver_when_register_as_passenger_doesnt_return_to
         "users/loginGoogle",
         json={"user_type": "driver", "token": "ahsgdhauiwhfdiwhf"},
     )
-    assert response.status_code == status.HTTP_404_NOT_FOUND
-    data1 = response.json()
-    assert data1["detail"] == "The driver does not exists"
+    assert response.status_code == status.HTTP_200_OK, response.text
+    data = response.json()
+    actual = token_handler.decode_token(data)
+    expected = {
+        "id": 1,
+        "rol": "user",
+    }
+
+    assert actual["id"] == expected["id"]
+    assert actual["rol"] == expected["rol"]
     client.delete(
         "/users/" + str(1),
         json={"user_type": "passenger"},
         headers={"Authorization": f"Bearer {adminToken()}"},
     )
+    client.delete(
+        "/users/" + str(1),
+        json={"user_type": "driver"},
+        headers={"Authorization": f"Bearer {adminToken()}"},
+    )
+
 
 
 def test_when_login_to_register_user_with_validad_data_then_it_should_return_token():

@@ -193,56 +193,20 @@ def login(email: str, token_id: str, user_type: str, db: Session):
     token = token_handler.create_access_token(db_user.id, "user")
     return token
 
-
-def login_google(
-    uid: str, email: str, name: str, picture: str, user_type: str, db: Session
-):
-    relationship = crud.get_google_relationship(uid, db)
+def login_google(uid: str, email: str, name: str, picture: str, user_type: str, db: Session):
     isnewUser = False
-    if not relationship:
-        print("email: ", email)
-        user = crud.get_user_by_email(email, db)
-        if user:
-            crud.logger.warning(
-                "Login with Google",
-                extra={
-                    "type": "WARN",
-                    "endpoint": "/users/loginGoogle",
-                    "method": "POST",
-                    "operation": "login",
-                    "status": 401,
-                },
-            )
-            raise exceptions.UserAlreadyExists
+    user_id = -1
+    if user_type == "passenger":
+        relationship_passenger = crud.get_google_relationship_passenger(uid, db)
+        if not relationship_passenger:
+            user = crud.create_user_google_passenger(uid, email, name, picture, db)
+            if user is None:
+                raise exceptions.PassengerAlreadyExists
+            user_id = user.id
+            isnewUser = True 
         else:
-            user_aux = schema.UserBase(
-                user_type=user_type,
-                name=name,
-                password="",
-                phone_number=None,
-                email=email,
-                age=None,
-                picture=picture,
-            )
-            isnewUser = True
-            db_user = create_user(uid, user_aux, db)
+            user_id = relationship_passenger.userId
             crud.logger.info(
-                "Login with Google",
-                extra={
-                    "type": "INFO",
-                    "endpoint": "/users/loginGoogle",
-                    "method": "POST",
-                    "operation": "login",
-                    "status": 200,
-                },
-            )
-            crud.create_google_relationship(uid, db_user.id, db)
-            user_id = db_user.id
-    else:
-        isnewUser = False
-        user_id = relationship.userId
-        login_verify_user_type(user_id, user_type, "google", db)
-        crud.logger.info(
             "Login with Google",
             extra={
                 "type": "INFO",
@@ -251,28 +215,48 @@ def login_google(
                 "operation": "login",
                 "status": 200,
             },
-        )
+            )
+    else :
+        relationship_driver = crud.get_google_relationship_driver(uid, db)
+        if not relationship_driver:
+            user = crud.create_user_google_driver(uid, email, name, picture, db)
+            if user is None:
+                raise exceptions.DriverAlreadyExists
+            user_id = user.id
+            isnewUser = True
 
+        else: 
+            user_id = relationship_driver.userId
+            crud.logger.info(
+            "Login with Google",
+            extra={
+                "type": "INFO",
+                "endpoint": "/users/loginGoogle",
+                "method": "POST",
+                "operation": "login",
+                "status": 200,
+            },
+            )
     token = token_handler.create_access_token(user_id, "user")
     return token, isnewUser
 
 
-def get_google_user(user_id, db):
-    google_user = crud.get_google_user(user_id, db)
-    print("entre")
-    return google_user
+
 
 
 def delete_user(user_id, user_type, db: Session):
     print("toy en delete user")
-    google_user = get_google_user(user_id, db)
-    if google_user is not None:
-        print("entre")
-        crud.delete_google_user(google_user, db)
+    
     if user_type == "passenger":
+        google_user = crud.get_passenger_google_by_id(user_id, db)
+        if google_user :
+            crud.delete_google_user_passenger(google_user, db)
         user = crud.delete_passenger(user_id, db)
         return user 
     else:
+        google_user = crud.get_driver_google_by_id(user_id, db)
+        if google_user:
+            crud.delete_google_user_driver(google_user, db)
         user = crud.delete_driver(user_id, db)
         return user
 

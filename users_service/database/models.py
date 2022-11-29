@@ -44,6 +44,19 @@ class GoogleUser(Base):
     userId = Column("userId", Integer, ForeignKey("users.id"), nullable=False)
     googleId = Column("googleId", String(255), primary_key=True)
 
+class GooglePassenger(Base):
+    __tablename__ = "googlePassenger"
+
+    userId = Column("userId", Integer, ForeignKey("users.id"), nullable=False)
+    googleId = Column("googleId", String(255), primary_key=True)
+
+class GoogleDriver(Base):
+    __tablename__ = "googleDriver"
+
+    userId = Column("userId", Integer, ForeignKey("users.id"), nullable=False)
+    googleId = Column("googleId", String(255), primary_key=True)
+
+
 
 class PassengerScores(Base):
     __tablename__ = "passengersScores"
