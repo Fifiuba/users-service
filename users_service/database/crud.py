@@ -570,7 +570,9 @@ def create_user_google_passenger(uid:str, email:str, name:str, picture:str, db:S
                 picture=picture,
             )
     user = get_user_by_email(email, db)
+    print(user)
     if user is None or (user and get_driver_by_id is not None):
+        print("creo usuaro google como passager")
         db_user = create_passenger(uid, user_aux, db)
         logger.info(
                     "Login with Google",
@@ -616,7 +618,9 @@ def create_user_google_passenger(uid:str, email:str, name:str, picture:str, db:S
 
 def create_user_google_driver(uid:str, email:str, name:str, picture:str, db:Session):
     user = get_user_by_email(email, db)
+    print(user)
     if user is None or (user and get_passenger_google_by_id(user.id, db) is not None):
+        print("toy en crear usuario como driver en login google")
         user_aux = schema.UserBase(
                 user_type="driver",
                 name=name,
@@ -654,6 +658,7 @@ def create_user_google_driver(uid:str, email:str, name:str, picture:str, db:Sess
         print("no falle")
         return  db_user
     else:
+        print("Me esta diciendo que ya hay alguien con ese emial normal")
         logger.warning(
                 "Login with Google",
                 extra={

@@ -198,13 +198,17 @@ def login_google(uid: str, email: str, name: str, picture: str, user_type: str, 
     user_id = -1
     if user_type == "passenger":
         relationship_passenger = crud.get_google_relationship_passenger(uid, db)
+        print(relationship_passenger)
         if not relationship_passenger:
+            print("No hay relacion pasagero")
             user = crud.create_user_google_passenger(uid, email, name, picture, db)
             if user is None:
+                print("Ya exiate alguien con ese email")
                 raise exceptions.PassengerAlreadyExists
             user_id = user.id
             isnewUser = True 
         else:
+            print("Hay relacion")
             user_id = relationship_passenger.userId
             crud.logger.info(
             "Login with Google",
@@ -218,14 +222,18 @@ def login_google(uid: str, email: str, name: str, picture: str, user_type: str, 
             )
     else :
         relationship_driver = crud.get_google_relationship_driver(uid, db)
+        print(relationship_driver)
         if not relationship_driver:
+            print("No hay relacion como driver")
             user = crud.create_user_google_driver(uid, email, name, picture, db)
             if user is None:
+                print("Ya existe alguien coin ese email ")
                 raise exceptions.DriverAlreadyExists
             user_id = user.id
             isnewUser = True
 
         else: 
+            print("Hay relacion")
             user_id = relationship_driver.userId
             crud.logger.info(
             "Login with Google",
