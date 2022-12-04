@@ -135,7 +135,7 @@ def test_when_app_has_2_passengers_then_get_passengers_return_2_users():
     assert response.status_code == status.HTTP_200_OK
 
     data = response.json()
-    print(data)
+  
     assert len(data) == 2
     assert data[0]["id"] == data1["id"]
     client.delete(
@@ -160,7 +160,7 @@ def test_when_app_has_2_user_then_get_users_return_2_users():
 
     data = response.json()
     assert len(data) == 2
-    print(data)
+ 
     client.delete(
         "/users/" + str(data[0]["id"]),
         json={"user_type": "passenger"},
@@ -176,12 +176,12 @@ def test_when_app_has_2_user_then_get_users_return_2_users():
 def test_when_getting_a_passenger_info_that_existis_then_it_returns_it():
     response = registerPassenger()
     data = response.json()
-    print(data)
+   
     endpoint = "/users/" + str(data["id"]) + "/?user_type=passenger"
     response = client.get(endpoint)
     assert response.status_code == status.HTTP_200_OK
     data1 = response.json()
-    print("test ", data1)
+
     client.delete(
         "/users/" + str(data["id"]),
         json={"user_type": "passenger"},
@@ -305,7 +305,7 @@ def test_when_driver_not_exists_and_adds_carInfo_the_carInfo_isnot_addit():
 def test_when_getting_information_for_nonexisting_user_then_returns_user_not_exist():
     token = token_handler.create_access_token(1, "user")
     response = client.get("/users/info/1", headers={"Authorization": f"Bearer {token}"})
-    print(response.status_code)
+
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
 
     data = response.json()
@@ -491,7 +491,6 @@ def test_when_getting_profile_for_passenger_that_not_exists_it_should_not_return
 def test_when_update_passenger_info_it_should_do_it():
     response = registerPassenger()
     data1 = response.json()
-    print(data1)
     token = token_handler.create_access_token(data1["id"], "user")
     response = client.patch(
         "/users/me/",
@@ -504,7 +503,6 @@ def test_when_update_passenger_info_it_should_do_it():
 
     assert response.status_code == status.HTTP_200_OK, response.text
     data = response.json()
-    print(data)
     assert data[0]["age"] == 25
     assert data[1]["default_address"] == "example"
     client.delete(
@@ -529,7 +527,6 @@ def test_when_update_driver_info_it_should_do_it():
 
     assert response.status_code == status.HTTP_200_OK, response.text
     data = response.json()
-    print(data)
     assert data[0]["age"] == 14
     assert data[0]["phone_number"] == "436278"
     assert data[1]["model_car"] == "Audi"
@@ -629,7 +626,6 @@ def test_when_scorring_a_passenger_that_existis_it_returns_the_avg():
     )
     assert response.status_code == status.HTTP_200_OK, response.text
     data1 = response.json()
-    print(data1)
     score_expected = (4 + 2 + 1) / 3
 
     assert score_expected == data1["score"]
@@ -645,7 +641,6 @@ def test_when_scoring_a_driver_that_exist_it_does_it():
     data = response.json()
     token = token_handler.create_access_token(100, "user")
     endpoint = "/users/score/" + str(data["id"])
-    print(endpoint)
     response = client.patch(
         endpoint,
         headers={"Authorization": f"Bearer {token}"},
@@ -655,7 +650,6 @@ def test_when_scoring_a_driver_that_exist_it_does_it():
     data1 = response.json()
 
     score_expected = 4
-    print(data1)
 
     assert score_expected == data1["score"]
     client.delete(
@@ -669,7 +663,6 @@ def test_when_a_passenger_does_an_opinion_to_driver_it_does_it():
     data = response.json()
     token = token_handler.create_access_token(100, "user")
     endpoint = "/users/score/" + str(data["id"])
-    print(endpoint)
     response = client.patch(
         endpoint,
         headers={"Authorization": f"Bearer {token}"},
@@ -695,7 +688,6 @@ def test_when_a_passenger_does_an_opinion_to_driver_it_does_it():
 def test_when_scoring_a_driver_that_does_not_exist_it_does_not_do_it():
     token = token_handler.create_access_token(100, "user")
     endpoint = "/users/score/101"
-    print(endpoint)
     response = client.patch(
         endpoint,
         headers={"Authorization": f"Bearer {token}"},
@@ -770,7 +762,7 @@ def test_when_blocking_a_user_that_not_exists_it_cannot_do_it():
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
     data = response.json()
     assert data["detail"] == "The user does not exists"
-    print(data)
+ 
 
 def test_when_getting_services_it_returns_it():
     response = client.get("/")
@@ -801,7 +793,7 @@ def test_when_getting_opinions_for_user_that_exists_it_returns_it():
     data = response.json()
     assert data[1]['opinion'] == 'Muy buen chofer'
     assert data[0]['opinion'] == 'Cumplio con su trabajo'
-    print(data)
+
     client.delete(
         "/users/" + str(data1['id']),
         json={"user_type": "passenger"},

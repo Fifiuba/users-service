@@ -15,7 +15,6 @@ class Firebase:
             self.auth.UserNotFoundError,
             fb_exceptions.FirebaseError,
         ) as error:
-            print(error)
             crud.logger.warning(
                 "firebase error %s",
                 error,
@@ -45,23 +44,19 @@ class Firebase:
             self.auth.RevokedIdTokenError,
             self.auth.ExpiredIdTokenError,
             self.auth.InvalidIdTokenError,
-        ) as error:
-            print(error)
+        ):
             raise exceptions.UserWrongLoginInformation
-        except (self.auth.UserDisabledError) as error:
-            print(error)
+        except (self.auth.UserDisabledError):
             raise exceptions.UserIsBlock
 
     def delete_user(self, uid):
         try:
             self.auth.delete_user(uid, app=self.app)
         except (ValueError, self.auth.UserNotFoundError, fb_exceptions.FirebaseError):
-            print("error de firebase")
             raise exceptions.UserNotFoundError
     
     def block_user(self, uid, block):
         try:
             self.auth.update_user(uid, disabled=block)
-        except (ValueError, self.auth.UserNotFoundError, fb_exceptions.FirebaseError) as err:
-            print("error de firebase ", err)
+        except (ValueError, self.auth.UserNotFoundError, fb_exceptions.FirebaseError):
             raise exceptions.UserNotFoundError

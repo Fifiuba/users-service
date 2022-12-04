@@ -35,7 +35,6 @@ class FirebaseMock:
     def create_user(self, email, password):
         uid = None
         for value in self.usersfireabse.values():
-            print(value)
             if value["email"] == email:
                 uid = value["uid"]
         return uid
@@ -56,7 +55,6 @@ class FirebaseMock:
     def get_email(self, uid):
         email = None
         for value in self.usersfireabse.values():
-            print(value)
             if value["uid"] == uid:
                 email = value["email"]
         return email
@@ -66,7 +64,6 @@ class FirebaseMock:
 
     def block_user(self, uid, block):
         for value in self.usersfireabse.values():
-            print(value)
             if value["uid"] == uid:
                 value['block'] = block
        

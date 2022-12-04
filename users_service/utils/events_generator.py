@@ -7,7 +7,6 @@ class EventsGenerator:
         self.api_client = api_client
 
     def create_event(self,titleEvent, textEvent, alert_typeEvent, tagsEvent):
-        print("entre a event generator")
         body = EventCreateRequest(
             title=titleEvent,
             text=textEvent,

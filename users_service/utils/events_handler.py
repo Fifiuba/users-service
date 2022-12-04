@@ -8,7 +8,6 @@ def init_events():
     events = EventsGenerator(config, api_client)
 
 def get_event():
-    print("entre a get event")
     try:
         yield events
     finally:

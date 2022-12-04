@@ -12,7 +12,6 @@ def validated_admin(headers):
     authorization_handler.is_auth(headers)
     token = authorization_handler.get_token(headers)
     payload = token_handler.decode_token(token)
-    print(payload)
     user = payload["rol"]
     authorization_handler.is_admin(user)
 
@@ -137,7 +136,6 @@ async def login_google(
     try:
         user = firebase.valid_user(googleUser.token)
         email = firebase.get_email(user.get("uid"))
-        print("email: ", email)
         token, isNewUser= user_repository.login_google(
             user.get("uid"),
             email,
@@ -199,7 +197,6 @@ async def delete_user(
 ):
     try:
         validated_admin(rq.headers)
-        print("si llegue hasta aca es xq tengo perimos sde admin")
         db_user = user_repository.get_user_by_id(user_id, db)
         unique = user_repository.verify_unique_user(user_id, user.user_type, db)
         if unique :
@@ -217,7 +214,6 @@ async def score_user(
     db: Session = Depends(database.get_db),
 ):
     try:
-        print("opinion recibida: ", user.opinion)
         authorization_handler.is_auth(rq.headers)
         user = user_repository.score_user(user_id, user, db)
         return user

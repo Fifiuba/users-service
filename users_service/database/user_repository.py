@@ -19,9 +19,7 @@ def get_opinions_users(id:int, user_type:str, db:Session):
         return opinions
     else:
         opinions, found = crud.get_opinions_driver(id, db)
-        print(found)
         if not opinions and not found:
-            print("no existe driver")
             raise exceptions.DriverNotFoundError
         return opinions
 
@@ -89,13 +87,11 @@ def score_user(user_id, user: schema.UserScore, db: Session):
         db_driver = crud.get_driver_by_id(user_id, db)
         if not db_driver:
             raise exceptions.DriverNotFoundError
-        print("opinion recibida en repocitory: ", user.opinion)
         return crud.update_score_driver(db_driver, user, db)
     else:
         db_passenger = crud.get_passenger_by_id(user_id, db)
         if not db_passenger:
             raise exceptions.PassengerNotFoundError
-        print("opinion recibida en repocitory: ", user.opinion)
         return crud.update_score_passenger(db_passenger, user, db)
 
 
@@ -198,17 +194,13 @@ def login_google(uid: str, email: str, name: str, picture: str, user_type: str, 
     user_id = -1
     if user_type == "passenger":
         relationship_passenger = crud.get_google_relationship_passenger(uid, db)
-        print(relationship_passenger)
         if not relationship_passenger:
-            print("No hay relacion pasagero")
             user = crud.create_user_google_passenger(uid, email, name, picture, db)
             if user is None:
-                print("Ya exiate alguien con ese email")
                 raise exceptions.PassengerAlreadyExists
             user_id = user.id
             isnewUser = True 
         else:
-            print("Hay relacion")
             user_id = relationship_passenger.userId
             crud.logger.info(
             "Login with Google",
@@ -222,18 +214,14 @@ def login_google(uid: str, email: str, name: str, picture: str, user_type: str, 
             )
     else :
         relationship_driver = crud.get_google_relationship_driver(uid, db)
-        print(relationship_driver)
         if not relationship_driver:
-            print("No hay relacion como driver")
             user = crud.create_user_google_driver(uid, email, name, picture, db)
             if user is None:
-                print("Ya existe alguien coin ese email ")
                 raise exceptions.DriverAlreadyExists
             user_id = user.id
             isnewUser = True
 
         else: 
-            print("Hay relacion")
             user_id = relationship_driver.userId
             crud.logger.info(
             "Login with Google",
@@ -260,9 +248,7 @@ def verify_unique_user(id: int, type: str, db:Session):
             return False
         return True
 
-def delete_user(user_id, user_type, db: Session):
-    print("toy en delete user")
-    
+def delete_user(user_id, user_type, db: Session):  
     if user_type == "passenger":
         google_user = crud.get_passenger_google_by_id(user_id, db)
         if google_user is not None:
@@ -281,10 +267,8 @@ def delete_user(user_id, user_type, db: Session):
 def get_user_by_id(user_id: int, db: Session):
     user = crud.get_user_by_id(user_id, db)
     if not user:
-        print("no existe")
         raise exceptions.UserNotFoundError
     return user
 
-def block_user(user, block: bool, db: Session):
-    
+def block_user(user, block: bool, db: Session):  
     return crud.toggle_block_user(user, block, db)
