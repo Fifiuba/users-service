@@ -3,8 +3,8 @@
 
 [![GitHub Workflow Status](https://github.com/Fifiuba/users-service/actions/workflows/test_action.yml/badge.svg?event=push)](https://github.com/Fifiuba/users-service/commits/main)
 [![codecov](https://codecov.io/gh/Fifiuba/users-service/branch/main/graph/badge.svg?token=WQLIP37828)](https://codecov.io/gh/Fifiuba/users-service)
-[![GitHub issues](https://img.shields.io/github/issues/Fifiuba/users-service?&style=flat-square)](https://github.com/Fifiuba/users-service/issues)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/Fifiuba/users-service/blob/develop/LICENSE)
+[![Develop on Okteto](https://okteto.com/develop-okteto.svg)](https://backend-agustinaa235.cloud.okteto.net/)
 
 ### App
 
@@ -67,7 +67,9 @@ This is the users services used to handle all the request for the users. Some of
 
 
 ### Project Structure
-* .
+*
+``` 
+.
 ├──   .coverage
 ├──   .env.example
 ├──   .flake8
@@ -118,6 +120,7 @@ This is the users services used to handle all the request for the users. Some of
         ├── firebase_keys.json
         ├── firebase_mock.py
         ├── token_handler.py
+```
 
 * Arquitectura: [a link](https://lucid.app/lucidchart/2b0082b4-0986-4100-94b0-df16a620bc21/edit?invitationId=inv_221440e6-e888-4abd-a513-a07c1c196692&page=0_0#)
 
