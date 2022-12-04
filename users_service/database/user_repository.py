@@ -248,25 +248,34 @@ def login_google(uid: str, email: str, name: str, picture: str, user_type: str, 
     token = token_handler.create_access_token(user_id, "user")
     return token, isnewUser
 
-
-
-
+def verify_unique_user(id: int, type: str, db:Session):
+    if type == "passenger":
+        user = crud.get_driver_by_id(id, db)
+        if user is not None:
+            return False
+        return True
+    else:
+        user = crud.get_passenger_by_id(id, db)
+        if user is not None:
+            return False
+        return True
 
 def delete_user(user_id, user_type, db: Session):
     print("toy en delete user")
     
     if user_type == "passenger":
         google_user = crud.get_passenger_google_by_id(user_id, db)
-        if google_user :
+        if google_user is not None:
             crud.delete_google_user_passenger(google_user, db)
         user = crud.delete_passenger(user_id, db)
         return user 
     else:
         google_user = crud.get_driver_google_by_id(user_id, db)
-        if google_user:
+        if google_user is not None:
             crud.delete_google_user_driver(google_user, db)
         user = crud.delete_driver(user_id, db)
         return user
+
 
 
 def get_user_by_id(user_id: int, db: Session):

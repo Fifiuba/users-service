@@ -17,6 +17,7 @@ def validated_admin(headers):
     authorization_handler.is_admin(user)
 
 
+
 @user_router.get(
     "",
     response_model=List[schema.UserResponse],
@@ -200,7 +201,9 @@ async def delete_user(
         validated_admin(rq.headers)
         print("si llegue hasta aca es xq tengo perimos sde admin")
         db_user = user_repository.get_user_by_id(user_id, db)
-        firebase.delete_user(db_user.tokenId)
+        unique = user_repository.verify_unique_user(user_id, user.user_type, db)
+        if unique :
+            firebase.delete_user(db_user.tokenId)
         return user_repository.delete_user(user_id, user.user_type, db)
     except (exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
@@ -266,4 +269,3 @@ async def restore_password(rq: Request, user_id: int,db: Session = Depends(datab
         return user
     except (exceptions.UserInfoException) as error:
         raise HTTPException(**error.__dict__)
-        

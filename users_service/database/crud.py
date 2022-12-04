@@ -711,19 +711,3 @@ def delete_google_user_passenger(google_user_passenger, db):
     )
     logger.info("Google User deleted")
 
-
-def delete_google_user(google_user, db):
-    db.delete(google_user)
-    db.commit()
-    logger.debug(
-        "Google user  %d deleted",
-        google_user.userId,
-        extra={
-            "type": "DEBUG",
-            "endpoint": "/users/",
-            "method": "DELETE",
-            "operation": "delete user",
-            "status": 200,
-        },
-    )
-    logger.info("Google User deleted")
