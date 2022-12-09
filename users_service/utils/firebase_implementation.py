@@ -15,18 +15,23 @@ class Firebase:
             self.auth.UserNotFoundError,
             fb_exceptions.FirebaseError,
         ) as error:
-            crud.logger.warning(
-                "firebase error %s",
-                error,
-                extra={
-                    "type": "WARN",
-                    "endpoint": "/users",
-                    "method": "POST",
-                    "operation": "Register",
-                    "status": 401,
-                },
-            )
-            raise exceptions.UserWrongLoginInformation
+            if error.code == 'ALREADY_EXISTS':
+                user = self.auth.get_user_by_email(email, app=self.app)
+                print(user)
+                return user.uid
+            else:
+                crud.logger.warning(
+                    "firebase error %s",
+                    error,
+                    extra={
+                        "type": "WARN",
+                        "endpoint": "/users",
+                        "method": "POST",
+                        "operation": "Register",
+                        "status": 401,
+                    },
+                )
+                raise exceptions.UserWrongLoginInformation
         else:
             return user.uid
 
