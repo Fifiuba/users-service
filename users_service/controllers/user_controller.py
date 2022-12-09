@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, HTTPException, Depends, Request
 from sqlalchemy.orm import Session
 from typing import List, Union
 from users_service.database import schema, exceptions, database, user_repository
-from users_service.utils import authorization_handler, token_handler, firebase_handler, events_handler
+from users_service.utils import authorization_handler, token_handler, firebase_handler, events_handler, wallet_handler
 
 
 user_router = APIRouter()
@@ -79,10 +79,13 @@ async def registrate_user(
     db: Session = Depends(database.get_db),
     firebase=Depends(firebase_handler.get_fb),
     events=Depends(events_handler.get_event),
+    wallet=Depends(wallet_handler.get_wallet),
 ):
     try:
+
         token_id = firebase.create_user(user.email, user.password)
         value = user_repository.create_user(token_id, user, db)
+        wallet.create_wallet(value.id)
         events.create_event("Register user with email", "A user was register", "info", ["type:INFO",
             "endpoint:/users",
             "method:POST",
@@ -132,18 +135,20 @@ async def login_google(
     db: Session = Depends(database.get_db),
     firebase=Depends(firebase_handler.get_fb),
     events=Depends(events_handler.get_event),
+    wallet = Depends(wallet_handler.get_wallet)
 ):
     try:
         user = firebase.valid_user(googleUser.token)
         email = firebase.get_email(user.get("uid"))
-        token, isNewUser= user_repository.login_google(
+        id, isNewUser= user_repository.login_google(
             user.get("uid"),
             email,
             user.get("name"),
             user.get("picture"),
             googleUser.user_type,
             db,
-        )
+        )   
+        wallet.create_wallet(id)
         if isNewUser :
             events.create_event("Register user with google", "A user registers the systems with google", "info", ["type:INFO",
                     "endpoint:/users/loginGoogle",
@@ -155,7 +160,8 @@ async def login_google(
                     "endpoint:/users/loginGoogle",
                     "method:POST",
                     "operation:login",
-                    "status:200",])        
+                    "status:200",])  
+        token = token_handler.create_access_token(id, "user")      
         return token
     except exceptions.UserInfoException as error:
         raise HTTPException(**error.__dict__)

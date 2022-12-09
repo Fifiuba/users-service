@@ -5,6 +5,8 @@ from users_service.database import models, database
 from users_service.utils.events_handler import get_event
 from users_service.utils.events_mockup import EventsMock
 from users_service.utils.firebase_mock import FirebaseMock
+from users_service.utils.wallet_handler import get_wallet
+from users_service.utils.wallet_mockup import WalletMockUp
 from users_service.utils.firebase_handler import get_fb
 
 
@@ -43,6 +45,15 @@ def init_events(app):
 
     app.dependency_overrides[get_event] = override_get_events
 
+def init_wallet(app):
+    wallet = WalletMockUp()
+    def override_get_wallets():
+        try:
+            yield wallet 
+        finally:
+            wallet
+    
+    app.dependency_overrides[get_wallet] = override_get_wallets
 # firebase
 def init_firebase(app):
     firebase = FirebaseMock()

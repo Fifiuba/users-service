@@ -233,8 +233,7 @@ def login_google(uid: str, email: str, name: str, picture: str, user_type: str, 
                 "status": 200,
             },
             )
-    token = token_handler.create_access_token(user_id, "user")
-    return token, isnewUser
+    return user_id, isnewUser
 
 def verify_unique_user(id: int, type: str, db:Session):
     if type == "passenger":
