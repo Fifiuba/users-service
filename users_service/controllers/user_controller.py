@@ -235,11 +235,6 @@ async def block_user( rq: Request, user_id: int, userBlock: schema.BlockUser, db
         print(db_user.id)
         firebase.block_user(db_user.tokenId, userBlock.block)
         
-        events.create_event("Block User", "A user was block by an admin", "info", ["type:INFO",
-                    "endpoint:/users/block",
-                    "method:PATCH",
-                    "operation:block",
-                    "status:200",])
         user = user_repository.block_user(db_user, userBlock.block, db)
         if userBlock.block :
             events.create_event("Block User", "A user was block by an admin", "info", ["type:INFO",
