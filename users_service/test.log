@@ -1,0 +1,25 @@
+2022-10-30 15:50:50,072 - INFO: Started server process [9060]
+2022-10-30 15:50:50,072 - INFO: Waiting for application startup.
+2022-10-30 15:50:50,072 - INFO: Application startup complete.
+2022-10-30 15:50:52,722 - INFO: Shutting down
+2022-10-30 15:50:52,824 - INFO: Waiting for application shutdown.
+2022-10-30 15:50:52,824 - INFO: Application shutdown complete.
+2022-10-30 15:50:52,825 - INFO: Finished server process [9060]
+2022-10-30 15:52:57,376 - INFO: Starting server
+2022-10-30 15:52:57,392 - INFO: Started server process [8948]
+2022-10-30 15:52:57,392 - INFO: Waiting for application startup.
+2022-10-30 15:52:57,392 - INFO: Application startup complete.
+2022-10-30 15:53:40,603 - INFO: Shutting down
+2022-10-30 15:53:40,704 - INFO: Waiting for application shutdown.
+2022-10-30 15:53:40,705 - INFO: Application shutdown complete.
+2022-10-30 15:53:40,706 - INFO: Finished server process [8948]
+2022-10-30 15:53:56,228 - INFO: Starting server
+2022-10-30 15:53:56,244 - INFO: Started server process [4480]
+2022-10-30 15:53:56,244 - INFO: Waiting for application startup.
+2022-10-30 15:53:56,244 - INFO: Application startup complete.
+2022-10-30 15:56:18,676 - DEBUG: <class 'ddtrace.internal.module.ModuleWatchdog'> installed
+2022-10-30 15:58:56,268 - DEBUG: <class 'ddtrace.internal.module.ModuleWatchdog'> installed
+2022-10-30 16:00:01,285 - DEBUG: <class 'ddtrace.internal.module.ModuleWatchdog'> installed
+2022-10-30 16:01:57,071 - DEBUG: <class 'ddtrace.internal.module.ModuleWatchdog'> installed
+2022-10-30 16:02:16,757 - DEBUG: <class 'ddtrace.internal.module.ModuleWatchdog'> installed
+2022-10-30 16:03:55,445 - DEBUG: <class 'ddtrace.internal.module.ModuleWatchdog'> installed

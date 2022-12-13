@@ -1,1 +1,10 @@
-__pycache__
+
+.env
+postgres-data
+test.db
+.pytest_cache
+__pycache__/
+*.pyc
+firebase_keys.json
+
+
