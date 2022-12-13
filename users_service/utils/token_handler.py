@@ -22,6 +22,6 @@ def create_access_token(user_id: int, rol: str) -> str:
 
 
 def decode_token(token: str):
-    
+
     decoded_jwt = jwt.decode(token, JWT_SECRET_KEY, algorithms=[ALGORITHM])
     return decoded_jwt

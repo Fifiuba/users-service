@@ -8,4 +8,4 @@ class Wallet:
     def create_wallet(self, user_id: int):
         body = {"user_id": user_id}
         headers = {"Content-type": "application/json", "Accept": "application/json"}
-        response = requests.post(self.url, json=body, headers=headers)
+        requests.post(self.url, json=body, headers=headers)

@@ -726,7 +726,8 @@ def test_when_blocking_a_user_it_shoudl_be_block():
     )
     assert response.status_code == status.HTTP_200_OK, response.text
     data2 = response.json()
-    assert data2["isBlock"] == True
+    block = True
+    assert data2["isBlock"] == block
     client.delete(
         "/users/" + str(id),
         json={"user_type": "passenger"},

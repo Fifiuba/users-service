@@ -19,10 +19,13 @@ app.add_middleware(
 
 @app.get("/")
 async def root(status_code=status.HTTP_200_OK):
+    description = (
+        "User services is the responsable of handle the users of the fifiuba app"
+    )
     message = {
         "service": "Users Service!",
-        "created_on": "7-9-22",
-        "description": "User services is the responsable of handle the users of the fifiuba app",
+        "created_on": "7-9-2022",
+        "description": description,
     }
     return message
 

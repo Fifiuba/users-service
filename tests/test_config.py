@@ -12,6 +12,7 @@ from users_service.utils.firebase_handler import get_fb
 
 session = None
 
+
 # database
 def init_database(app):
 

@@ -17,5 +17,4 @@ class EventsGenerator:
             tags=tagsEvent,
         )
         api_instance = EventsApi(self.api_client)
-        response = api_instance.create_event(body=body)
-        
+        api_instance.create_event(body=body)
