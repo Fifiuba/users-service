@@ -19,6 +19,8 @@ services:
   # Servicio de backend
   backend:
     build: .
+    env_file:
+      - .env
     restart: on-failure
     ports:
       - 8000:8000
