@@ -1,12 +1,15 @@
 import os
 from jose import jwt
+from dotenv import load_dotenv
+
+load_dotenv()
 
 if "RUN_ENV" in os.environ.keys() and os.environ["RUN_ENV"] == "test":
     JWT_SECRET_KEY = "testcase"
     ALGORITHM = "HS256"
 else:
-    JWT_SECRET_KEY = "taller2"  # os.getenv("JWT_SECRET_KEY")
-    ALGORITHM = "HS256"  # os.getenv("ALGORITHM")
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+    ALGORITHM = os.getenv("ALGORITHM")
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 5
 

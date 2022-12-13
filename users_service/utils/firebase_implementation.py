@@ -15,9 +15,8 @@ class Firebase:
             self.auth.UserNotFoundError,
             fb_exceptions.FirebaseError,
         ) as error:
-            if error.code == 'ALREADY_EXISTS':
+            if error.code == "ALREADY_EXISTS":
                 user = self.auth.get_user_by_email(email, app=self.app)
-                print(user)
                 return user.uid
             else:
                 crud.logger.warning(
@@ -59,7 +58,7 @@ class Firebase:
             self.auth.delete_user(uid, app=self.app)
         except (ValueError, self.auth.UserNotFoundError, fb_exceptions.FirebaseError):
             raise exceptions.UserNotFoundError
-    
+
     def block_user(self, uid, block):
         try:
             self.auth.update_user(uid, disabled=block)

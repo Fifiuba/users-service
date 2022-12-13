@@ -34,6 +34,7 @@ def init_database(app):
     app.dependency_overrides[database.get_db] = override_get_db
     return TestingSessionLocal()
 
+
 def init_events(app):
     events = EventsMock()
 
@@ -45,15 +46,19 @@ def init_events(app):
 
     app.dependency_overrides[get_event] = override_get_events
 
+
 def init_wallet(app):
     wallet = WalletMockUp()
+
     def override_get_wallets():
         try:
-            yield wallet 
+            yield wallet
         finally:
             wallet
-    
+
     app.dependency_overrides[get_wallet] = override_get_wallets
+
+
 # firebase
 def init_firebase(app):
     firebase = FirebaseMock()

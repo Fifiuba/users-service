@@ -11,7 +11,7 @@ def init_database():
     )
     global SessionLocal
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    #Base.metadata.drop_all(engine)
+    # Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
 
 

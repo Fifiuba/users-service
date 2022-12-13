@@ -11,7 +11,8 @@ def get_user_by_email(email: str, db: Session):
         raise exceptions.UserNotFoundError
     return user
 
-def get_opinions_users(id:int, user_type:str, db:Session):
+
+def get_opinions_users(id: int, user_type: str, db: Session):
     if user_type == "passenger":
         opinions, found = crud.get_opinions_passenger(id, db)
         if not opinions and not found:
@@ -22,6 +23,7 @@ def get_opinions_users(id:int, user_type:str, db:Session):
         if not opinions and not found:
             raise exceptions.DriverNotFoundError
         return opinions
+
 
 def get_especific_user_by_id(id: int, user_type: str, db: Session):
     if user_type == "passenger":
@@ -189,7 +191,10 @@ def login(email: str, token_id: str, user_type: str, db: Session):
     token = token_handler.create_access_token(db_user.id, "user")
     return token
 
-def login_google(uid: str, email: str, name: str, picture: str, user_type: str, db: Session):
+
+def login_google(
+    uid: str, email: str, name: str, picture: str, user_type: str, db: Session
+):
     isnewUser = False
     user_id = -1
     if user_type == "passenger":
@@ -199,20 +204,20 @@ def login_google(uid: str, email: str, name: str, picture: str, user_type: str, 
             if user is None:
                 raise exceptions.PassengerAlreadyExists
             user_id = user.id
-            isnewUser = True 
+            isnewUser = True
         else:
             user_id = relationship_passenger.userId
             crud.logger.info(
-            "Login with Google",
-            extra={
-                "type": "INFO",
-                "endpoint": "/users/loginGoogle",
-                "method": "POST",
-                "operation": "login",
-                "status": 200,
-            },
+                "Login with Google",
+                extra={
+                    "type": "INFO",
+                    "endpoint": "/users/loginGoogle",
+                    "method": "POST",
+                    "operation": "login",
+                    "status": 200,
+                },
             )
-    else :
+    else:
         relationship_driver = crud.get_google_relationship_driver(uid, db)
         if not relationship_driver:
             user = crud.create_user_google_driver(uid, email, name, picture, db)
@@ -221,21 +226,22 @@ def login_google(uid: str, email: str, name: str, picture: str, user_type: str, 
             user_id = user.id
             isnewUser = True
 
-        else: 
+        else:
             user_id = relationship_driver.userId
             crud.logger.info(
-            "Login with Google",
-            extra={
-                "type": "INFO",
-                "endpoint": "/users/loginGoogle",
-                "method": "POST",
-                "operation": "login",
-                "status": 200,
-            },
+                "Login with Google",
+                extra={
+                    "type": "INFO",
+                    "endpoint": "/users/loginGoogle",
+                    "method": "POST",
+                    "operation": "login",
+                    "status": 200,
+                },
             )
     return user_id, isnewUser
 
-def verify_unique_user(id: int, type: str, db:Session):
+
+def verify_unique_user(id: int, type: str, db: Session):
     if type == "passenger":
         user = crud.get_driver_by_id(id, db)
         if user is not None:
@@ -247,13 +253,14 @@ def verify_unique_user(id: int, type: str, db:Session):
             return False
         return True
 
-def delete_user(user_id, user_type, db: Session):  
+
+def delete_user(user_id, user_type, db: Session):
     if user_type == "passenger":
         google_user = crud.get_passenger_google_by_id(user_id, db)
         if google_user is not None:
             crud.delete_google_user_passenger(google_user, db)
         user = crud.delete_passenger(user_id, db)
-        return user 
+        return user
     else:
         google_user = crud.get_driver_google_by_id(user_id, db)
         if google_user is not None:
@@ -262,12 +269,12 @@ def delete_user(user_id, user_type, db: Session):
         return user
 
 
-
 def get_user_by_id(user_id: int, db: Session):
     user = crud.get_user_by_id(user_id, db)
     if not user:
         raise exceptions.UserNotFoundError
     return user
 
-def block_user(user, block: bool, db: Session):  
+
+def block_user(user, block: bool, db: Session):
     return crud.toggle_block_user(user, block, db)

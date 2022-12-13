@@ -52,23 +52,41 @@ def get_user_by_email(email: str, db: Session):
 def get_user_by_id(user_id: int, db: Session):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
-def get_opinions_passenger(user_id, db:Session):
+
+def get_opinions_passenger(user_id, db: Session):
     passenger = get_passenger_by_id(user_id, db)
     found = True
     if not passenger:
         found = False
-    return db.query(models.PassengerScores).filter(models.PassengerScores.userId == user_id).order_by(models.PassengerScores.scoreid.desc()).limit(3).all(), found
+    return (
+        db.query(models.PassengerScores)
+        .filter(models.PassengerScores.userId == user_id)
+        .order_by(models.PassengerScores.scoreid.desc())
+        .limit(3)
+        .all(),
+        found,
+    )
 
-def get_opinions_driver(user_id, db:Session):
+
+def get_opinions_driver(user_id, db: Session):
     driver = get_driver_by_id(user_id, db)
     found = True
-    if not driver :
+    if not driver:
         found = False
-    return db.query(models.DriverScores).filter(models.DriverScores.userId == user_id).order_by(models.DriverScores.scoreid.desc()).limit(3).all(), found
+    return (
+        db.query(models.DriverScores)
+        .filter(models.DriverScores.userId == user_id)
+        .order_by(models.DriverScores.scoreid.desc())
+        .limit(3)
+        .all(),
+        found,
+    )
+
 
 def get_passenger_by_id(passenger_id: int, db: Session):
-    return db.query(models.Passenger).filter(models.Passenger.id == passenger_id).first()
-    
+    return (
+        db.query(models.Passenger).filter(models.Passenger.id == passenger_id).first()
+    )
 
 
 def get_driver_by_id(driver_id: int, db: Session):
@@ -114,12 +132,21 @@ def create_driver_with_id(user_id: int, db: Session):
     db.commit()
     db.refresh(db_driver)
 
-def get_driver_google_by_id(id:int, db: Session):
 
-    return db.query(models.GoogleDriver).filter(models.GoogleDriver.userId == id).first()
+def get_driver_google_by_id(id: int, db: Session):
 
-def get_passenger_google_by_id(id:int, db: Session):
-    return db.query(models.GooglePassenger).filter(models.GooglePassenger.userId == id).first()
+    return (
+        db.query(models.GoogleDriver).filter(models.GoogleDriver.userId == id).first()
+    )
+
+
+def get_passenger_google_by_id(id: int, db: Session):
+    return (
+        db.query(models.GooglePassenger)
+        .filter(models.GooglePassenger.userId == id)
+        .first()
+    )
+
 
 def create_passenger(token_id: Union[str, None], user: schema.UserBase, db: Session):
     db_user, already_existing_user = create_user(token_id, user, db)
@@ -163,8 +190,6 @@ def create_driver(token_id: Union[str, None], user: schema.UserBase, db: Session
         get_passenger_by_id(db_user.id, db) is None
         or get_driver_by_id(db_user.id, db) is not None
     ):
-        print(get_passenger_by_id(db_user.id, db))
-        print(get_driver_by_id(db_user.id, db))
         logger.warning(
             "Driver with id %d already exists",
             db_user.id,
@@ -371,13 +396,17 @@ def edit_driver_info(
     logger.info("Driver updated")
     return user, driver
 
-def delete_scores_for_passenger(user_id: int, db:Session):
-    scores = db.query(models.PassengerScores).filter(models.PassengerScores.userId == user_id)
+
+def delete_scores_for_passenger(user_id: int, db: Session):
+    scores = db.query(models.PassengerScores).filter(
+        models.PassengerScores.userId == user_id
+    )
     for score in scores:
         db.delete(score)
         db.commit()
 
-def delete_scores_for_driver(user_id:int, db:Session):
+
+def delete_scores_for_driver(user_id: int, db: Session):
     scores = db.query(models.DriverScores).filter(models.DriverScores.userId == user_id)
     for score in scores:
         db.delete(score)
@@ -417,7 +446,7 @@ def delete_passenger(user_id, db):
         },
     )
     logger.info("Passenger deleted")
-    return {'id': user_id}
+    return {"id": user_id}
 
 
 def delete_driver(user_id, db):
@@ -454,7 +483,8 @@ def delete_driver(user_id, db):
     )
     logger.info("Driver deleted")
 
-    return {'id': user_id}
+    return {"id": user_id}
+
 
 def get_total_score_for_passenger(passenger_id, db):
     scores = (
@@ -476,10 +506,14 @@ def get_total_score_for_driver(driver_id, db):
     return total_score
 
 
-def update_score_passenger(passenger: models.Passenger, userScore: schema.UserScore, db: Session):
-    newScore = models.PassengerScores(userId=passenger.id, rating=userScore.score, opinion=userScore.opinion)
+def update_score_passenger(
+    passenger: models.Passenger, userScore: schema.UserScore, db: Session
+):
+    newScore = models.PassengerScores(
+        userId=passenger.id, rating=userScore.score, opinion=userScore.opinion
+    )
     db.add(newScore)
-    db.commit()  
+    db.commit()
     final_score = get_total_score_for_passenger(passenger.id, db)
     passenger.score = final_score
     db.commit()
@@ -496,12 +530,20 @@ def update_score_passenger(passenger: models.Passenger, userScore: schema.UserSc
         },
     )
     logger.info("Passenger updated")
-    info = {'score': final_score, 'userId': newScore.userId, 'opinion': newScore.opinion}
+    info = {
+        "score": final_score,
+        "userId": newScore.userId,
+        "opinion": newScore.opinion,
+    }
     return info
 
 
-def update_score_driver(driver: models.Driver, userScore: schema.UserScore, db: Session):
-    newScore = models.DriverScores(userId=driver.id, rating=userScore.score, opinion=userScore.opinion)
+def update_score_driver(
+    driver: models.Driver, userScore: schema.UserScore, db: Session
+):
+    newScore = models.DriverScores(
+        userId=driver.id, rating=userScore.score, opinion=userScore.opinion
+    )
     db.add(newScore)
     db.commit()
     db.refresh(newScore)
@@ -521,92 +563,101 @@ def update_score_driver(driver: models.Driver, userScore: schema.UserScore, db: 
         },
     )
     logger.info("Driver updated")
-    info = {'score': final_score, 'userId': newScore.userId, 'opinion': newScore.opinion}
+    info = {
+        "score": final_score,
+        "userId": newScore.userId,
+        "opinion": newScore.opinion,
+    }
     return info
 
-def toggle_block_user(user: models.User, block: bool, db:Session):
+
+def toggle_block_user(user: models.User, block: bool, db: Session):
     user.isBlock = block
     db.commit()
     db.refresh(user)
     return user
 
-def create_user_google_passenger(uid:str, email:str, name:str, picture:str, db:Session):
+
+def create_user_google_passenger(
+    uid: str, email: str, name: str, picture: str, db: Session
+):
     user_aux = schema.UserBase(
-                user_type="passenger",
-                name=name,
-                password="",
-                phone_number=None,
-                email=email,
-                age=None,
-                picture=picture,
-            )
+        user_type="passenger",
+        name=name,
+        password="",
+        phone_number=None,
+        email=email,
+        age=None,
+        picture=picture,
+    )
     user = get_user_by_email(email, db)
     if user is None or (user and get_driver_by_id is not None):
-        print("creo usuaro google como passager")
         db_user = create_passenger(uid, user_aux, db)
         logger.info(
-                    "Login with Google",
-                    extra={
-                        "type": "INFO",
-                        "endpoint": "/users/loginGoogle",
-                        "method": "POST",
-                        "operation": "login",
-                        "status": 200,
-                    },
-                )
+            "Login with Google",
+            extra={
+                "type": "INFO",
+                "endpoint": "/users/loginGoogle",
+                "method": "POST",
+                "operation": "login",
+                "status": 200,
+            },
+        )
         db_google_user = models.GooglePassenger(userId=db_user.id, googleId=uid)
         db.add(db_google_user)
         db.commit()
         logger.debug("Create google user %s", uid)
         logger.info(
-                "Create google user",
-                extra={
-                    "type": "INFO",
-                    "endpoint": "/users/loginGoogle",
-                    "method": "POST",
-                    "operation": "register",
-                    "status": 200,
-                },
+            "Create google user",
+            extra={
+                "type": "INFO",
+                "endpoint": "/users/loginGoogle",
+                "method": "POST",
+                "operation": "register",
+                "status": 200,
+            },
         )
         return db_user
     else:
-        if (get_driver_google_by_id(user.id, db)):
+        if get_driver_google_by_id(user.id, db):
             logger.warning(
-                    "Login with Google",
-                    extra={
-                        "type": "WARN",
-                        "endpoint": "/users/loginGoogle",
-                        "method": "POST",
-                        "operation": "login",
-                        "status": 401,
-                    },
-                )
-        return None
-
-def create_user_google_driver(uid:str, email:str, name:str, picture:str, db:Session):
-    user = get_user_by_email(email, db)
-    print(user)
-    if user is None or (user and get_passenger_google_by_id(user.id, db) is not None):
-        user_aux = schema.UserBase(
-                user_type="driver",
-                name=name,
-                password="",
-                phone_number=None,
-                email=email,
-                age=None,
-                picture=picture,
-            )
-        db_user = create_driver(uid, user_aux, db)
-        logger.info(
                 "Login with Google",
                 extra={
-                    "type": "INFO",
+                    "type": "WARN",
                     "endpoint": "/users/loginGoogle",
                     "method": "POST",
                     "operation": "login",
-                    "status": 200,
+                    "status": 401,
                 },
             )
+        return None
+
+
+def create_user_google_driver(
+    uid: str, email: str, name: str, picture: str, db: Session
+):
+    user = get_user_by_email(email, db)
+    if user is None or (user and get_passenger_google_by_id(user.id, db) is not None):
+        user_aux = schema.UserBase(
+            user_type="driver",
+            name=name,
+            password="",
+            phone_number=None,
+            email=email,
+            age=None,
+            picture=picture,
+        )
+        db_user = create_driver(uid, user_aux, db)
+        logger.info(
+            "Login with Google",
+            extra={
+                "type": "INFO",
+                "endpoint": "/users/loginGoogle",
+                "method": "POST",
+                "operation": "login",
+                "status": 200,
+            },
+        )
         db_google_user = models.GoogleDriver(userId=db_user.id, googleId=uid)
         db.add(db_google_user)
         db.commit()
@@ -621,26 +672,36 @@ def create_user_google_driver(uid:str, email:str, name:str, picture:str, db:Sess
                 "status": 200,
             },
         )
-        return  db_user
+        return db_user
     else:
         logger.warning(
-                "Login with Google",
-                extra={
-                    "type": "WARN",
-                    "endpoint": "/users/loginGoogle",
-                    "method": "POST",
-                    "operation": "login",
-                    "status": 401,
-                },
-            )
+            "Login with Google",
+            extra={
+                "type": "WARN",
+                "endpoint": "/users/loginGoogle",
+                "method": "POST",
+                "operation": "login",
+                "status": 401,
+            },
+        )
         return None
-        
+
 
 def get_google_relationship_passenger(uid, db):
-    return db.query(models.GooglePassenger).filter(models.GooglePassenger.googleId == uid).first()
+    return (
+        db.query(models.GooglePassenger)
+        .filter(models.GooglePassenger.googleId == uid)
+        .first()
+    )
+
 
 def get_google_relationship_driver(uid, db):
-    return db.query(models.GoogleDriver).filter(models.GoogleDriver.googleId == uid).first()
+    return (
+        db.query(models.GoogleDriver)
+        .filter(models.GoogleDriver.googleId == uid)
+        .first()
+    )
+
 
 def delete_google_user_driver(google_user_driver, db):
     db.delete(google_user_driver)
@@ -658,6 +719,7 @@ def delete_google_user_driver(google_user_driver, db):
     )
     logger.info("Google User deleted")
 
+
 def delete_google_user_passenger(google_user_passenger, db):
     db.delete(google_user_passenger)
     db.commit()
@@ -673,4 +735,3 @@ def delete_google_user_passenger(google_user_passenger, db):
         },
     )
     logger.info("Google User deleted")
-

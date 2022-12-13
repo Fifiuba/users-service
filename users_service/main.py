@@ -4,6 +4,7 @@ from users_service.utils import firebase_handler
 from users_service.database import database
 from users_service.utils import events_handler
 from users_service.utils import wallet_handler
+
 ########
 
 events_handler.init_events()

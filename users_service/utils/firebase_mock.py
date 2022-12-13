@@ -43,14 +43,12 @@ class FirebaseMock:
         info = None
         if token in self.usersfireabse.keys():
             info = self.usersfireabse[token]
-            if info['block']:
-                raise exceptions.UserIsBlock 
+            if info["block"]:
+                raise exceptions.UserIsBlock
             else:
                 return info
         else:
             raise exceptions.UserWrongLoginInformation
-    
-
 
     def get_email(self, uid):
         email = None
@@ -65,5 +63,4 @@ class FirebaseMock:
     def block_user(self, uid, block):
         for value in self.usersfireabse.values():
             if value["uid"] == uid:
-                value['block'] = block
-       
+                value["block"] = block

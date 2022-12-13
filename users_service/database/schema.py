@@ -95,5 +95,6 @@ class UserScore(BaseModel):
     score: int = Field(..., ge=1, le=5)
     opinion: Optional[str] = None
 
+
 class BlockUser(BaseModel):
     block: bool

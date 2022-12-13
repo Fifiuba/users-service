@@ -16,7 +16,7 @@ class User(Base):
     age = Column("age", Integer, nullable=True)
     picture = Column("picture", String(255), nullable=True)
     tokenId = Column("tokenId", String(255), nullable=True)
-    isBlock = Column("score",  Boolean, unique=False, default=False)
+    isBlock = Column("score", Boolean, unique=False, default=False)
 
 
 class Passenger(Base):
@@ -25,7 +25,6 @@ class Passenger(Base):
     id = Column("id", Integer, ForeignKey("users.id"), primary_key=True)
     default_address = Column("default_address", String(255), nullable=True)
     score = Column("score", Integer, nullable=True)
-    
 
 
 class Driver(Base):
@@ -44,11 +43,13 @@ class GoogleUser(Base):
     userId = Column("userId", Integer, ForeignKey("users.id"), nullable=False)
     googleId = Column("googleId", String(255), primary_key=True)
 
+
 class GooglePassenger(Base):
     __tablename__ = "googlePassenger"
 
     userId = Column("userId", Integer, ForeignKey("users.id"), nullable=False)
     googleId = Column("googleId", String(255), primary_key=True)
+
 
 class GoogleDriver(Base):
     __tablename__ = "googleDriver"
@@ -57,13 +58,12 @@ class GoogleDriver(Base):
     googleId = Column("googleId", String(255), primary_key=True)
 
 
-
 class PassengerScores(Base):
     __tablename__ = "passengersScores"
     scoreid = Column("id", Integer, primary_key=True, autoincrement=True)
     userId = Column("userId", Integer, ForeignKey("passengers.id"), nullable=False)
     rating = Column("score", Integer, nullable=True)
-    opinion = Column("opinion", String(255), nullable = True)
+    opinion = Column("opinion", String(255), nullable=True)
 
 
 class DriverScores(Base):
@@ -71,4 +71,4 @@ class DriverScores(Base):
     scoreid = Column("id", Integer, primary_key=True, autoincrement=True)
     userId = Column("userId", Integer, ForeignKey("drivers.id"), nullable=False)
     rating = Column("score", Integer, nullable=True)
-    opinion = Column("opinion", String(255), nullable = True)
+    opinion = Column("opinion", String(255), nullable=True)
