@@ -849,3 +849,9 @@ def test_when_getting_especific_user_that_does_not_exist_it_does_not_return_it()
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
     data = response.json()
     assert data["detail"] == "The passenger does not exists"
+
+def test_when_retoring_password_to_valid_user_it_does_it():
+    response = registerDriver()
+    data = response.json()
+    response = client.post("users/restorePassword/" + data["email"])
+    response == status.HTTP_200_OK, response.text
